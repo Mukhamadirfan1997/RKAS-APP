@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RkasKertasKerjaExport;
 use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\RkasItemBulan;
@@ -9,6 +10,7 @@ use App\Models\TahunAnggaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RkasController extends Controller
 {
@@ -81,6 +83,7 @@ class RkasController extends Controller
             'satuan' => $item->satuan,
             'harga_satuan' => (float) $item->harga_satuan,
             'harga_satuan_arkas' => (float) $item->harga_satuan_arkas,
+            'koreksi' => (float) $item->koreksi,
             'jumlah' => (float) $item->jumlah,
             'alokasi' => $alokasiMap,
         ]);
@@ -98,6 +101,7 @@ class RkasController extends Controller
             'uraian' => 'required|string|max:500',
             'keterangan_kustom' => 'nullable|string|max:255',
             'harga_satuan' => 'required|numeric|min:0',
+            'koreksi' => 'nullable|numeric',
             'alokasi' => 'required|array',
         ]);
 
@@ -135,6 +139,7 @@ class RkasController extends Controller
                 'harga_satuan' => $hargaSatuan,
                 'harga_satuan_arkas' => $hargaSatuan,
                 'jumlah' => $totalJumlah,
+                'koreksi' => $validated['koreksi'] ?? 0,
                 'no_urut' => $maxNoUrut + 1,
             ]);
 
@@ -185,6 +190,7 @@ class RkasController extends Controller
             'uraian' => 'required|string|max:500',
             'keterangan_kustom' => 'nullable|string|max:255',
             'harga_satuan' => 'required|numeric|min:0',
+            'koreksi' => 'nullable|numeric',
             'alokasi' => 'required|array',
         ]);
 
@@ -216,6 +222,7 @@ class RkasController extends Controller
                 'harga_satuan' => $hargaSatuan,
                 'harga_satuan_arkas' => $hargaSatuan,
                 'jumlah' => $totalJumlah,
+                'koreksi' => $validated['koreksi'] ?? 0,
             ]);
 
             // Sync alokasi 12 bulan
@@ -292,5 +299,24 @@ class RkasController extends Controller
         ))->setPaper('a4', 'landscape');
 
         return $pdf->download('kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.pdf');
+    }
+
+    /**
+     * Export the worksheet as Excel .xlsx (kertas kerja ARKAS + KOREKSI/KONTROL).
+     */
+    public function export()
+    {
+        $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
+        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+
+        $items = RkasItem::with(['program', 'kodeRekening', 'barang', 'alokasiBulan'])
+            ->where('tahun_anggaran_id', $tahunAnggaran->id)
+            ->orderBy('no_urut')
+            ->get();
+
+        return Excel::download(
+            new RkasKertasKerjaExport($sekolah, $tahunAnggaran, $items),
+            'kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.xlsx'
+        );
     }
 }

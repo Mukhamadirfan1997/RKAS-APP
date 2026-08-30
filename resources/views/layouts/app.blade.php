@@ -74,11 +74,12 @@
                 'monitoring.juknis' => ['Monitoring JUKNIS', 'J'],
                 'master.program' => ['Master Data', 'D'],
                 'audit.index' => ['Audit Log', 'R'],
+                'backup.index' => ['Backup', 'B'],
                 'pengaturan.index' => ['Pengaturan', 'P'],
             ];
             $current = request()->route() ? request()->route()->getName() : '';
             $activeGroup = '';
-            foreach (['dashboard.index', 'rkas.index', 'monitoring.juknis', 'master.program', 'audit.index', 'pengaturan.index'] as $nav) {
+            foreach (['dashboard.index', 'rkas.index', 'monitoring.juknis', 'master.program', 'audit.index', 'backup.index', 'pengaturan.index'] as $nav) {
                 if (str_starts_with($current, explode('.', $nav)[0] . '.')) { $activeGroup = $nav; break; }
                 if ($current === $nav) { $activeGroup = $nav; break; }
             }

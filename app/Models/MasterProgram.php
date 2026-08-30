@@ -17,4 +17,14 @@ class MasterProgram extends Model
     {
         return $this->hasMany(RkasItem::class);
     }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
 }

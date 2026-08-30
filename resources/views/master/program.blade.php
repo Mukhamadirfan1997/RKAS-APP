@@ -40,8 +40,12 @@
                         <input type="text" name="nama" required placeholder="Peningkatan Kompetensi Guru" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Standar SNP</label>
-                        <input type="text" name="standar_snp" placeholder="Standar Pendidik dan Tenaga Kependidikan" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Program (8 SNP)</label>
+                        <input type="text" name="program" placeholder="Standar Pendidik dan Tenaga Kependidikan" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Sub Program</label>
+                        <input type="text" name="sub_program" placeholder="Pengembangan Profesi Pendidik dan Tenaga Kependidikan" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <button type="submit" class="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">Simpan</button>
                 </form>
@@ -58,7 +62,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">File .xls/.xlsx/.csv</label>
                         <input type="file" name="file" required accept=".xls,.xlsx,.csv" class="w-full text-xs">
-                        <div class="text-[10px] text-slate-400 mt-1">Kolom header: <b>kode</b>, <b>nama</b>, <b>standar_snp</b>.</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Kolom header: <b>kode</b> (kode_kegiatan), <b>nama</b> (uraian), <b>program</b>, <b>sub_program</b>.</div>
                     </div>
                     <button type="submit" class="w-full px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">Import Data</button>
                 </form>
@@ -81,7 +85,10 @@
                             <div class="text-sm font-bold text-slate-700">
                                 <span class="text-blue-600 font-mono">{{ $item->kode }}</span> &middot; {{ $item->nama }}
                             </div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">{{ $item->standar_snp }}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                <span class="text-slate-500 font-semibold">{{ $item->program }}</span>
+                                @if($item->sub_program) &middot; {{ $item->sub_program }} @endif
+                            </div>
                         </div>
                         <form method="POST" action="{{ route('master.program.update', $item->id) }}" class="flex items-center gap-1.5 shrink-0" x-data="{ editing: false }">
                             @csrf
@@ -94,7 +101,7 @@
                                 <div class="flex items-center gap-1.5">
                                     <input type="text" name="kode" value="{{ $item->kode }}" class="w-20 rounded-md border border-slate-300 px-2 py-1 text-xs">
                                     <input type="text" name="nama" value="{{ $item->nama }}" class="w-40 rounded-md border border-slate-300 px-2 py-1 text-xs">
-                                    <input type="text" name="standar_snp" value="{{ $item->standar_snp }}" class="w-32 rounded-md border border-slate-300 px-2 py-1 text-xs">
+                                    <input type="text" name="program" value="{{ $item->program }}" class="w-32 rounded-md border border-slate-300 px-2 py-1 text-xs">
                                     <button type="submit" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50">Simpan</button>
                                 </div>
                             </template>

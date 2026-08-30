@@ -14,7 +14,7 @@
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div>
             <h1 class="text-lg md:text-xl font-bold text-slate-800">Master Data &mdash; Kode Rekening Belanja</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Kelola kode rekening belanja BARJAS / MODAL / HONOR.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Kelola kode rekening belanja sesuai klasifikasi Jenis Belanja ARKAS (9 jenis).</p>
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ route('master.program') }}" class="px-3 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">Program</a>
@@ -40,11 +40,12 @@
                         <input type="text" name="nama" required placeholder="Belanja Makanan dan Minuman Rapat" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Belanja</label>
-                        <select name="kategori_belanja" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="BARJAS">BARJAS</option>
-                            <option value="MODAL">MODAL</option>
-                            <option value="HONOR">HONOR</option>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Belanja</label>
+                        <select name="jenis_belanja_id" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Pilih Jenis Belanja --</option>
+                            @foreach($jenisBelanjas as $jb)
+                                <option value="{{ $jb->id }}">{{ $jb->nama }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <button type="submit" class="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">Simpan</button>
@@ -62,7 +63,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">File .xls/.xlsx/.csv</label>
                         <input type="file" name="file" required accept=".xls,.xlsx,.csv" class="w-full text-xs">
-                        <div class="text-[10px] text-slate-400 mt-1">Kolom header: <b>kode</b>, <b>nama</b>, <b>kategori</b>.</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Kolom header: <b>kode</b> (kode_barang), <b>nama</b> (rincian_objek). Jenis belanja terisi otomatis dari prefix kode.</div>
                     </div>
                     <button type="submit" class="w-full px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">Import Data</button>
                 </form>
@@ -86,9 +87,8 @@
                                 <span class="text-blue-600 font-mono">{{ $item->kode }}</span> &middot; {{ $item->nama }}
                             </div>
                             <div class="text-[11px] text-slate-400 mt-0.5">
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border
-                                    {{ $item->kategori_belanja === 'BARJAS' ? 'bg-blue-50 text-blue-700 border-blue-200' : ($item->kategori_belanja === 'MODAL' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-rose-50 text-rose-700 border-rose-200') }}">
-                                    {{ $item->kategori_belanja }}
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">
+                                    {{ $item->jenisBelanja->nama ?? 'Belum diklasifikasi' }}
                                 </span>
                             </div>
                         </div>
@@ -103,10 +103,11 @@
                                 <div class="flex items-center gap-1.5">
                                     <input type="text" name="kode" value="{{ $item->kode }}" class="w-28 rounded-md border border-slate-300 px-2 py-1 text-xs">
                                     <input type="text" name="nama" value="{{ $item->nama }}" class="w-40 rounded-md border border-slate-300 px-2 py-1 text-xs">
-                                    <select name="kategori_belanja" class="rounded-md border border-slate-300 px-2 py-1 text-xs">
-                                        <option value="BARJAS" {{ $item->kategori_belanja === 'BARJAS' ? 'selected' : '' }}>BARJAS</option>
-                                        <option value="MODAL" {{ $item->kategori_belanja === 'MODAL' ? 'selected' : '' }}>MODAL</option>
-                                        <option value="HONOR" {{ $item->kategori_belanja === 'HONOR' ? 'selected' : '' }}>HONOR</option>
+                                    <select name="jenis_belanja_id" class="rounded-md border border-slate-300 px-2 py-1 text-xs">
+                                        <option value="">-- Jenis --</option>
+                                        @foreach($jenisBelanjas as $jb)
+                                            <option value="{{ $jb->id }}" {{ $item->jenis_belanja_id === $jb->id ? 'selected' : '' }}>{{ $jb->nama }}</option>
+                                        @endforeach
                                     </select>
                                     <button type="submit" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50">Simpan</button>
                                 </div>

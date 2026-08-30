@@ -60,40 +60,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 4. Master Program (8 SNP)
-        $programs = [
-            ['kode' => '02.01.01', 'nama' => 'Pelaksanaan Pembelajaran dan Asesmen', 'standar_snp' => 'Standar Proses'],
-            ['kode' => '03.02.01', 'nama' => 'Peningkatan Kompetensi Guru', 'standar_snp' => 'Standar Pendidik dan Tenaga Kependidikan'],
-            ['kode' => '03.02.02', 'nama' => 'Peningkatan Kompetensi Kepala Sekolah', 'standar_snp' => 'Standar Pendidik dan Tenaga Kependidikan'],
-            ['kode' => '04.01.01', 'nama' => 'Pembayaran Honor Guru Non-ASN', 'standar_snp' => 'Standar Pengelolaan'],
-            ['kode' => '04.01.02', 'nama' => 'Pembayaran Honor Tenaga Kependidikan Non-ASN', 'standar_snp' => 'Standar Pengelolaan'],
-            ['kode' => '05.08.01', 'nama' => 'Pemeliharaan Sarana dan Prasarana Sekolah', 'standar_snp' => 'Standar Sarana dan Prasarana'],
-            ['kode' => '05.02.02', 'nama' => 'Penyediaan Buku Teks Utama Peserta Didik', 'standar_snp' => 'Standar Sarana dan Prasarana'],
-            ['kode' => '06.01.01', 'nama' => 'Kegiatan Evaluasi dan Asesmen Nasional', 'standar_snp' => 'Standar Penilaian'],
-            ['kode' => '01.01.01', 'nama' => 'Kegiatan diskusi kolaborasi guru dalam penyusunan kurikulum', 'standar_snp' => 'Pengembangan Standar Isi'],
-            ['kode' => '03.03.01', 'nama' => 'Pembinaan Minat, Bakat dan Prestasi Siswa', 'standar_snp' => 'Standar Pendidik dan Tenaga Kependidikan'],
-        ];
-
-        foreach ($programs as $prog) {
-            MasterProgram::firstOrCreate(['kode' => $prog['kode']], $prog);
-        }
-
-        // 5. Master Kode Rekening
-        $rekenings = [
-            ['kode' => '5.1.02.01.01.0052', 'nama' => 'Belanja Makanan dan Minuman Rapat', 'kategori_belanja' => 'BARJAS'],
-            ['kode' => '5.1.02.01.01.0024', 'nama' => 'Belanja Alat Tulis Kantor (ATK)', 'kategori_belanja' => 'BARJAS'],
-            ['kode' => '5.1.02.01.01.0026', 'nama' => 'Belanja Kertas dan Cover', 'kategori_belanja' => 'BARJAS'],
-            ['kode' => '5.1.02.02.01.0003', 'nama' => 'Belanja Honorarium Guru Honorer', 'kategori_belanja' => 'HONOR'],
-            ['kode' => '5.1.02.02.01.0014', 'nama' => 'Belanja Honorarium Tenaga Kependidikan', 'kategori_belanja' => 'HONOR'],
-            ['kode' => '5.1.02.03.02.0405', 'nama' => 'Belanja Pemeliharaan Bangunan Gedung-Bangunan Tempat Kerja', 'kategori_belanja' => 'BARJAS'],
-            ['kode' => '5.1.02.04.01.0001', 'nama' => 'Belanja Perjalanan Dinas Dalam Kota', 'kategori_belanja' => 'BARJAS'],
-            ['kode' => '5.2.05.01.01.0001', 'nama' => 'Belanja Modal Buku Ilmu Pengetahuan Umum', 'kategori_belanja' => 'MODAL'],
-            ['kode' => '5.2.02.08.01.0005', 'nama' => 'Belanja Modal Personal Computer / Laptop', 'kategori_belanja' => 'MODAL'],
-        ];
-
-        foreach ($rekenings as $rek) {
-            MasterKodeRekening::firstOrCreate(['kode' => $rek['kode']], $rek);
-        }
+        // 4-5. Master Program (139) + Master Kode Rekening (276) + Jenis Belanja (9)
+        //      dari sumber nyata SmartRKAS.
+        $this->call(SmartRkasMasterSeeder::class);
 
         // 6. Katalog Barang
         $barangs = [
@@ -113,7 +82,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 7. Seed Sample RKAS Item (Seperti pada gambar ARKAS)
-        $progGuru = MasterProgram::where('kode', '03.02.01')->first();
+        $progGuru = MasterProgram::where('kode', '04.06.05')->first();
         $rekMakan = MasterKodeRekening::where('kode', '5.1.02.01.01.0052')->first();
         $brgNasi = KodeBarang::where('kode', 'KB-001')->first();
 

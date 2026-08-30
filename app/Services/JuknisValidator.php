@@ -32,18 +32,23 @@ class JuknisValidator
 
         foreach ($this->items as $item) {
             $kategori = $item->kodeRekening->kategori_belanja ?? '';
+            $jenisBelanja = $item->kodeRekening->jenisBelanja->nama ?? '';
             $programKode = $item->program->kode ?? '';
             $uraian = strtolower($item->uraian ?? '');
 
             $jumlah = (float) $item->jumlah;
 
             $isHonor = in_array($programKode, config('juknis.honor.kode_program'))
-                || in_array($kategori, config('juknis.honor.kategori_rekening'));
+                || in_array($jenisBelanja, config('juknis.honor.jenis_belanja'))
+                || $this->uraianHits($uraian, config('juknis.honor.keyword'))
+                || in_array($kategori, config('juknis.honor.kategori_rekening') ?? []);
 
             $isBuku = in_array($programKode, config('juknis.buku.kode_program'))
-                || ($kategori === 'MODAL' && str_contains($uraian, 'buku'));
+                || in_array($jenisBelanja, config('juknis.buku.jenis_belanja'))
+                || $this->uraianHits($uraian, config('juknis.buku.keyword'));
 
-            $isSarpras = in_array($programKode, config('juknis.sarpras.kode_program'));
+            $isSarpras = in_array($programKode, config('juknis.sarpras.kode_program'))
+                || in_array($jenisBelanja, config('juknis.sarpras.jenis_belanja'));
 
             if ($isHonor) {
                 $this->honorTotal += $jumlah;
@@ -150,5 +155,19 @@ class JuknisValidator
         }
 
         return $value >= $batas ? 'sesuai' : 'kurang';
+    }
+
+    /**
+     * @param  array<int, string>  $keywords
+     */
+    protected function uraianHits(string $uraian, array $keywords): bool
+    {
+        foreach ($keywords as $k) {
+            if (str_contains($uraian, $k)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

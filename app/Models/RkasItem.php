@@ -47,4 +47,28 @@ class RkasItem extends Model
     {
         return $this->alokasiBulan->whereBetween('bulan', [7, 12])->sum('jumlah');
     }
+
+    /**
+     * Jumlah setelah koreksi manual = (Volume x Harga) + KOREKSI.
+     */
+    public function getJumlahKoreksiAttribute()
+    {
+        return round((float) $this->jumlah + (float) $this->koreksi, 2);
+    }
+
+    /**
+     * Selisih harga yang dianggarkan terhadap harga acuan ARKAS.
+     */
+    public function getSelisihHargaAttribute()
+    {
+        return round((float) $this->harga_satuan - (float) $this->harga_satuan_arkas, 2);
+    }
+
+    /**
+     * Status KONTROL per baris: OK bila harga sesuai acuan, SELISIH bila berbeda.
+     */
+    public function getKontrolAttribute()
+    {
+        return abs($this->selisih_harga) > 0.009 ? 'SELISIH' : 'OK';
+    }
 }

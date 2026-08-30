@@ -1,0 +1,2390 @@
+{
+    "jenis_belanja": [
+        "Belanja Barang",
+        "Belanja Barang Persediaan",
+        "Belanja Cetak",
+        "Belanja Jasa",
+        "Belanja Jasa Pemeliharaan",
+        "Belanja Modal Aset Tetap Lainnya",
+        "Belanja Modal Buku",
+        "Belanja Modal Peralatan & Mesin",
+        "Belanja Perjalanan Dinas"
+    ],
+    "kategori_juknis": [
+        {
+            "nama": "Honor",
+            "arah": "maksimal",
+            "batas_persen": 20,
+            "berlaku_untuk": null
+        },
+        {
+            "nama": "Pemeliharaan",
+            "arah": "maksimal",
+            "batas_persen": 20,
+            "berlaku_untuk": null
+        },
+        {
+            "nama": "Buku",
+            "arah": "minimal",
+            "batas_persen": 10,
+            "berlaku_untuk": null
+        }
+    ],
+    "program": [
+        {
+            "kode": "02.02.01",
+            "nama": "Kegiatan pemberdayaan perpustakaan terutama untuk pengembangan minat baca peserta didik",
+            "program": "Pengembangan Standar Isi",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "02.03.01",
+            "nama": "Penyusunan Kurikulum",
+            "program": "Pengembangan Standar Isi",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "02.03.02",
+            "nama": "Penyusunan kurikulum kompetensi keahlian",
+            "program": "Pengembangan Standar Isi",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "02.06.01",
+            "nama": "Kegiatan diskusi kolaborasi pengembangan RPP dalam Komunitas Belajar (termasuk KKG/MGMP/MGMPS/MGPMPK)",
+            "program": "Pengembangan Standar Isi",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "03.01.01",
+            "nama": "Pelaksanaan Pendaftaran Peserta Didik Baru (PPDB)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Penerimaan Peserta Didik Baru",
+            "level": 4
+        },
+        {
+            "kode": "03.01.02",
+            "nama": "Pendataan ulang bagi Peserta Didik lama",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Penerimaan Peserta Didik Baru",
+            "level": 4
+        },
+        {
+            "kode": "03.01.03",
+            "nama": "Pelaksanaan kegiatan orientasi siswa baru yang bersifat akademik dan pengenalan lingkungan tanpa kekerasan",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Penerimaan Peserta Didik Baru",
+            "level": 4
+        },
+        {
+            "kode": "03.02.01",
+            "nama": "Pelaksanaan kegiatan publikasi berkala sekolah (Majalah Sekolah, Majalah Dinding)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "03.02.02",
+            "nama": "Pembeliaan Buku Lembar Kerja Siswa",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "03.02.03",
+            "nama": "Penyediaan atau pembiayaan langganan platform perpustakaan digital",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "03.03.01",
+            "nama": "Penyusunan Silabus / Tujuan Pembelajaran",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.02",
+            "nama": "Pengembangan Kegiatan Literasi dan Numerasi",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.04",
+            "nama": "Pengembangan pembelajaran berbasis projek (termasuk P5)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.05",
+            "nama": "Penyelenggaraan Perbaikan/Pengayaan (Remedial)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.06",
+            "nama": "Pelaksanaan Ekstrakurikuler Kepramukaan",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.07",
+            "nama": "Pelaksanaan Kegiatan Ekstrakurikuler (diluar Kepramukaan)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.08",
+            "nama": "Program Pembinaan Kesiswaan dan Kepemimpinan Siswa",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.10",
+            "nama": "Pengembangan program pencegahan dan penanganan kekerasan di satuan pendidikan (termasuk Program Roots)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.11",
+            "nama": "Penerapan Program Pencegahan Perundungan",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.12",
+            "nama": "Penyelenggaraan: pencegahan penyalahgunaan narkotika, psikotropika, zat adiktif (narkoba), minuman keras, merokok, dan HIV AIDS",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.13",
+            "nama": "Konsultasi peningkatan mutu pendidikan (Konsultan & Psikolog)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.14",
+            "nama": "Penyelenggaraan Pesantren Kilat dan Kegiatan Keagamaan Sejenis",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.15",
+            "nama": "Pengembangan kegiatan pelibatan orang tua/wali/keluarga di pembelajaran",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.16",
+            "nama": "Penyusunan Pembagian Tugas Guru dan Jadwal Pelajaran",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.17",
+            "nama": "Pembiayaan untuk partisipasi kegiatan berbagi praktik baik",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.18",
+            "nama": "Pengayaan TIK untuk memfasilitasi kegiatan pembelajaran",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.19",
+            "nama": "Pelaksanaan Lomba Lomba",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.20",
+            "nama": "Pelaksanaan Program-Program Sekolah Lainnya",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.21",
+            "nama": "Perayaan Hari Besar Agama, Nasional, dan Daerah",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.03.22",
+            "nama": "Penyelenggaraan Pembelajaran aktif, kreatif, efektif, dan nyaman",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "03.04.01",
+            "nama": "Pelaksanaan supervisi pembelajaran semua mapel/guru di sekolah",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen/Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "03.04.02",
+            "nama": "Pelaksanaan Evaluasi kegiatan ekstrakurikuler",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen/Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "03.05.01",
+            "nama": "Kegiatan koordinasi dan pelaporan untuk mendukung Program Prioritas Pusat (Program Indonesia Pintar, BOSP, Sekolah Penggerak, dll.)",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "03.05.02",
+            "nama": "Penyelenggaraan UKS, penyediaan alat peralatan UKS dan bahan/obat-obatan penunjang kesehatan sekolah",
+            "program": "Pengembangan Standar Proses",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "04.06.01",
+            "nama": "Pelaksanaan kegiatan komunitas belajar di satuan pendidikan",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.02",
+            "nama": "Kegiatan Komunitas Belajar antar sekolah (termasuk KKG, MGMP, MGMPS, MGMPK, KKKS, atau MKKS)",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.03",
+            "nama": "Pengembangan diri guru dan tenaga kependidikan materi lain di luar PMM",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.04",
+            "nama": "Pengembangan diri guru dan tenaga kependidikan materi lain melalui PMM",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.05",
+            "nama": "Peningkatan Kompetensi Guru",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.06",
+            "nama": "Peningkatan Kompetensi Kepala Sekolah",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.07",
+            "nama": "Pembinaan dan Peningkatan Kompetensi Tenaga Pelaksana Sekolah (Tenaga Ekstrakurikuler, TU, Laboratorium, Perustakaan, dan UKS)",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.08",
+            "nama": "Fasilitasi kepesertaan Guru dalam berbagai kegiatan prestasi guru",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.09",
+            "nama": "Kegiatan Magang Guru di Sekolah Lain",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.11",
+            "nama": "Peningkatan Kompetensi Guru untuk keterlibatan orangtua/wali dan masyarakat dalam pembelajaran",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.12",
+            "nama": "Peningkatan Kompetensi Guru untuk pengelolaan lingkungan pembelajaran yang aman dan nyaman",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.13",
+            "nama": "Peningkatan Kompetensi Guru untuk memperkuat numerasi",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.14",
+            "nama": "Peningkatan Kompetensi Guru untuk memperkuat literasi",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.22",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami konten pembelajaran dan cara mengajarkannya",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.23",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami Kurikulum dan cara mengajarkannya",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.24",
+            "nama": "Peningkatan Kompetensi Guru untuk pengembangan diri melalui kebiasaan refleksi",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.25",
+            "nama": "Peningkatan Kompetensi Guru untuk pembelajaran berorientasi pada peserta didik",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.26",
+            "nama": "Peningkatan Kompetensi Guru untuk meamahami kematangam moral, emosi, dan spiritaul untuk berperilaku sesuai kode etik guru",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.27",
+            "nama": "Peningkatan Kompetensi Guru untuk asesmen, umpan balik dan pelaporan yang berpusat pada peserta didik",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.31",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Bertakwa Kepada Tuhan YME dan Berakhlak Mulia",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.32",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Gotong Royong",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.33",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kreativitas",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.34",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Nalar Kritis",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.35",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kebinekaan Global",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.36",
+            "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kemandirian",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.41",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami tentang perundungan, kekerasan, dan kekerasan seksual",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.42",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami tentang disiplin positif (dan menghindari hukuman fisik)",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.43",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami penyalahgunaan narkotika, psikotropika, zat adiktif (narkoba), minuman keras, merokok, dan HIV AIDS",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.44",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami toleransi/kesetaraan/moderasi beragama dan budaya",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.45",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami komitmen dan nilai-nilai kebangsaan",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "04.06.46",
+            "nama": "Peningkatan Kompetensi Guru untuk memahami sikap inklusif, toleran, dan kesertaan gender (termasuk pendidikan inklusif/disabilitas)",
+            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "05.02.01",
+            "nama": "Pemeliharaan buku/koleksi perpustakaan",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "05.02.02",
+            "nama": "Pengadaan buku/koleksi perpustakaan (selain buku teks, pengayaan, dan referensi)",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "05.02.03",
+            "nama": "Pengadaan Buku Teks Utama/Pendamping Peserta Didik",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "05.02.04",
+            "nama": "Pengadaan Buku Teks Utama/Pendamping Guru",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "05.02.05",
+            "nama": "Pengadaan buku pengayaan dan referensi",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pengembangan Perpustakaan",
+            "level": 4
+        },
+        {
+            "kode": "05.05.01",
+            "nama": "Penyediaan atau pembuatan media pembelajaran",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.05.02",
+            "nama": "Pengembangan sekolah sehat, sekolah aman, sekolah ramah anak, sekolah inklusi, sekolah adiwiyata dan sejenisnya",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.01",
+            "nama": "Pemeliharaan Prasarana Lahan, Bangunan dan Ruang",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.02",
+            "nama": "Pengadaan Peralatan Sekolah diluar diluar komponen penyediaan alat multimedia pembelajaran",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.03",
+            "nama": "Pemeliharaan Peralatan Sekolah",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.04",
+            "nama": "Pengadaan Perlengkapan Sekolah diluar komponen penyediaan alat multimedia pembelajaran",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.05",
+            "nama": "Pemeliharaan Perlengkapan Sekolah",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.06",
+            "nama": "Penyediaan prasarana akses/fasilitas bagi Peserta Didik Penyandang Disabilitas",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.07",
+            "nama": "Pengadaan Peralatan untuk menunjang pembelajaran Peserta Didik Penyandang Disabilitas",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.08",
+            "nama": "Pengadaan Sarana Perlengkapan untuk mendukung Peserta Didik Disabilitas",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.09",
+            "nama": "Pengadaan Perlengkapan Daya dan Jasa Sekolah (instalasi air, listrik, telepon, internet, termasuk genset/panel surya)",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.10",
+            "nama": "Pemeliharaan Perlengkapan Daya dan Jasa Sekolah (instalasi air, listrik, internet, termasuk genset/panel surya)",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.11",
+            "nama": "Pengadaan seragam untuk peserta didik, pendidik, dan tenaga kependidikan yang menjadi inventaris sekolah",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.08.12",
+            "nama": "Tindakan tanggap darurat dampak bencana (tidak termasuk perbaikan setelah lewat tanggap darurat)",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "05.09.01",
+            "nama": "Pengadaan Komputer Desktop/Work-station untuk Pembelajaran, Administrasi dan Perpustakaan",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "05.09.02",
+            "nama": "Pengadaan Komputer Laptop, Notebook untuk Pembelajaran, Administrasi dan Perpustakaan",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "05.09.04",
+            "nama": "Pengadaan Printer, Printer+Scanner, dan Scanner",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "05.09.05",
+            "nama": "Pengadaan Proyektor, Layar Proyektor, dan Layar LCD/LED >= 32\"",
+            "program": "Pengembangan sarana dan prasarana sekolah",
+            "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "06.05.01",
+            "nama": "Penyusunan perencanaan program satuan pendidikan (Visi Misi Sekolah, RKJM, RKT, RKAS)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.02",
+            "nama": "Pengembangan dan Pelaksanaan Program Kerja Kepala Sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.03",
+            "nama": "Pendataan Dapodik",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.04",
+            "nama": "Pelaksanaan Monitoring Program/Kegiatan Sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.05",
+            "nama": "Pelaksanaan Supervisi Administrasi Tata Usaha",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.06",
+            "nama": "Konsumsi Rapat Kedinasan dan Tamu Sekolah (diluar kegiatan lain)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.07",
+            "nama": "Pengadaan Bahan Pembelajaran dan Praktik (termasuk Kejuruan/Bengkel)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.08",
+            "nama": "Pembelian Bahan Habis Pakai untuk mendukung pembelajaran dan administrasi sekolah (termasuk ATK, Tinta Printer, Kabel Ekstension, dsb)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.09",
+            "nama": "Pembelian bahan habis pakai/alat penunjang kebersihan dan sanitasi sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.10",
+            "nama": "Pembelian Bahan Habis Pakai (termasuk Suku Cadang Alat) untuk Kegiatan Rumah Tangga Sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.11",
+            "nama": "Pengelolaan dan operasional rutin sekolah dalam pembelajaran jarak jauh",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.12",
+            "nama": "Pengembangan dan pemeliharaan Website Sekolah (termasuk media sosial sekolah)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.13",
+            "nama": "Pengembangan Sistem Informasi untuk menunjang Manajemen Sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.05.14",
+            "nama": "Transportasi atau perjalanan dinas dalam rangka koordinasi dan pelaporan ke Dinas Pendidikan",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "06.06.01",
+            "nama": "Kegiatan kerjasama dengan sekolah bertaraf internasional untuk peningkatan kompetensi guru",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        },
+        {
+            "kode": "06.07.01",
+            "nama": "Pembayaran daya listrik",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.02",
+            "nama": "Penambahan daya listrik",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.03",
+            "nama": "Pembayaran langganan air",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.04",
+            "nama": "Pembayaran biaya telepon",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.05",
+            "nama": "Pembayaran jasa internet",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.06",
+            "nama": "Penambahan daya internet",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.07",
+            "nama": "Pembelian Bahan Bakar Minyak/Gas untuk keperluan pembelajaran/RT Sekolah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.08",
+            "nama": "Pembayaran Retribusi keamanan dan sampah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.09",
+            "nama": "Pembayaran langganan koran dan majalah",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.10",
+            "nama": "Sewa genset",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "06.07.12",
+            "nama": "Belanja Sewa Rumah/Gedung/Gudang/Parkir/tanah (diluar bangunan utama sekolah, kecuali untuk Sekolah Swasta)",
+            "program": "Pengembangan standar pengelolaan",
+            "sub_program": "Pembiayaan Langganan Daya dan Jasa",
+            "level": 4
+        },
+        {
+            "kode": "07.05.01",
+            "nama": "Bea materai, administrasi bank",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.02",
+            "nama": "Penggandaan laporan dan/atau surat-menyurat",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.03",
+            "nama": "Penyelenggaraan sosialisasi dan pelaporan program, kegiatan hasil-hasil, dan pengelolaan keuangan sekolah",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.04",
+            "nama": "Penyelenggaraan kegiatan inventarisasi dan pendokumentasian nilai aset semua sarpras sekolah pada tahun berjalan",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.05",
+            "nama": "Penggalangan, pengelolaan dan pelaporan pendanaan dari pihak ketiga (masyarakat umum, dunia industri, dan CSR)",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.06",
+            "nama": "Perjalanan dinas dalam rangka mengambil dana BOS di Bank (untuk sekolah terpencil)",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.05.07",
+            "nama": "Pencetakan Ijazah",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
+            "level": 4
+        },
+        {
+            "kode": "07.12.01",
+            "nama": "Pembayaran honor Guru/Pendidik",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pembayaran Honor",
+            "level": 4
+        },
+        {
+            "kode": "07.12.02",
+            "nama": "Pembayaran honor Tenaga Kependidikan (selain pendidik)",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pembayaran Honor",
+            "level": 4
+        },
+        {
+            "kode": "07.12.03",
+            "nama": "Pembayaran Honor tenaga administrasi",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pembayaran Honor",
+            "level": 4
+        },
+        {
+            "kode": "07.12.04",
+            "nama": "Pembayaran honor Tenaga Penunjang atau pelaksana",
+            "program": "Pengembangan standar pembiayaan",
+            "sub_program": "Pembayaran Honor",
+            "level": 4
+        },
+        {
+            "kode": "08.03.01",
+            "nama": "Seleksi Siswa Program Bilingual",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "08.03.02",
+            "nama": "Seleksi Peserta Didik Program Kelas Akselerasi",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
+            "level": 4
+        },
+        {
+            "kode": "08.04.01",
+            "nama": "Persiapan, uji coba, simulasi, dan pelaksanaan Asesmen Nasional",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.02",
+            "nama": "Penyiapan dan Pelaksanaan Asesmen di Awal Pembelajaran",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.03",
+            "nama": "Penyusunan kisi-kisi dan penyusunan soal penilaian formatif (ulangan harian)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.04",
+            "nama": "Pelaksanaan penilaian formatif (ulangan harian)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.05",
+            "nama": "Penyusunan kisi-kisi dan penyusunan soal penilaian sumatif (ulangan tengah semester/akhir semester/kenaikan kelas)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.06",
+            "nama": "Pelaksanaan penilaian sumatif (ulangan tengah semester/akhir semester/kenaikan kelas)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.07",
+            "nama": "Penyusunan Kisi-Kisi dan Penyusunan Soal Penilaian/Asesmen Sekolah (Akhir Sekolah)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.08",
+            "nama": "Penyiapan, Uji Coba, dan Pelaksanaan Penilaian/Asesmen Sekolah (Akhir Sekolah) - Termasuk Asesmen Sekolah Berbasis Komputer",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.09",
+            "nama": "Penyusunan Kriteria Kenaikan Kelas",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.10",
+            "nama": "Penyusunan Kompetensi Ketuntasan Minimal",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.04.11",
+            "nama": "Pengembangan Perangkat Asesmen Kejuruan",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
+            "level": 4
+        },
+        {
+            "kode": "08.06.01",
+            "nama": "Fasilitasi pengembangan kompetensi guru melalui diseminasi PSP (IHT, Pelatihan, Penugasan, Pengembangan Portofolio, Pelaksanaan P5, dan Workshop)",
+            "program": "Pengembangan dan implementasi sistem penilaian",
+            "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            "level": 4
+        }
+    ],
+    "rekening": [
+        {
+            "kode": "5.1.02.01.01.0001",
+            "nama": "Belanja Bahan-Bahan Bangunan dan Konstruksi",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0002",
+            "nama": "Belanja Bahan-Bahan Kimia",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0004",
+            "nama": "Belanja Bahan-Bahan Bakar dan Pelumas",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0005",
+            "nama": "Belanja Bahan-Bahan Baku Praktek KBM",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0008",
+            "nama": "Belanja Bahan-Bahan/Bibit Tanaman",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0009",
+            "nama": "Belanja Bahan-Isi Tabung Pemadam Kebakaran",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0010",
+            "nama": "Belanja Bahan-Isi Tabung Gas",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0011",
+            "nama": "Belanja Bahan-Bahan/Bibit Ternak/Bibit Ikan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0012",
+            "nama": "Belanja Bahan-Bahan Lainnya",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0013",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Angkutan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0016",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Laboratorium",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0017",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Pemancar",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0018",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Studio dan Komunikasi",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0019",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Pertanian",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0020",
+            "nama": "Belanja Suku Cadang-Suku Cadang Alat Bengkel",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0024",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat Tulis Kantor",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0025",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor- Kertas dan Cover",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0026",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak dan Penggandaan",
+            "jenis_belanja": "Belanja Cetak"
+        },
+        {
+            "kode": "5.1.02.01.01.0027",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Benda Pos",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0029",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Bahan Komputer",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0030",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Perabot Kantor",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0031",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat Listrik",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0032",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Perlengkapan Dinas",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0034",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor- Perlengkapan Pendukung Olahraga",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0035",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor- Suvenir/Cendera Mata",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0036",
+            "nama": "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat/Bahan untuk Kegiatan Kantor Lainnya",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0037",
+            "nama": "Belanja Obat-Obat-Obatan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0043",
+            "nama": "Belanja Natura dan Pakan-Natura",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0045",
+            "nama": "Belanja Natura dan Pakan-Natura dan Pakan Lainnya",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0052",
+            "nama": "Belanja Makanan dan Minuman Rapat",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0053",
+            "nama": "Belanja Makanan dan Minuman Jamuan Tamu",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0055",
+            "nama": "Belanja Makanan dan Minuman pada Fasilitas Pelayanan Urusan Pendidikan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0064",
+            "nama": "Belanja Pakaian Dinas Lapangan (PDL)",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0066",
+            "nama": "Belanja Pakaian Dinas Upacara (PDU)",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0067",
+            "nama": "Belanja Pakaian Penyelamatan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0069",
+            "nama": "Belanja Pakaian Teknik",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0071",
+            "nama": "Belanja Pakaian Kerja Laboratorium",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0072",
+            "nama": "Belanja Pakaian Kerja Bengkel",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0074",
+            "nama": "Belanja Pakaian Adat Daerah",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0075",
+            "nama": "Belanja Pakaian Batik Tradisional",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0076",
+            "nama": "Belanja Pakaian Olahraga",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.01.0077",
+            "nama": "Belanja Pakaian Paskibraka",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.01.02.0003",
+            "nama": "Belanja Komponen-Komponen Peralatan",
+            "jenis_belanja": "Belanja Barang Persediaan"
+        },
+        {
+            "kode": "5.1.02.02.01.0003",
+            "nama": "Honorarium Narasumber atau Pembahas, Moderator, Pembawa Acara, dan Panitia",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0004",
+            "nama": "Honorarium Tim Pelaksana Kegiatan dan Sekretariat Tim Pelaksana Kegiatan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0006",
+            "nama": "Honorarium Penyuluhan atau Pendampingan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0007",
+            "nama": "Honorarium Rohaniwan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0008",
+            "nama": "Honorarium Tim Penyusunan Jurnal, Buletin, Majalah, Pengelola Teknologi Informasi dan Pengelola Website",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0009",
+            "nama": "Honorarium Penyelenggara Ujian",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0011",
+            "nama": "Honorarium Penyelenggaraan Kegiatan Pendidikan dan Pelatihan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0013",
+            "nama": "Belanja Jasa Tenaga Pendidikan / Honorarium Guru",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0015",
+            "nama": "Belanja Jasa Tenaga Laboratorium",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0016",
+            "nama": "Belanja Jasa Tenaga Penanganan Prasarana dan Sarana Umum / Upah Tukang",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0025",
+            "nama": "Belanja Jasa Tenaga Kesenian dan Kebudayaan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0026",
+            "nama": "Belanja Jasa Tenaga Administrasi",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0027",
+            "nama": "Belanja Jasa Tenaga Operator Komputer",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0029",
+            "nama": "Belanja Jasa Tenaga Ahli",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0030",
+            "nama": "Belanja Jasa Tenaga Kebersihan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0031",
+            "nama": "Belanja Jasa Tenaga Keamanan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0035",
+            "nama": "Belanja Jasa Tenaga Teknisi Mekanik dan Listrik",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0036",
+            "nama": "Belanja Jasa Audit/Surveillance ISO",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0037",
+            "nama": "Belanja Jasa Juri Perlombaan/Pertandingan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0038",
+            "nama": "Belanja Jasa Tata Rias",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0041",
+            "nama": "Belanja Jasa Pemasangan Instalasi Telepon, Air, dan Listrik",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0042",
+            "nama": "Belanja Jasa Pelaksanaan Transaksi Keuangan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0049",
+            "nama": "Belanja Jasa Pencucian Pakaian, Alat Kesenian dan Kebudayaan, serta Alat Rumah Tangga",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0050",
+            "nama": "Belanja Jasa Kalibrasi",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0051",
+            "nama": "Belanja Jasa Pengolahan Sampah",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0052",
+            "nama": "Belanja Jasa Pembersihan, Pengendalian Hama, dan Fumigasi",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0057",
+            "nama": "Belanja Jasa Operator Kapal",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0059",
+            "nama": "Belanja Tagihan Telepon",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0060",
+            "nama": "Belanja Tagihan Air",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0061",
+            "nama": "Belanja Tagihan Listrik",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0062",
+            "nama": "Belanja Langganan Jurnal/Surat Kabar/Majalah",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0063",
+            "nama": "Belanja Kawat/Faksimili/Internet/TV Berlangganan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0064",
+            "nama": "Belanja Paket/Pengiriman",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0065",
+            "nama": "Belanja Penambahan Daya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0066",
+            "nama": "Belanja Registrasi/Keanggotaan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0067",
+            "nama": "Belanja Pembayaran Bea, dan Perizinan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.01.0071",
+            "nama": "Belanja Lembur",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.02.0008",
+            "nama": "Belanja Asuransi Barang Milik Daerah",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.03.0002",
+            "nama": "Belanja Sewa Tanah untuk Bangunan Gedung Perdagangan/Perusahaan/Pendidikan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0001",
+            "nama": "Belanja Sewa Tractor",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0010",
+            "nama": "Belanja Sewa Alat Pengangkat",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0012",
+            "nama": "Belanja Sewa Alat Besar Darat Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0022",
+            "nama": "Belanja Sewa Electric Generating Set",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0023",
+            "nama": "Belanja Sewa Pompa",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0031",
+            "nama": "Belanja Sewa Peralatan Selam",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0036",
+            "nama": "Belanja Sewa Kendaraan Bermotor Penumpang",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0037",
+            "nama": "Belanja Sewa Kendaraan Bermotor Angkutan Barang",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0038",
+            "nama": "Belanja Sewa Kendaraan Bermotor Beroda Dua",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0039",
+            "nama": "Belanja Sewa Kendaraan Bermotor Beroda Tiga",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0117",
+            "nama": "Belanja Sewa Alat Kantor Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0118",
+            "nama": "Belanja Sewa Mebel",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0123",
+            "nama": "Belanja Sewa Alat Rumah Tangga Lainnya (Home Use)",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0132",
+            "nama": "Belanja Sewa Peralatan Studio Audio",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0133",
+            "nama": "Belanja Sewa Peralatan Studio Video dan Film",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0134",
+            "nama": "Belanja Sewa Peralatan Studio Gambar",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0137",
+            "nama": "Belanja Sewa Alat Studio Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0140",
+            "nama": "Belanja Sewa Alat Komunikasi Radio HF/FM",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0308",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Bahasa Indonesia",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0309",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Matematika",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0310",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:IPA Dasar",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0311",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:IPA Lanjutan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0312",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:IPA Menengah",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0313",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:IPA Atas",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0314",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:IPS",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0315",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Agama",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0316",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Keterampilan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0317",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Kesenian",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0318",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:Olahraga",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0319",
+            "nama": "Belanja Sewa Alat Peraga Praktik Sekolah Bidang Studi:PKN",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0320",
+            "nama": "Belanja Sewa Alat Peraga Luar Biasa (Tuna Netra, Terapi Fisik, Tuna Daksa, dan Tuna Rungu)",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0321",
+            "nama": "Belanja Sewa Alat Peraga Kejuruan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0322",
+            "nama": "Belanja Sewa Alat Peraga PAUD/TK",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0355",
+            "nama": "Belanja Sewa Peralatan Umum",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0406",
+            "nama": "Belanja Sewa Komputer Unit Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.04.0411",
+            "nama": "Belanja Sewa Peralatan Komputer Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.05.0009",
+            "nama": "Belanja Sewa Bangunan Gedung Tempat Pertemuan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.05.0011",
+            "nama": "Belanja Sewa Bangunan Gedung Tempat Olahraga",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.05.0030",
+            "nama": "Belanja Sewa Bangunan Gedung Tempat Kerja Lainnya",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.02.12.0001",
+            "nama": "Belanja Kursus Singkat/Pelatihan",
+            "jenis_belanja": "Belanja Jasa"
+        },
+        {
+            "kode": "5.1.02.03.02.0036",
+            "nama": "Belanja Pemeliharaan Alat Angkutan-Alat Angkutan Darat Bermotor-Kendaraan Bermotor Penumpang",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0113",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Kantor-Mesin Ketik",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0115",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Kantor-Alat Reproduksi (Penggandaan) / Pemeliaharaan Printer",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0116",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Kantor-Alat Penyimpan Perlengkapan Kantor",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0117",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Kantor-Alat Kantor Lainnya",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0118",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Rumah Tangga-Mebel",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0120",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Rumah Tangga-Alat Pembersih",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0121",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Rumah Tangga-Alat Pendingin",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0123",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Rumah Tangga-Alat Rumah Tangga Lainnya (Home Use)",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0124",
+            "nama": "Belanja Pemeliharaan Alat Kantor dan Rumah Tangga-Alat Rumah Tangga-Alat Pemadam Kebakaran",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0308",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Bahasa Indonesia",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0309",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Matematika",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0310",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:IPA Dasar",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0311",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:IPA Lanjutan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0312",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:IPA Menengah",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0313",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:IPA Atas",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0314",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:IPS",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0315",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Agama",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0316",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Keterampilan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0317",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Kesenian",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0318",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:Olahraga",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0319",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Praktik Sekolah Bidang Studi:PKN",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0320",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Luar Biasa (Tuna Netra, Terapi Fisik, Tuna Daksa, dan Tuna Rungu)",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0321",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga Kejuruan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0322",
+            "nama": "Belanja Pemeliharaan Alat Laboratorium-Alat Peraga Praktik Sekolah-Alat Peraga PAUD/TK",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0404",
+            "nama": "Belanja Pemeliharaan Komputer-Komputer Unit-Komputer Jaringan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0405",
+            "nama": "Belanja Pemeliharaan Komputer-Komputer Unit-Personal Computer",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0407",
+            "nama": "Belanja Pemeliharaan Komputer-Peralatan Komputer-Peralatan Mainframe",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0408",
+            "nama": "Belanja Pemeliharaan Komputer-Peralatan Komputer-Peralatan Mini Computer",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0409",
+            "nama": "Belanja Pemeliharaan Komputer-Peralatan Komputer-Peralatan Personal Computer",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0410",
+            "nama": "Belanja Pemeliharaan Komputer-Peralatan Komputer-Peralatan Jaringan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0411",
+            "nama": "Belanja Pemeliharaan Komputer-Peralatan Komputer-Peralatan Komputer Lainnya",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0463",
+            "nama": "Belanja Pemeliharaan Alat Peraga-Alat Peraga Pelatihan dan Percontohan-Alat Peraga Pelatihan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0504",
+            "nama": "Belanja Pemeliharaan Peralatan Olahraga-Peralatan Olahraga-Peralatan Olahraga Atletik",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0505",
+            "nama": "Belanja Pemeliharaan Peralatan Olahraga-Peralatan Olahraga-Peralatan Permainan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0506",
+            "nama": "Belanja Pemeliharaan Peralatan Olahraga-Peralatan Olahraga-Peralatan Senam",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0507",
+            "nama": "Belanja Pemeliharaan Peralatan Olahraga-Peralatan Olahraga-Peralatan Olahraga Air",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.02.0508",
+            "nama": "Belanja Pemeliharaan Peralatan Olahraga-Peralatan Olahraga-Peralatan Olahraga Udara",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0001",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Kantor",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0002",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gudang",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0005",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Laboratorium",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0006",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Kesehatan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0008",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Tempat Ibadah",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0009",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Tempat Pertemuan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0010",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Tempat Pendidikan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0011",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Tempat Olahraga",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0013",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung untuk Pos Jaga",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0016",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Perpustakaan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0030",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Gedung Tempat Kerja Lainnya",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0033",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Bangunan Parkir",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.03.0036",
+            "nama": "Belanja Pemeliharaan Bangunan Gedung-Bangunan Gedung Tempat Kerja-Taman",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.04.0075",
+            "nama": "Belanja Pemeliharaan Instalasi-Instalasi Air Bersih/Air Baku-Instalasi Air Permukaan",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.04.0076",
+            "nama": "Belanja Pemeliharaan Instalasi-Instalasi Air Bersih/Air Baku-Instalasi Air Sumber/Mata Air",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.05.0001",
+            "nama": "Belanja Pemeliharaan Bahan Perpustakaan-Bahan Perpustakaan Tercetak-Buku Umum",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.05.0021",
+            "nama": "Belanja Pemeliharaan Bahan Perpustakaan-Musik-Musik Lainnya",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.05.0028",
+            "nama": "Belanja Pemeliharaan Barang Bercorak Kesenian/Kebudayaan/Olahraga-Barang Bercorak Kesenian-Alat Musik",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.03.05.0030",
+            "nama": "Belanja Pemeliharaan Barang Bercorak Kesenian/Kebudayaan/Olahraga-Barang Bercorak Kesenian-Alat Peraga Kesenian",
+            "jenis_belanja": "Belanja Jasa Pemeliharaan"
+        },
+        {
+            "kode": "5.1.02.04.01.0001",
+            "nama": "Belanja Perjalanan Dinas Biasa / Luar Daerah",
+            "jenis_belanja": "Belanja Perjalanan Dinas"
+        },
+        {
+            "kode": "5.1.02.04.01.0003",
+            "nama": "Belanja Perjalanan Dinas Dalam Kota / Dalam Daerah",
+            "jenis_belanja": "Belanja Perjalanan Dinas"
+        },
+        {
+            "kode": "5.1.02.04.01.0004",
+            "nama": "Belanja Perjalanan Dinas Paket Meeting Dalam Kota",
+            "jenis_belanja": "Belanja Perjalanan Dinas"
+        },
+        {
+            "kode": "5.1.02.04.01.0005",
+            "nama": "Belanja Perjalanan Dinas Paket Meeting Luar Kota",
+            "jenis_belanja": "Belanja Perjalanan Dinas"
+        },
+        {
+            "kode": "5.2.02.03.03.0010",
+            "nama": "Belanja Modal Alat Timbangan/Biara",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.05.01.0001",
+            "nama": "Belanja Modal Mesin Ketik",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.01.0002",
+            "nama": "Belanja Modal Mesin Hitung/Mesin Jumlah",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.01.0003",
+            "nama": "Belanja Modal Alat Reproduksi (Penggandaan)",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.01.0004",
+            "nama": "Belanja Modal Alat Penyimpan Perlengkapan Kantor",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.01.0005",
+            "nama": "Belanja Modal Alat Kantor Lainnya",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0001",
+            "nama": "Belanja Modal Mebel",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0002",
+            "nama": "Belanja Modal Alat Pengukur Waktu",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0003",
+            "nama": "Belanja Modal Alat Pembersih",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0004",
+            "nama": "Belanja Modal Alat Pendingin",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0005",
+            "nama": "Belanja Modal Alat Dapur",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0006",
+            "nama": "Belanja Modal Alat Rumah Tangga Lainnya (Home Use)",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.05.02.0007",
+            "nama": "Belanja Modal Alat Pemadam Kebakaran",
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+        },
+        {
+            "kode": "5.2.02.06.01.0001",
+            "nama": "Belanja Modal Peralatan Studio Audio",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.01.0002",
+            "nama": "Belanja Modal Peralatan Studio Video dan Film",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.01.0003",
+            "nama": "Belanja Modal Peralatan Studio Gambar",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.01.0004",
+            "nama": "Belanja Modal Peralatan Cetak",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.02.0001",
+            "nama": "Belanja Modal Alat Komunikasi Telephone",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.02.0002",
+            "nama": "Belanja Modal Alat Komunikasi Radio SSB",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.02.0003",
+            "nama": "Belanja Modal Alat Komunikasi Radio HF/FM",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.03.0003",
+            "nama": "Belanja Modal Peralatan Pemancar VHF/FM",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.03.0008",
+            "nama": "Belanja Modal Peralatan Antena VHF/FM",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.03.0010",
+            "nama": "Belanja Modal Peralatan Antena SHF/Parabola",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.06.03.0019",
+            "nama": "Belanja Modal Switcher Antena",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0006",
+            "nama": "Belanja Modal Alat Laboratorium Bahan Bangunan Konstruksi",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0011",
+            "nama": "Belanja Modal Alat Laboratorium Umum",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0012",
+            "nama": "Belanja Modal Alat Laboratorium Mikrobiologi",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0013",
+            "nama": "Belanja Modal Alat Laboratorium Kimia",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0020",
+            "nama": "Belanja Modal Alat Laboratorium Fisika",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0041",
+            "nama": "Belanja Modal Alat Laboratorium Pertanian",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0042",
+            "nama": "Belanja Modal Alat Laboratorium Elektronika dan Daya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.01.0048",
+            "nama": "Belanja Modal Alat Laboratorium Biologi",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0001",
+            "nama": "Alat Peraga Praktek Sekolah Bidang Studi:Bahasa Indonesia",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0002",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:Matematika",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0003",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:IPA Dasar",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0004",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:IPA Lanjutan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0005",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:IPA Menengah",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0006",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:IPA Atas",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0007",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:IPS",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0008",
+            "nama": "Alat Peraga Praktek Sekolah Bidang Studi:Agama",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0009",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:Keterampilan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0010",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:Kesenian",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0011",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:Olahraga",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0012",
+            "nama": "Belanja Modal Alat Peraga Praktek Sekolah Bidang Studi:PKN",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0013",
+            "nama": "Belanja Modal Alat Peraga Luar Biasa (Tuna Netra, Terapi Fisik, Tuna Daksa, dan Tuna Rungu)",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0014",
+            "nama": "Belanja Modal Alat Peraga Kejuruan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0015",
+            "nama": "Belanja Modal Alat Peraga PAUD/TK",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.08.03.0016",
+            "nama": "Belanja Modal Alat Peraga Praktik Sekolah Lainnya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.01.0001",
+            "nama": "Belanja Modal Komputer Jaringan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.01.0002",
+            "nama": "Belanja Modal Personal Computer",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.02.0001",
+            "nama": "Belanja Modal Peralatan Mainframe",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.02.0002",
+            "nama": "Belanja Modal Peralatan Mini Computer",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.02.0003",
+            "nama": "Belanja Modal Peralatan Personal Computer",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.02.0004",
+            "nama": "Belanja Modal Peralatan Jaringan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.10.02.0005",
+            "nama": "Belanja Modal Peralatan Komputer Lainnya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.16.01.0001",
+            "nama": "Belanja Modal Alat Peraga Pelatihan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.16.01.0002",
+            "nama": "Belanja Modal Alat Peraga Percontohan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.18.01.0001",
+            "nama": "Belanja Modal Rambu Bersuar",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.18.01.0002",
+            "nama": "Belanja Modal Rambu Tidak Bersuar",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.19.01.0001",
+            "nama": "Belanja Modal Peralatan Olahraga Atletik",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.19.01.0002",
+            "nama": "Belanja Modal Peralatan Permainan",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.19.01.0003",
+            "nama": "Belanja Modal Peralatan Senam",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.19.01.0004",
+            "nama": "Belanja Modal Peralatan Olahraga Air",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.02.19.01.0005",
+            "nama": "Belanja Modal Peralatan Olahraga Udara",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.02.06.0005",
+            "nama": "Belanja Modal Bangunan Pelengkap Air Bersih/Air Baku",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.03.01.0005",
+            "nama": "Belanja Modal Instalasi Air Bersih/Air Baku Lainnya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.03.05.0002",
+            "nama": "Belanja Modal Instalasi Pembangkit Listrik Tenaga Diesel (PLTD)",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.04.02.0002",
+            "nama": "Belanja Modal Jaringan Distribusi",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.04.02.0003",
+            "nama": "Belanja Modal Jaringan Listrik Lainnya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.04.04.03.0005",
+            "nama": "Belanja Modal Jaringan Telepon Lainnya",
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
+        },
+        {
+            "kode": "5.2.05.01.01.0001",
+            "nama": "Belanja Modal Buku Umum",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0002",
+            "nama": "Belanja Modal Buku Filsafat",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0003",
+            "nama": "Belanja Modal Buku Agama",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0004",
+            "nama": "Belanja Modal Buku Ilmu Sosial",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0005",
+            "nama": "Belanja Modal Buku Ilmu Bahasa",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0006",
+            "nama": "Belanja Modal Buku Matematika dan Pengetahuan Alam",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0007",
+            "nama": "Belanja Modal Buku Ilmu Pengetahuan Praktis",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0008",
+            "nama": "Belanja Modal Buku Arsitektur, Kesenian, dan Olahraga",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0009",
+            "nama": "Belanja Modal Buku Geografi, Biografi, dan Sejarah",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.01.0010",
+            "nama": "Belanja Modal Serial",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.02.0001",
+            "nama": "Belanja Modal Audio Visual",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.02.0002",
+            "nama": "Belanja Modal Bentuk Mikro (Microform)",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.03.0001",
+            "nama": "Belanja Modal Bahan Kartografi",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.03.0002",
+            "nama": "Belanja Modal Naskah (Manuskrip)/Asli",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.03.0003",
+            "nama": "Belanja Modal Lukisan dan Ukiran",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.01.04.0001",
+            "nama": "Belanja Modal Karya Musik",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.01.0001",
+            "nama": "Belanja Modal Alat Musik",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.01.0002",
+            "nama": "Belanja Modal Lukisan",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.01.0003",
+            "nama": "Belanja Modal Alat Peraga Kesenian",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.02.0001",
+            "nama": "Belanja Modal Pahatan",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.02.0002",
+            "nama": "Belanja Modal Maket, Miniatur, Replika, Foto Dokumen, dan Benda Bersejarah",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.02.02.0003",
+            "nama": "Belanja Modal Barang Kerajinan",
+            "jenis_belanja": "Belanja Modal Buku"
+        },
+        {
+            "kode": "5.2.05.08.01.0005",
+            "nama": "Belanja Modal Software",
+            "jenis_belanja": "Belanja Modal Buku"
+        }
+    ]
+}

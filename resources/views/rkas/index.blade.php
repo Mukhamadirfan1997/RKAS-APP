@@ -27,6 +27,10 @@
             </p>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('rkas.export') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export Excel
+            </a>
             <a href="{{ route('rkas.pdf') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak / PDF
@@ -95,7 +99,10 @@
                         <th class="px-3 py-2.5 text-right font-semibold">Volume</th>
                         <th class="px-3 py-2.5 text-left font-semibold">Satuan</th>
                         <th class="px-3 py-2.5 text-right font-semibold">Harga Satuan</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">Jumlah</th>
+                        <th class="px-3 py-2.5 text-right font-semibold">Jumlah Kontrol</th>
+                        <th class="px-3 py-2.5 text-right font-semibold">KOREKSI</th>
+                        <th class="px-3 py-2.5 text-right font-semibold">Jumlah +Koreksi</th>
+                        <th class="px-3 py-2.5 text-center font-semibold">KONTROL</th>
                         <th class="px-3 py-2.5 text-left font-semibold">Bulan Aktif</th>
                         <th class="px-3 py-2.5 text-center font-semibold">Aksi</th>
                     </tr>
@@ -111,7 +118,7 @@
                             <td class="px-3 py-3 text-slate-400">{{ $item->no_urut }}</td>
                             <td class="px-3 py-3">
                                 <div class="font-semibold text-slate-700">{{ $item->program->nama ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $item->program->kode ?? '' }} &middot; {{ $item->program->standar_snp ?? '' }}</div>
+                                <div class="text-[11px] text-slate-400">{{ $item->program->kode ?? '' }} &middot; {{ $item->program->sub_program ?? '' }}</div>
                             </td>
                             <td class="px-3 py-3">
                                 <div class="text-slate-700">{{ $item->uraian }}</div>
@@ -121,12 +128,32 @@
                             </td>
                             <td class="px-3 py-3">
                                 <div class="text-slate-700">{{ $item->kodeRekening->nama ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $item->kodeRekening->kode ?? '' }} &middot; {{ $item->kodeRekening->kategori_belanja ?? '' }}</div>
+                                <div class="text-[11px] text-slate-400">{{ $item->kodeRekening->kode ?? '' }} &middot; {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
                             </td>
                             <td class="px-3 py-3 text-right text-slate-700">{{ number_format($item->volume, 2, ',', '.') }}</td>
                             <td class="px-3 py-3 text-slate-500">{{ $item->satuan }}</td>
-                            <td class="px-3 py-3 text-right text-slate-700">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
-                            <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="px-3 py-3 text-right text-slate-700">
+                                <div>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
+                                @if((float) $item->harga_satuan !== (float) $item->harga_satuan_arkas)
+                                    <div class="text-[10px] text-slate-400">ARKAS: Rp {{ number_format($item->harga_satuan_arkas, 0, ',', '.') }}</div>
+                                @endif
+                            </td>
+                            <td class="px-3 py-3 text-right text-slate-500">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="px-3 py-3 text-right {{ (float) $item->koreksi < 0 ? 'text-red-600' : 'text-slate-600' }}">
+                                {{ (float) $item->koreksi != 0 ? 'Rp '.number_format($item->koreksi, 0, ',', '.') : '—' }}
+                            </td>
+                            <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($item->jumlah_koreksi, 0, ',', '.') }}</td>
+                            <td class="px-3 py-3 text-center">
+                                @if($item->kontrol === 'OK')
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>OK
+                                    </span>
+                                @else
+                                    <span title="Harga dianggarkan berbeda dari harga acuan ARKAS (selisih Rp {{ number_format($item->selisih_harga, 0, ',', '.') }})" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>SELISIH
+                                    </span>
+                                @endif
+                            </td>
                             <td class="px-3 py-3 text-slate-500 max-w-[200px]">
                                 <span class="text-xs">{{ $manyBulan }} bulan</span>
                                 <span class="text-[10px] text-slate-400 block leading-snug">{{ $manyBulan < 12 && $manyBulan > 0 ? $labelBulan : ($manyBulan === 12 ? 'Januari s.d. Desember' : '-') }}</span>
@@ -144,7 +171,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="px-3 py-12 text-center text-slate-400">
+                            <td colspan="13" class="px-3 py-12 text-center text-slate-400">
                                 <div class="text-sm font-semibold">Belum ada rincian anggaran</div>
                                 <div class="text-xs mt-1">Klik tombol &ldquo;Sisip Uraian Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
                             </td>
@@ -154,8 +181,10 @@
                 @if($items->isNotEmpty())
                 <tfoot class="bg-slate-50 border-t border-slate-200 text-sm">
                     <tr>
-                        <td colspan="7" class="px-3 py-3 text-right font-bold text-slate-600">Total Keseluruhan</td>
-                        <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($items->sum('jumlah'), 0, ',', '.') }}</td>
+                        <td colspan="8" class="px-3 py-3 text-right font-bold text-slate-600">Total Keseluruhan</td>
+                        <td class="px-3 py-3 text-right font-bold {{ $items->sum('koreksi') < 0 ? 'text-red-600' : 'text-slate-700' }}">Rp {{ number_format($items->sum('koreksi'), 0, ',', '.') }}</td>
+                        <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
+                        <td></td>
                         <td colspan="2" class="px-3 py-3 text-[11px] text-slate-400">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
@@ -191,7 +220,7 @@
                                         <template x-for="r in pickers.kegiatan.results" :key="r.id">
                                             <li @click="selectKegiatan(r)" class="px-3 py-2 hover:bg-blue-50 cursor-pointer">
                                                 <div class="text-sm text-slate-700" x-text="r.text"></div>
-                                                <div class="text-[11px] text-slate-400" x-text="'SNP: ' + r.subtext"></div>
+                                                <div class="text-[11px] text-slate-400" x-text="'Sub Program: ' + r.subtext"></div>
                                             </li>
                                         </template>
                                         <template x-if="pickers.kegiatan.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400">Tidak ada data cocok.</li></template>
@@ -270,6 +299,22 @@
                                 @input="form.harga_satuan = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0"
                                 placeholder="0" class="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
+                        <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0 && form.harga_satuan !== form.harga_satuan_arkas">
+                            Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600">SELISIH</span> pada kolom KONTROL.
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">KOREKSI (selisih rupiah, boleh negatif)</label>
+                        <div class="flex items-center gap-1">
+                            <span class="text-sm text-slate-400">Rp</span>
+                            <input type="text" inputmode="numeric" x-bind:value="form.koreksi.toLocaleString('id-ID')"
+                                @input="form.koreksi = Number(String($event.target.value).replace(/[^\d-]/g, '')) || 0"
+                                placeholder="0" class="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="mt-1 text-[10px] text-slate-400">
+                            Jumlah terpakai = (&Sigma; Volume &times; Harga) + KOREKSI &mdash; &Sigma; Volume &times; Harga = <span class="font-semibold text-slate-600" x-text="'Rp ' + totalAll()"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -343,7 +388,7 @@ function modalForm() {
         saving: false,
         error: '',
         months: BULAN_KE.map(m => ({ no: m, nama: NAMA_BULAN[m] })),
-        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, kode_barang_id: null },
+        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, koreksi: 0, kode_barang_id: null },
         alokasi: makeAlokasi(),
         pickers: { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() },
         _timers: {},
@@ -351,7 +396,7 @@ function modalForm() {
         reset() {
             this.editingId = null;
             this.error = '';
-            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, kode_barang_id: null };
+            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, koreksi: 0, kode_barang_id: null };
             this.alokasi = makeAlokasi();
             this.pickers = { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() };
         },
@@ -429,6 +474,8 @@ function modalForm() {
                     uraian: d.uraian || '',
                     keterangan_kustom: d.keterangan_kustom || '',
                     harga_satuan: Number(d.harga_satuan) || 0,
+                    harga_satuan_arkas: Number(d.harga_satuan_arkas) || 0,
+                    koreksi: Number(d.koreksi) || 0,
                     kode_barang_id: d.kode_barang_id || null
                 };
                 if (d.kegiatan_id) { this.pickers.kegiatan.value = d.kegiatan_id; this.pickers.kegiatan.label = d.kegiatan_text; this.pickers.kegiatan.q = d.kegiatan_text; }
@@ -458,6 +505,7 @@ function modalForm() {
                 uraian: this.form.uraian,
                 keterangan_kustom: this.form.keterangan_kustom || null,
                 harga_satuan: this.form.harga_satuan || 0,
+                koreksi: this.form.koreksi || 0,
                 alokasi: {}
             };
             BULAN_KE.forEach(m => {

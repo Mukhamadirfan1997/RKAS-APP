@@ -59,7 +59,9 @@
                 <th class="r">Volume</th>
                 <th>Satuan</th>
                 <th class="r">Harga Satuan</th>
-                <th class="r">Jumlah (Rp)</th>
+                <th class="r">Jumlah Kontrol (Rp)</th>
+                <th class="r">KOREKSI (Rp)</th>
+                <th class="r">Jumlah +Koreksi (Rp)</th>
                 <th class="r">Tahap I (Rp)</th>
                 <th class="r">Tahap II (Rp)</th>
             </tr>
@@ -67,15 +69,19 @@
         <tbody>
             @php
                 $grandTotal = 0;
+                $grandKoreksi = 0;
                 $grandT1 = 0;
                 $grandT2 = 0;
             @endphp
             @forelse($items as $item)
                 @php
                     $jumlah = (float) $item->jumlah;
+                    $koreksi = (float) $item->koreksi;
+                    $jumlahKoreksi = (float) $item->jumlah_koreksi;
                     $t1 = (float) $item->alokasiBulan->whereBetween('bulan', [1, 6])->sum('jumlah');
                     $t2 = (float) $item->alokasiBulan->whereBetween('bulan', [7, 12])->sum('jumlah');
                     $grandTotal += $jumlah;
+                    $grandKoreksi += $koreksi;
                     $grandT1 += $t1;
                     $grandT2 += $t2;
                 @endphp
@@ -99,17 +105,19 @@
                     <td>{{ $item->satuan }}</td>
                     <td class="r">{{ number_format((float) $item->harga_satuan, 0, ',', '.') }}</td>
                     <td class="r">{{ number_format($jumlah, 0, ',', '.') }}</td>
+                    <td class="r">{{ $koreksi == 0 ? '—' : number_format($koreksi, 0, ',', '.') }}</td>
+                    <td class="r">{{ number_format($jumlahKoreksi, 0, ',', '.') }}</td>
                     <td class="r">{{ number_format($t1, 0, ',', '.') }}</td>
                     <td class="r">{{ number_format($t2, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="c">Belum ada rincian belanja.</td>
+                    <td colspan="12" class="c">Belum ada rincian belanja.</td>
                 </tr>
             @endforelse
             <tr class="total-row">
-                <td colspan="7" class="r">TOTAL</td>
-                <td class="r">{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                <td colspan="9" class="r">TOTAL</td>
+                <td class="r">{{ number_format($grandTotal + $grandKoreksi, 0, ',', '.') }}</td>
                 <td class="r">{{ number_format($grandT1, 0, ',', '.') }}</td>
                 <td class="r">{{ number_format($grandT2, 0, ',', '.') }}</td>
             </tr>

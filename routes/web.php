@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
@@ -25,6 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/rkas/{id}/update', [RkasController::class, 'update'])->name('rkas.update');
     Route::delete('/rkas/{id}/delete', [RkasController::class, 'destroy'])->name('rkas.destroy');
     Route::get('/rkas/pdf', [RkasController::class, 'pdf'])->name('rkas.pdf');
+    Route::get('/rkas/export', [RkasController::class, 'export'])->name('rkas.export');
+
+    // Backup & Restore
+    Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup/create', [BackupController::class, 'create'])->name('backup.create');
+    Route::post('/backup/restore', [BackupController::class, 'restore'])->name('backup.restore');
+    Route::post('/backup/{filename}/restore', [BackupController::class, 'restoreExisting'])->name('backup.restore-file');
+    Route::get('/backup/{filename}/download', [BackupController::class, 'download'])->name('backup.download');
+    Route::delete('/backup/{filename}/delete', [BackupController::class, 'destroy'])->name('backup.destroy');
 
     // Dashboard & Monitoring JUKNIS
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

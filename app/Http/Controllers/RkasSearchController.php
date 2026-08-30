@@ -21,7 +21,8 @@ class RkasSearchController extends Controller
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
                     ->orWhere('nama', 'like', "%{$q}%")
-                    ->orWhere('standar_snp', 'like', "%{$q}%");
+                    ->orWhere('program', 'like', "%{$q}%")
+                    ->orWhere('sub_program', 'like', "%{$q}%");
             });
         }
 
@@ -30,9 +31,10 @@ class RkasSearchController extends Controller
                 'id' => $item->id,
                 'kode' => $item->kode,
                 'nama' => $item->nama,
-                'standar_snp' => $item->standar_snp,
+                'program' => $item->program,
+                'sub_program' => $item->sub_program,
                 'text' => "[{$item->kode}] {$item->nama}",
-                'subtext' => $item->standar_snp,
+                'subtext' => trim(($item->sub_program ?? $item->program ?? '')),
             ];
         });
 
@@ -46,11 +48,12 @@ class RkasSearchController extends Controller
     {
         $q = trim($request->input('q', ''));
 
-        $query = MasterKodeRekening::query();
+        $query = MasterKodeRekening::query()->with('jenisBelanja');
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "%{$q}%");
+                    ->orWhere('nama', 'like', "%{$q}%")
+                    ->orWhereHas('jenisBelanja', fn ($jb) => $jb->where('nama', 'like', "%{$q}%"));
             });
         }
 
@@ -59,9 +62,9 @@ class RkasSearchController extends Controller
                 'id' => $item->id,
                 'kode' => $item->kode,
                 'nama' => $item->nama,
-                'kategori' => $item->kategori_belanja,
+                'kategori' => $item->jenisBelanja->nama ?? $item->kategori_belanja,
                 'text' => "[{$item->kode}] {$item->nama}",
-                'subtext' => "Kategori: {$item->kategori_belanja}",
+                'subtext' => 'Jenis Belanja: '.($item->jenisBelanja->nama ?? '-'),
             ];
         });
 

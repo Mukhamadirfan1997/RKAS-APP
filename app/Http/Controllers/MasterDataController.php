@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JenisBelanja;
 use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
+use App\Services\JenisBelanjaResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MasterDataController extends Controller
 {
+    protected JenisBelanjaResolver $resolver;
+
+    public function __construct()
+    {
+        $this->resolver = app(JenisBelanjaResolver::class);
+    }
     // ===================== PROGRAM =====================
 
     public function program(Request $request)
@@ -22,7 +30,8 @@ class MasterDataController extends Controller
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
                     ->orWhere('nama', 'like', "%{$q}%")
-                    ->orWhere('standar_snp', 'like', "%{$q}%");
+                    ->orWhere('program', 'like', "%{$q}%")
+                    ->orWhere('sub_program', 'like', "%{$q}%");
             });
         }
 
@@ -36,7 +45,8 @@ class MasterDataController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50|unique:master_program,kode',
             'nama' => 'required|string|max:255',
-            'standar_snp' => 'nullable|string|max:150',
+            'program' => 'nullable|string|max:150',
+            'sub_program' => 'nullable|string|max:150',
         ]);
 
         MasterProgram::create($validated);
@@ -49,7 +59,8 @@ class MasterDataController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50|unique:master_program,kode,'.$id,
             'nama' => 'required|string|max:255',
-            'standar_snp' => 'nullable|string|max:150',
+            'program' => 'nullable|string|max:150',
+            'sub_program' => 'nullable|string|max:150',
         ]);
 
         MasterProgram::findOrFail($id)->update($validated);
@@ -70,17 +81,20 @@ class MasterDataController extends Controller
     {
         $q = trim($request->input('q', ''));
 
-        $query = MasterKodeRekening::query();
+        $query = MasterKodeRekening::query()->with('jenisBelanja');
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "%{$q}%");
+                    ->orWhere('nama', 'like', "%{$q}%")
+                    ->orWhereHas('jenisBelanja', fn ($jb) => $jb->where('nama', 'like', "%{$q}%"));
             });
         }
 
         $items = $query->orderBy('kode')->get();
 
-        return view('master.rekening', compact('items', 'q'));
+        $jenisBelanjas = JenisBelanja::orderBy('nama')->get();
+
+        return view('master.rekening', compact('items', 'q', 'jenisBelanjas'));
     }
 
     public function storeRekening(Request $request)
@@ -88,7 +102,8 @@ class MasterDataController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50|unique:master_kode_rekening,kode',
             'nama' => 'required|string|max:255',
-            'kategori_belanja' => 'required|in:BARJAS,MODAL,HONOR',
+            'jenis_belanja_id' => 'nullable|exists:jenis_belanja,id',
+            'kategori_belanja' => 'nullable|in:BARJAS,MODAL,HONOR',
         ]);
 
         MasterKodeRekening::create($validated);
@@ -101,7 +116,8 @@ class MasterDataController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50|unique:master_kode_rekening,kode,'.$id,
             'nama' => 'required|string|max:255',
-            'kategori_belanja' => 'required|in:BARJAS,MODAL,HONOR',
+            'jenis_belanja_id' => 'nullable|exists:jenis_belanja,id',
+            'kategori_belanja' => 'nullable|in:BARJAS,MODAL,HONOR',
         ]);
 
         MasterKodeRekening::findOrFail($id)->update($validated);
@@ -207,35 +223,39 @@ class MasterDataController extends Controller
 
                 switch ($request->target) {
                     case 'program':
-                        if (empty($rowMap['kode'] ?? null) || empty($rowMap['nama'] ?? null)) {
+                        $kode = trim((string) ($rowMap['kode_kegiatan'] ?? $rowMap['kode'] ?? ''));
+                        $nama = trim((string) ($rowMap['uraian'] ?? $rowMap['nama'] ?? ''));
+                        if ($kode === '' || $nama === '') {
                             $skipped++;
 
                             continue 2;
                         }
                         $created = MasterProgram::firstOrCreate(
-                            ['kode' => trim($rowMap['kode'])],
+                            ['kode' => rtrim($kode, '.')],
                             [
-                                'nama' => trim($rowMap['nama']),
-                                'standar_snp' => $rowMap['standar_snp'] ?? $rowMap['standarsnp'] ?? null,
+                                'nama' => $nama,
+                                'program' => $rowMap['program'] ?? $rowMap['standar_snp'] ?? $rowMap['standarsnp'] ?? null,
+                                'sub_program' => $rowMap['sub_program'] ?? null,
                             ]
                         );
                         break;
 
                     case 'rekening':
-                        if (empty($rowMap['kode'] ?? null) || empty($rowMap['nama'] ?? null)) {
+                        $kode = trim((string) ($rowMap['kode_barang'] ?? $rowMap['kode'] ?? ''));
+                        $nama = trim((string) ($rowMap['rincian_objek'] ?? $rowMap['nama'] ?? ''));
+                        if ($kode === '' || $nama === '') {
                             $skipped++;
 
                             continue 2;
                         }
-                        $kategori = strtoupper((string) ($rowMap['kategori'] ?? $rowMap['kategori_belanja'] ?? 'BARJAS'));
-                        if (! in_array($kategori, ['BARJAS', 'MODAL', 'HONOR'])) {
-                            $kategori = 'BARJAS';
-                        }
+                        $kode = rtrim($kode, '.');
+                        $namaJenis = $this->resolver->namaRekening($kode);
                         $created = MasterKodeRekening::firstOrCreate(
-                            ['kode' => trim($rowMap['kode'])],
+                            ['kode' => $kode],
                             [
-                                'nama' => trim($rowMap['nama']),
-                                'kategori_belanja' => $kategori,
+                                'nama' => $nama,
+                                'jenis_belanja_id' => $this->resolver->jenisId($kode),
+                                'kategori_belanja' => $this->resolver->legacyKategori($namaJenis),
                             ]
                         );
                         break;
