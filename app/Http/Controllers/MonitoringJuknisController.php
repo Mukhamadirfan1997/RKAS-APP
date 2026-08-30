@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\KategoriJuknis;
+use App\Models\KodeRekeningKategoriJuknis;
+use App\Models\RkasItem;
+use App\Models\TahunAnggaran;
+use App\Services\JuknisValidator;
+use Illuminate\Http\Request;
+
+class MonitoringJuknisController extends Controller
+{
+    public function index(Request $request)
+    {
+        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $validator = new JuknisValidator($tahunAnggaran);
+        $summary = $validator->summary();
+
+        // Kategori JUKNIS konfigurasi pengguna
+        $kategoriList = KategoriJuknis::with('rekenings')->get();
+
+        // Daftar item yang belum termapping ke kategori JUKNIS
+        $mappedRekeningIds = KodeRekeningKategoriJuknis::pluck('master_kode_rekening_id');
+        $unmapped = RkasItem::with(['program', 'kodeRekening'])
+            ->where('tahun_anggaran_id', $tahunAnggaran->id)
+            ->where(function ($q) use ($mappedRekeningIds) {
+                $q->whereNull('master_kode_rekening_id')
+                    ->orWhereNotIn('master_kode_rekening_id', $mappedRekeningIds);
+            })
+            ->get();
+
+        $filter = $request->input('filter', 'all');
+
+        return view('monitoring.index', compact(
+            'tahunAnggaran',
+            'summary',
+            'kategoriList',
+            'unmapped',
+            'filter'
+        ));
+    }
+
+    public function mapping(Request $request)
+    {
+        $request->validate([
+            'kategori_juknis_id' => 'required|exists:kategori_juknis,id',
+            'kode_rekening' => 'array',
+            'kode_rekening.*' => 'exists:master_kode_rekening,id',
+        ]);
+
+        $kategori = KategoriJuknis::findOrFail($request->kategori_juknis_id);
+        $kategori->rekenings()->sync($request->kode_rekening ?? []);
+
+        return redirect()->route('monitoring.juknis')->with('success', 'Pemetaan rekening ke kategori JUKNIS berhasil disimpan.');
+    }
+}
