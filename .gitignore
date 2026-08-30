@@ -19,6 +19,14 @@
 /storage/*.key
 /storage/pail
 /vendor
+
+# Dokumen rahasia/privasi proyek — tidak di-commit
+AGENTS.md
+PLAN-DESKTOP-RKAS.md
+README.md
+*.xlsm
+*.xlsx
+*.xls
 Homestead.json
 Homestead.yaml
 Thumbs.db
