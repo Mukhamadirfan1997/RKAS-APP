@@ -91,3 +91,13 @@ Skema database yang telah aktif dan dimigrasikan:
   - Dependensi Excel (`maatwebsite/excel`), PDF (`barryvdh/laravel-dompdf`), Tailwind CSS v4, dan Alpine.js 3 terpasang.
   - Controller `RkasSearchController`, `RkasController`, dan Model-Model Eloquent selesai dibuat.
   - Aturan Pagu 1 Tahun & Per Tahap serta form Uraian Manual tercatat resmi di `PLAN-DESKTOP-RKAS.md`.
+
+## Sesi 30 Agu 2026 (Lanjutan) — Dashboard, Monitoring JUKNIS, Login, Laporan PDF & Tauri 2
+- **Pencapaian**:
+  - `PengaturanController` + halaman `pengaturan/index` (profil sekolah & pagu), migrasi `audit_logs`, `kategori_juknis`, `kode_rekening_kategori_juknis`; `AuditLog`, `KategoriJuknis`, `KodeRekeningKategoriJuknis` model; trait `LogsActivity` terpasang di model utama.
+  - `config/juknis.php` (Honor ≤20%, Buku ≥10%, Sarpras ≤20%, Tahap I minimal 50%) + `JuknisValidator` + `JuknisSeeder`.
+  - `DashboardController` + grafik; `MonitoringJuknisController` + halaman monitoring; `MasterDataController` + CRUD master + import Excel; export PDF kertas kerja (`barryvdh/laravel-dompdf`).
+  - Auth manual: `AuthController` + `auth/login.blade.php`, semua route di belakang middleware `auth`, audit log untuk login.
+  - Semua route terverifikasi `php artisan route:list`; test hijau: **12 tests / 52 assertions** (PageRenderTest + RkasFlowTest); `pint` dijalankan.
+  - **Tauri 2**: `npx tauri init`, `lib.rs` menspawn `php artisan serve --port=9200` (mode produksi), window memuat `http://127.0.0.1:9200`. `cargo check` hijau. Jalankan via `npm run tauri:dev`.
+  - **Git**: repo diinisialisasi, commit awal `163c748` dibuat.
