@@ -8,6 +8,7 @@ use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use App\Services\JuknisValidator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -132,5 +133,84 @@ class RkasFlowTest extends TestCase
         ])->assertRedirect();
 
         $this->assertDatabaseHas('tahun_anggaran', ['pagu_total' => 100000000]);
+    }
+
+    public function test_juknis_kombinasi_honor_dan_non_honor()
+    {
+        $ta = TahunAnggaran::where('tahun', 2026)->first();
+
+        // Kombinasi benar: program honor 07.12.01 + rekening honor -> terhitung HONOR
+        $progHonor = MasterProgram::where('kode', '07.12.01')->firstOrFail();
+        $rekHonor = MasterKodeRekening::where('kode', '5.1.02.02.01.0013')->firstOrFail();
+        $itemHonor = RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $progHonor->id,
+            'master_kode_rekening_id' => $rekHonor->id,
+            'uraian' => 'Honorarium Guru Honorer',
+            'volume' => 1,
+            'satuan' => 'bln',
+            'harga_satuan' => 100000,
+            'jumlah' => 100000,
+        ]);
+        $itemHonor->alokasiBulan()->create(['bulan' => 1, 'volume' => 1, 'satuan' => 'bln', 'jumlah' => 100000]);
+
+        // Kombinasi SALAH: program non-honor + rekening Belanja Jasa (Sewa) -> TIDAK masuk HONOR
+        $progLain = MasterProgram::where('kode', '04.06.05')->first()
+            ?? MasterProgram::whereNotIn('kode', config('juknis.honor.kode_program'))->firstOrFail();
+        $rekSewa = MasterKodeRekening::where('kode', '5.1.02.02.04.0036')->firstOrFail();
+        RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $progLain->id,
+            'master_kode_rekening_id' => $rekSewa->id,
+            'uraian' => 'Sewa Kendaraan Kegiatan',
+            'volume' => 1,
+            'satuan' => 'unit',
+            'harga_satuan' => 200000,
+            'jumlah' => 200000,
+        ]);
+
+        $validator = new JuknisValidator($ta);
+        $summary = $validator->summary();
+
+        // Hanya item kombinasi benar yang dihitung honor, bukan belanja jasa sewa
+        $this->assertEquals(100000, (float) $summary['honor']['total']);
+    }
+
+    public function test_juknis_sarpras_tidak_menangkap_bahan_alat_listrik_persediaan()
+    {
+        $ta = TahunAnggaran::where('tahun', 2026)->first();
+        $progSarpras = MasterProgram::where('kode', '05.08.01')->firstOrFail();
+
+        // Benar: pemeliharaan bangunan/program sarpras + rekening pemeliharaan -> terhitung SARPRAS
+        $rekPemeliharaan = MasterKodeRekening::where('kode', '5.1.02.03.03.0010')->firstOrFail();
+        RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $progSarpras->id,
+            'master_kode_rekening_id' => $rekPemeliharaan->id,
+            'uraian' => 'Pemeliharaan gedung ruang kelas',
+            'volume' => 1,
+            'satuan' => 'paket',
+            'harga_satuan' => 100000,
+            'jumlah' => 100000,
+        ]);
+
+        // Salah: Bahan Alat Listrik (Barang Persediaan) di program sarpras -> TIDAK masuk SARPRAS
+        $rekListrik = MasterKodeRekening::where('kode', '5.1.02.01.01.0031')->firstOrFail();
+        RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $progSarpras->id,
+            'master_kode_rekening_id' => $rekListrik->id,
+            'uraian' => 'Pembelian lampu LED penerangan kantor',
+            'volume' => 1,
+            'satuan' => 'unit',
+            'harga_satuan' => 50000,
+            'jumlah' => 50000,
+        ]);
+
+        $validator = new JuknisValidator($ta);
+        $summary = $validator->summary();
+
+        // Hanya yang benar yang dihitung sarpras; bahan alat listrik persediaan TIDAK masuk
+        $this->assertEquals(100000, (float) $summary['sarpras']['total']);
     }
 }

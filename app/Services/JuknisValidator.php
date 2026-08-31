@@ -31,34 +31,21 @@ class JuknisValidator
             ->all();
 
         foreach ($this->items as $item) {
-            $kategori = $item->kodeRekening->kategori_belanja ?? '';
             $jenisBelanja = $item->kodeRekening->jenisBelanja->nama ?? '';
+            $kodeRekening = $item->kodeRekening->kode ?? '';
             $programKode = $item->program->kode ?? '';
             $uraian = strtolower($item->uraian ?? '');
 
             $jumlah = (float) $item->jumlah;
 
-            $isHonor = in_array($programKode, config('juknis.honor.kode_program'))
-                || in_array($jenisBelanja, config('juknis.honor.jenis_belanja'))
-                || $this->uraianHits($uraian, config('juknis.honor.keyword'))
-                || in_array($kategori, config('juknis.honor.kategori_rekening') ?? []);
+            // Kombinasi presisi ARKAS: program AND (jenis belanja / prefix rekening / keyword)
+            $kategori = $this->klasifikasi($programKode, $jenisBelanja, $kodeRekening, $uraian);
 
-            $isBuku = in_array($programKode, config('juknis.buku.kode_program'))
-                || in_array($jenisBelanja, config('juknis.buku.jenis_belanja'))
-                || $this->uraianHits($uraian, config('juknis.buku.keyword'));
-
-            $isSarpras = in_array($programKode, config('juknis.sarpras.kode_program'))
-                || in_array($jenisBelanja, config('juknis.sarpras.jenis_belanja'));
-
-            if ($isHonor) {
+            if ($kategori === 'honor') {
                 $this->honorTotal += $jumlah;
-            }
-
-            if ($isBuku) {
+            } elseif ($kategori === 'buku') {
                 $this->bukuTotal += $jumlah;
-            }
-
-            if ($isSarpras) {
+            } elseif ($kategori === 'sarpras') {
                 $this->sarprasTotal += $jumlah;
             }
         }
@@ -155,6 +142,59 @@ class JuknisValidator
         }
 
         return $value >= $batas ? 'sesuai' : 'kurang';
+    }
+
+    /**
+     * Klasifikasi satu item ke komponen JUKNIS.
+     *
+     * Presisi ARKAS: kombinasi AND antara kode program (kegiatan) dengan
+     * (jenis belanja ATAU prefix kode rekening ATAU kata kunci uraian).
+     * Prioritas eksklusif: honor > buku > sarpras -> null (tanpa komponen).
+     *
+     * @return string|null 'honor' | 'buku' | 'sarpras' | null
+     */
+    protected function klasifikasi(string $programKode, string $jenisBelanja, string $kodeRekening, string $uraian): ?string
+    {
+        if ($this->kombinasi('honor', $programKode, $jenisBelanja, $kodeRekening, $uraian)) {
+            return 'honor';
+        }
+
+        if ($this->kombinasi('buku', $programKode, $jenisBelanja, $kodeRekening, $uraian)) {
+            return 'buku';
+        }
+
+        if ($this->kombinasi('sarpras', $programKode, $jenisBelanja, $kodeRekening, $uraian)) {
+            return 'sarpras';
+        }
+
+        return null;
+    }
+
+    /**
+     * Cek kombinasi AND program + (jenis belanja | prefix rekening | keyword).
+     */
+    protected function kombinasi(string $key, string $programKode, string $jenisBelanja, string $kodeRekening, string $uraian): bool
+    {
+        $cfg = config("juknis.$key");
+
+        if (! in_array($programKode, $cfg['kode_program'] ?? [], true)) {
+            return false;
+        }
+
+        $jenisCocok = in_array($jenisBelanja, $cfg['jenis_belanja'] ?? [], true);
+
+        $prefix = $cfg['rekening'] ?? [];
+        $rekeningCocok = false;
+        foreach ($prefix as $p) {
+            if ($p !== '' && str_starts_with($kodeRekening, $p)) {
+                $rekeningCocok = true;
+                break;
+            }
+        }
+
+        $keywordCocok = $this->uraianHits($uraian, $cfg['keywords'] ?? []);
+
+        return $jenisCocok || $rekeningCocok || $keywordCocok;
     }
 
     /**
