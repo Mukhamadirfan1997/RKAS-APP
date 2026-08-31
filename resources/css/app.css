@@ -5,7 +5,62 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Smooth theme transition */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+    color-scheme: dark;
+}
+
+/* Custom scrollbar (premium, subtle) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Card = reusable premium surface */
+.card {
+    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
+}
+.dark .card {
+    @apply bg-slate-800/70 border-slate-700/60;
+}
+
+/* Input */
+.input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800
+        placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500;
+}
+.dark .input {
+    @apply bg-slate-900/60 border-slate-600/60 text-slate-100 placeholder:text-slate-500;
+}
+
+/* Small label */
+.label {
+    @apply block text-xs font-semibold text-slate-600 mb-1;
+}
+.dark .label {
+    @apply text-slate-300;
 }

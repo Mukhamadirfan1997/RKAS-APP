@@ -5,37 +5,37 @@
     $bulanIndonesia = ['', 'Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 @endphp
 
-<div class="p-5 md:p-6 max-w-[1440px] mx-auto">
+<div class="space-y-6">
     @if(session('success'))
-        <div class="mb-4 px-4 py-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">{{ session('success') }}</div>
+        <div class="mb-4 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-400">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">{{ session('error') }}</div>
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400">{{ session('error') }}</div>
     @endif
     @if($errors->any())
-        <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400">
             @foreach($errors->all() as $err)<div>{{ $err }}</div>@endforeach
         </div>
     @endif
 
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-            <h1 class="text-lg md:text-xl font-bold text-slate-800">Lembar Kerja RKAS {{ $tahunAnggaran->tahun }}</h1>
-            <p class="text-xs text-slate-500 mt-0.5">
+            <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Lembar Kerja RKAS {{ $tahunAnggaran->tahun }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {{ $tahunAnggaran->sumber_dana }} &mdash; {{ $sekolah->nama_sekolah }}
                 (NPSN {{ $sekolah->npsn }})
             </p>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('rkas.export') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="{{ route('rkas.export') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 dark:hover:bg-slate-700/50 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Export Excel
             </a>
-            <a href="{{ route('rkas.pdf') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+            <a href="{{ route('rkas.pdf') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak / PDF
             </a>
-            <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm">
+            <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Sisip Uraian Anggaran
             </button>
@@ -46,44 +46,44 @@
         $tahap1Total = \App\Models\RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))->whereBetween('bulan', [1, 6])->sum('jumlah');
         $tahap1Pct = $tahunAnggaran->pagu_total > 0 ? round($tahap1Total / $tahunAnggaran->pagu_total * 100) : 0;
     @endphp
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Pagu Total</div>
-            <div class="text-lg md:text-xl font-bold text-slate-800 mt-1">Rp {{ number_format($tahunAnggaran->pagu_total, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Tahap I: Rp {{ number_format($tahunAnggaran->pagu_tahap1, 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($tahunAnggaran->pagu_tahap2, 0, ',', '.') }}</div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card p-5">
+            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Pagu Total</div>
+            <div class="text-lg md:text-xl font-extrabold text-slate-800 dark:text-white mt-1">Rp {{ number_format($tahunAnggaran->pagu_total, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Tahap I: Rp {{ number_format($tahunAnggaran->pagu_tahap1, 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($tahunAnggaran->pagu_tahap2, 0, ',', '.') }}</div>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Sudah Dianggarkan</div>
-            <div class="text-lg md:text-xl font-bold text-indigo-700 mt-1">Rp {{ number_format($totalSudahDianggarkan, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">{{ $items->count() }} item belanja</div>
+        <div class="card p-5">
+            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Sudah Dianggarkan</div>
+            <div class="text-lg md:text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">Rp {{ number_format($totalSudahDianggarkan, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $items->count() }} item belanja</div>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Sisa Pagu</div>
-            <div class="text-lg md:text-xl font-bold {{ $sisaPagu >= 0 ? 'text-emerald-700' : 'text-red-600' }} mt-1">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">{{ $sisaPagu >= 0 ? 'Siap untuk tambahan kegiatan' : 'Melebihi pagu total' }}</div>
+        <div class="card p-5">
+            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Sisa Pagu</div>
+            <div class="text-lg md:text-xl font-extrabold {{ $sisaPagu >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600' }} mt-1">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $sisaPagu >= 0 ? 'Siap untuk tambahan kegiatan' : 'Melebihi pagu total' }}</div>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Capaian Tahap I (min 50%)</div>
-            <div class="text-lg md:text-xl font-bold {{ $tahap1Pct >= 50 ? 'text-emerald-700' : 'text-amber-600' }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">{{ $tahap1Pct }}% dari pagu &middot; {{ $tahap1Pct >= 50 ? 'memenuhi minimal 50%' : 'belum mencapai minimal 50%' }}</div>
+        <div class="card p-5">
+            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Capaian Tahap I (min 50%)</div>
+            <div class="text-lg md:text-xl font-extrabold {{ $tahap1Pct >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600' }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $tahap1Pct }}% dari pagu &middot; {{ $tahap1Pct >= 50 ? 'memenuhi minimal 50%' : 'belum mencapai minimal 50%' }}</div>
         </div>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-4 py-3 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="card overflow-hidden">
+        <div class="px-5 lg:px-6 py-4 border-b border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h2 class="text-sm font-bold text-slate-700">Daftar Rincian Anggaran</h2>
-                <p class="text-[11px] text-slate-400">Filter alokasi bulan &mdash; pilah item sesuai bulan pelaksanaan.</p>
+                <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Daftar Rincian Anggaran</h2>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">Filter alokasi bulan &mdash; pilah item sesuai bulan pelaksanaan.</p>
             </div>
             <form method="GET" action="{{ route('rkas.index') }}" class="flex items-center gap-2">
-                <select name="bulan" onchange="this.form.submit()" class="rounded-lg border border-slate-300 text-sm px-3 py-1.5 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <select name="bulan" onchange="this.form.submit()" class="input !w-auto">
                     <option value="0" {{ $selectedBulan === 0 ? 'selected' : '' }}>Semua Bulan</option>
                     @for($b = 1; $b <= 12; $b++)
                         <option value="{{ $b }}" {{ $selectedBulan === $b ? 'selected' : '' }}>{{ $bulanIndonesia[$b] }}</option>
                     @endfor
                 </select>
                 @if($selectedBulan > 0)
-                    <a href="{{ route('rkas.index', ['bulan' => 0]) }}" class="text-xs text-slate-400 hover:text-red-500">Reset</a>
+                    <a href="{{ route('rkas.index', ['bulan' => 0]) }}" class="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500">Reset</a>
                 @endif
             </form>
         </div>
@@ -91,79 +91,79 @@
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
-                    <tr class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wide">
-                        <th class="px-3 py-2.5 text-left font-semibold">No</th>
-                        <th class="px-3 py-2.5 text-left font-semibold min-w-[220px]">Kegiatan (Kode SNP)</th>
-                        <th class="px-3 py-2.5 text-left font-semibold min-w-[260px]">Uraian / Keterangan Khusus</th>
-                        <th class="px-3 py-2.5 text-left font-semibold min-w-[200px]">Kode Rekening</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">Volume</th>
-                        <th class="px-3 py-2.5 text-left font-semibold">Satuan</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">Harga Satuan</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">Jumlah Kontrol</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">KOREKSI</th>
-                        <th class="px-3 py-2.5 text-right font-semibold">Jumlah +Koreksi</th>
-                        <th class="px-3 py-2.5 text-center font-semibold">KONTROL</th>
-                        <th class="px-3 py-2.5 text-left font-semibold">Bulan Aktif</th>
-                        <th class="px-3 py-2.5 text-center font-semibold">Aksi</th>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
+                        <th class="px-4 py-3 text-left font-semibold">No</th>
+                        <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Kegiatan (Kode SNP)</th>
+                        <th class="px-4 py-3 text-left font-semibold min-w-[280px]">Uraian / Keterangan Khusus</th>
+                        <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Kode Rekening</th>
+                        <th class="px-4 py-3 text-right font-semibold">Volume</th>
+                        <th class="px-4 py-3 text-left font-semibold">Satuan</th>
+                        <th class="px-4 py-3 text-right font-semibold">Harga Satuan</th>
+                        <th class="px-4 py-3 text-right font-semibold">Jumlah Kontrol</th>
+                        <th class="px-4 py-3 text-right font-semibold">KOREKSI</th>
+                        <th class="px-4 py-3 text-right font-semibold">Jumlah +Koreksi</th>
+                        <th class="px-4 py-3 text-center font-semibold">KONTROL</th>
+                        <th class="px-4 py-3 text-left font-semibold">Bulan Aktif</th>
+                        <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
                     @forelse($items as $item)
                         @php
                             $aktif = $item->alokasiBulan->where('volume', '>', 0);
                             $labelBulan = $aktif->map(fn($ab) => $bulanIndonesia[$ab->bulan])->implode(', ');
                             $manyBulan = $aktif->count();
                         @endphp
-                        <tr class="hover:bg-slate-50/70">
-                            <td class="px-3 py-3 text-slate-400">{{ $item->no_urut }}</td>
-                            <td class="px-3 py-3">
-                                <div class="font-semibold text-slate-700">{{ $item->program->nama ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $item->program->kode ?? '' }} &middot; {{ $item->program->sub_program ?? '' }}</div>
+                        <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
+                            <td class="px-4 py-4 text-slate-400 dark:text-slate-500">{{ $item->no_urut }}</td>
+                            <td class="px-4 py-4">
+                                <div class="font-semibold text-slate-700 dark:text-slate-200">{{ $item->program->nama ?? '-' }}</div>
+                                <div class="text-[11px] text-slate-400 dark:text-slate-500">{{ $item->program->kode ?? '' }} &middot; {{ $item->program->sub_program ?? '' }}</div>
                             </td>
-                            <td class="px-3 py-3">
-                                <div class="text-slate-700">{{ $item->uraian }}</div>
+                            <td class="px-4 py-4">
+                                <div class="text-slate-700 dark:text-slate-200">{{ $item->uraian }}</div>
                                 @if($item->keterangan_kustom)
-                                    <div class="text-[11px] mt-0.5 text-indigo-500">{{ $item->keterangan_kustom }}</div>
+                                    <div class="text-[11px] mt-0.5 text-indigo-500 dark:text-indigo-400">{{ $item->keterangan_kustom }}</div>
                                 @endif
                             </td>
-                            <td class="px-3 py-3">
-                                <div class="text-slate-700">{{ $item->kodeRekening->nama ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $item->kodeRekening->kode ?? '' }} &middot; {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
+                            <td class="px-4 py-4">
+                                <div class="text-slate-700 dark:text-slate-200">{{ $item->kodeRekening->nama ?? '-' }}</div>
+                                <div class="text-[11px] text-slate-400 dark:text-slate-500">{{ $item->kodeRekening->kode ?? '' }} &middot; {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
                             </td>
-                            <td class="px-3 py-3 text-right text-slate-700">{{ number_format($item->volume, 2, ',', '.') }}</td>
-                            <td class="px-3 py-3 text-slate-500">{{ $item->satuan }}</td>
-                            <td class="px-3 py-3 text-right text-slate-700">
+                            <td class="px-4 py-4 text-right text-slate-700 dark:text-slate-200">{{ number_format($item->volume, 2, ',', '.') }}</td>
+                            <td class="px-4 py-4 text-slate-500 dark:text-slate-400">{{ $item->satuan }}</td>
+                            <td class="px-4 py-4 text-right text-slate-700 dark:text-slate-200">
                                 <div>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
                                 @if((float) $item->harga_satuan !== (float) $item->harga_satuan_arkas)
-                                    <div class="text-[10px] text-slate-400">ARKAS: Rp {{ number_format($item->harga_satuan_arkas, 0, ',', '.') }}</div>
+                                    <div class="text-[10px] text-slate-400 dark:text-slate-500">ARKAS: Rp {{ number_format($item->harga_satuan_arkas, 0, ',', '.') }}</div>
                                 @endif
                             </td>
-                            <td class="px-3 py-3 text-right text-slate-500">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                            <td class="px-3 py-3 text-right {{ (float) $item->koreksi < 0 ? 'text-red-600' : 'text-slate-600' }}">
+                            <td class="px-4 py-4 text-right text-slate-500 dark:text-slate-400">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="px-4 py-4 text-right {{ (float) $item->koreksi < 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300' }}">
                                 {{ (float) $item->koreksi != 0 ? 'Rp '.number_format($item->koreksi, 0, ',', '.') : '—' }}
                             </td>
-                            <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($item->jumlah_koreksi, 0, ',', '.') }}</td>
-                            <td class="px-3 py-3 text-center">
+                            <td class="px-4 py-4 text-right font-bold text-slate-800 dark:text-white">Rp {{ number_format($item->jumlah_koreksi, 0, ',', '.') }}</td>
+                            <td class="px-4 py-4 text-center">
                                 @if($item->kontrol === 'OK')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>OK
                                     </span>
                                 @else
-                                    <span title="Harga dianggarkan berbeda dari harga acuan ARKAS (selisih Rp {{ number_format($item->selisih_harga, 0, ',', '.') }})" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span title="Harga dianggarkan berbeda dari harga acuan ARKAS (selisih Rp {{ number_format($item->selisih_harga, 0, ',', '.') }})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">
                                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>SELISIH
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-3 py-3 text-slate-500 max-w-[200px]">
+                            <td class="px-4 py-4 text-slate-500 dark:text-slate-400 max-w-[200px]">
                                 <span class="text-xs">{{ $manyBulan }} bulan</span>
-                                <span class="text-[10px] text-slate-400 block leading-snug">{{ $manyBulan < 12 && $manyBulan > 0 ? $labelBulan : ($manyBulan === 12 ? 'Januari s.d. Desember' : '-') }}</span>
+                                <span class="text-[10px] text-slate-400 dark:text-slate-500 block leading-snug">{{ $manyBulan < 12 && $manyBulan > 0 ? $labelBulan : ($manyBulan === 12 ? 'Januari s.d. Desember' : '-') }}</span>
                             </td>
-                            <td class="px-3 py-3">
+                            <td class="px-4 py-4">
                                 <div class="flex items-center justify-center gap-1.5">
-                                    <button type="button" data-action="edit" data-id="{{ $item->id }}" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50">
+                                    <button type="button" data-action="edit" data-id="{{ $item->id }}" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/15">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </button>
-                                    <button type="button" data-action="delete" data-id="{{ $item->id }}" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50">
+                                    <button type="button" data-action="delete" data-id="{{ $item->id }}" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </div>
@@ -171,7 +171,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="13" class="px-3 py-12 text-center text-slate-400">
+                            <td colspan="13" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
                                 <div class="text-sm font-semibold">Belum ada rincian anggaran</div>
                                 <div class="text-xs mt-1">Klik tombol &ldquo;Sisip Uraian Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
                             </td>
@@ -179,13 +179,13 @@
                     @endforelse
                 </tbody>
                 @if($items->isNotEmpty())
-                <tfoot class="bg-slate-50 border-t border-slate-200 text-sm">
+                <tfoot class="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60 text-sm">
                     <tr>
-                        <td colspan="8" class="px-3 py-3 text-right font-bold text-slate-600">Total Keseluruhan</td>
-                        <td class="px-3 py-3 text-right font-bold {{ $items->sum('koreksi') < 0 ? 'text-red-600' : 'text-slate-700' }}">Rp {{ number_format($items->sum('koreksi'), 0, ',', '.') }}</td>
-                        <td class="px-3 py-3 text-right font-bold text-slate-800">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
+                        <td colspan="8" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan</td>
+                        <td class="px-4 py-4 text-right font-bold {{ $items->sum('koreksi') < 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200' }}">Rp {{ number_format($items->sum('koreksi'), 0, ',', '.') }}</td>
+                        <td class="px-4 py-4 text-right font-bold text-slate-800 dark:text-white">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
                         <td></td>
-                        <td colspan="2" class="px-3 py-3 text-[11px] text-slate-400">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</td>
+                        <td colspan="2" class="px-4 py-4 text-[11px] text-slate-400 dark:text-slate-500">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
                 @endif
@@ -193,15 +193,15 @@
         </div>
     </div>
 
-    <div id="rkas-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" style="background-color: rgba(15,23,42,.55); backdrop-filter: blur(2px);">
+    <div id="rkas-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" style="background-color: rgba(15,23,42,.6); backdrop-filter: blur(3px);">
         <div class="min-h-full flex items-center justify-center p-4" x-data="modalForm()">
-            <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh]">
-                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] ring-1 ring-slate-200 dark:ring-slate-700/60">
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700/60">
                     <div>
-                        <h3 class="text-base font-bold text-slate-800">Detail Anggaran Kegiatan</h3>
-                        <p class="text-[11px] text-slate-400">{{ $tahunAnggaran->sumber_dana }} Tahun {{ $tahunAnggaran->tahun }}</p>
+                        <h3 class="text-base font-extrabold text-slate-800 dark:text-white">Detail Anggaran Kegiatan</h3>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500">{{ $tahunAnggaran->sumber_dana }} Tahun {{ $tahunAnggaran->tahun }}</p>
                     </div>
-                    <button @click="close()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+                    <button @click="close()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -209,69 +209,69 @@
                 <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Kegiatan <span class="text-red-500">*</span></label>
+                            <label class="label">Kegiatan <span class="text-red-500">*</span></label>
                             <div class="relative" @click.outside="pickers.kegiatan.open = false">
                                 <input type="text" x-model="pickers.kegiatan.q" @input="debouncedSearch('kegiatan')" placeholder="Ketik untuk mencari kegiatan dari 8 SNP..." autocomplete="off"
                                     @focus="if (pickers.kegiatan.q) pickers.kegiatan.open = true"
-                                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <template x-if="pickers.kegiatan.open && pickers.kegiatan.loading"><div class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                    class="input">
+                                <template x-if="pickers.kegiatan.open && pickers.kegiatan.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.kegiatan.open && !pickers.kegiatan.loading">
-                                    <ul class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-auto divide-y divide-slate-100">
+                                    <ul class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.kegiatan.results" :key="r.id">
-                                            <li @click="selectKegiatan(r)" class="px-3 py-2 hover:bg-blue-50 cursor-pointer">
-                                                <div class="text-sm text-slate-700" x-text="r.text"></div>
-                                                <div class="text-[11px] text-slate-400" x-text="'Sub Program: ' + r.subtext"></div>
+                                            <li @click="selectKegiatan(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
+                                                <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
+                                                <div class="text-[11px] text-slate-400 dark:text-slate-500" x-text="'Sub Program: ' + r.subtext"></div>
                                             </li>
                                         </template>
-                                        <template x-if="pickers.kegiatan.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.kegiatan.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
                                     </ul>
                                 </template>
-                                <template x-if="pickers.kegiatan.label"><div class="mt-1 text-[11px] text-emerald-600" x-text="'Terpilih: ' + pickers.kegiatan.label"></div></template>
+                                <template x-if="pickers.kegiatan.label"><div class="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400" x-text="'Terpilih: ' + pickers.kegiatan.label"></div></template>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Kode Rekening Belanja <span class="text-red-500">*</span></label>
+                            <label class="label">Kode Rekening Belanja <span class="text-red-500">*</span></label>
                             <div class="relative" @click.outside="pickers.rekening.open = false">
                                 <input type="text" x-model="pickers.rekening.q" @input="debouncedSearch('rekening')" placeholder="Ketik untuk mencari kode rekening belanja..." autocomplete="off"
                                     @focus="if (pickers.rekening.q) pickers.rekening.open = true"
-                                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <template x-if="pickers.rekening.open && pickers.rekening.loading"><div class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                    class="input">
+                                <template x-if="pickers.rekening.open && pickers.rekening.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.rekening.open && !pickers.rekening.loading">
-                                    <ul class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-auto divide-y divide-slate-100">
+                                    <ul class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.rekening.results" :key="r.id">
-                                            <li @click="selectRekening(r)" class="px-3 py-2 hover:bg-blue-50 cursor-pointer">
-                                                <div class="text-sm text-slate-700" x-text="r.text"></div>
-                                                <div class="text-[11px] text-slate-400" x-text="r.subtext"></div>
+                                            <li @click="selectRekening(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
+                                                <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
+                                                <div class="text-[11px] text-slate-400 dark:text-slate-500" x-text="r.subtext"></div>
                                             </li>
                                         </template>
-                                        <template x-if="pickers.rekening.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.rekening.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
                                     </ul>
                                 </template>
-                                <template x-if="pickers.rekening.label"><div class="mt-1 text-[11px] text-emerald-600" x-text="'Terpilih: ' + pickers.rekening.label"></div></template>
+                                <template x-if="pickers.rekening.label"><div class="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400" x-text="'Terpilih: ' + pickers.rekening.label"></div></template>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 overflow-hidden">
-                        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-between">
+                    <div class="rounded-xl border border-slate-200 dark:border-slate-700/60 overflow-hidden">
+                        <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-700/40 border-b border-slate-200 dark:border-slate-700/60 text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center justify-between">
                             <span>Katalog Barang (pengisi cepat)</span>
-                            <span class="text-[10px] font-normal text-slate-400">Pilih untuk mengisi uraian, satuan &amp; harga acuan</span>
+                            <span class="text-[10px] font-normal text-slate-400 dark:text-slate-500">Pilih untuk mengisi uraian, satuan &amp; harga acuan</span>
                         </div>
                         <div class="p-3">
                             <div class="relative" @click.outside="pickers.barang.open = false">
                                 <input type="text" x-model="pickers.barang.q" @input="debouncedSearch('barang')" placeholder="Cari nama barang / kode barang di katalog..." autocomplete="off"
                                     @focus="if (pickers.barang.q) pickers.barang.open = true"
-                                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                    class="input">
+                                <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.barang.open && !pickers.barang.loading">
-                                    <ul class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-72 overflow-auto divide-y divide-slate-100">
+                                    <ul class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-72 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.barang.results" :key="r.id">
-                                            <li @click="selectBarang(r); fillFromCatalog(r)" class="px-3 py-2 hover:bg-blue-50 cursor-pointer">
-                                                <div class="text-sm text-slate-700" x-text="r.nama"></div>
-                                                <div class="text-[11px] text-slate-400" x-text="r.subtext"></div>
+                                            <li @click="selectBarang(r); fillFromCatalog(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
+                                                <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.nama"></div>
+                                                <div class="text-[11px] text-slate-400 dark:text-slate-500" x-text="r.subtext"></div>
                                             </li>
                                         </template>
-                                        <template x-if="pickers.barang.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.barang.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
                                     </ul>
                                 </template>
                             </div>
@@ -280,79 +280,79 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Uraian <span class="text-red-500">*</span></label>
-                            <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas, maksimal 500 karakter..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                            <label class="label">Uraian <span class="text-red-500">*</span></label>
+                            <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas, maksimal 500 karakter..." class="input resize-none"></textarea>
                             <div class="text-[10px] text-slate-400 text-right mt-0.5" x-text="form.uraian.length + ' / 500'"></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Keterangan Khusus / Peruntukan Anggaran</label>
-                            <textarea x-model="form.keterangan_kustom" maxlength="255" rows="2" placeholder="Contoh: Pemeliharaan Ruang Kelas 1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                            <label class="label">Keterangan Khusus / Peruntukan Anggaran</label>
+                            <textarea x-model="form.keterangan_kustom" maxlength="255" rows="2" placeholder="Contoh: Pemeliharaan Ruang Kelas 1" class="input resize-none"></textarea>
                             <div class="text-[10px] text-slate-400 mt-0.5">Ketikan bebas untuk membedakan peruntukan walau kode rekening sama.</div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Harga Satuan yang Dianggarkan <span class="text-red-500">*</span></label>
+                        <label class="label">Harga Satuan yang Dianggarkan <span class="text-red-500">*</span></label>
                         <div class="flex items-center gap-1">
                             <span class="text-sm text-slate-400">Rp</span>
                             <input type="text" inputmode="numeric" x-bind:value="form.harga_satuan.toLocaleString('id-ID')"
                                 @input="form.harga_satuan = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0"
-                                placeholder="0" class="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                placeholder="0" class="input !w-auto max-w-xs">
                         </div>
                         <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0 && form.harga_satuan !== form.harga_satuan_arkas">
-                            Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600">SELISIH</span> pada kolom KONTROL.
+                            Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600 dark:text-amber-400">SELISIH</span> pada kolom KONTROL.
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">KOREKSI (selisih rupiah, boleh negatif)</label>
+                        <label class="label">KOREKSI (selisih rupiah, boleh negatif)</label>
                         <div class="flex items-center gap-1">
                             <span class="text-sm text-slate-400">Rp</span>
                             <input type="text" inputmode="numeric" x-bind:value="form.koreksi.toLocaleString('id-ID')"
                                 @input="form.koreksi = Number(String($event.target.value).replace(/[^\d-]/g, '')) || 0"
-                                placeholder="0" class="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                placeholder="0" class="input !w-auto max-w-xs">
                         </div>
                         <div class="mt-1 text-[10px] text-slate-400">
-                            Jumlah terpakai = (&Sigma; Volume &times; Harga) + KOREKSI &mdash; &Sigma; Volume &times; Harga = <span class="font-semibold text-slate-600" x-text="'Rp ' + totalAll()"></span>
+                            Jumlah terpakai = (&Sigma; Volume &times; Harga) + KOREKSI &mdash; &Sigma; Volume &times; Harga = <span class="font-semibold text-slate-600 dark:text-slate-300" x-text="'Rp ' + totalAll()"></span>
                         </div>
                     </div>
 
                     <div>
                         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                            <span class="text-xs font-semibold text-slate-600">Dianggarkan untuk Bulan</span>
-                            <span class="text-[11px] text-slate-500">Kartu biru = Tahap I (Jan&ndash;Jun) &middot; hijau = Tahap II (Jul&ndash;Des)</span>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Dianggarkan untuk Bulan</span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-500">Kartu biru = Tahap I (Jan&ndash;Jun) &middot; hijau = Tahap II (Jul&ndash;Des)</span>
                         </div>
                         <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
                             <template x-for="b in months" :key="b.no">
-                                <div :class="b.no <= 6 ? 'border-blue-200' : 'border-emerald-200'" class="rounded-lg border bg-slate-50/50 p-2">
-                                    <div class="text-[10px] font-bold text-slate-500 mb-1" x-text="b.nama"></div>
-                                    <input type="number" x-model.number="alokasi[b.no].volume" min="0" step="any" placeholder="Vol" class="w-full rounded-md border border-slate-300 px-1.5 py-1 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                                    <input type="text" x-model="alokasi[b.no].satuan" placeholder="satuan" class="w-full rounded-md border border-slate-200 px-1.5 py-1 text-[10px] mt-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                                    <div class="text-[10px] text-slate-400 mt-1.5 text-right" x-text="subtotal(b.no)"></div>
+                                <div :class="b.no <= 6 ? 'border-blue-200 dark:border-blue-500/40' : 'border-emerald-200 dark:border-emerald-500/40'" class="rounded-xl border bg-slate-50/50 dark:bg-slate-700/30 p-2">
+                                    <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1" x-text="b.nama"></div>
+                                    <input type="number" x-model.number="alokasi[b.no].volume" min="0" step="any" placeholder="Vol" class="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-1.5 py-1 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="text" x-model="alokasi[b.no].satuan" placeholder="satuan" class="w-full rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-1.5 py-1 text-[10px] mt-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                    <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 text-right" x-text="subtotal(b.no)"></div>
                                 </div>
                             </template>
                         </div>
                         <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
-                            <div class="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2">
-                                <div class="text-[10px] font-semibold text-blue-500 uppercase">Subtotal Tahap I</div>
-                                <div class="text-sm font-bold text-blue-700" x-text="sumTahap(1)"></div>
+                            <div class="rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/30 px-3 py-2.5">
+                                <div class="text-[10px] font-semibold text-blue-500 dark:text-blue-400 uppercase">Subtotal Tahap I</div>
+                                <div class="text-sm font-bold text-blue-700 dark:text-blue-300" x-text="sumTahap(1)"></div>
                             </div>
-                            <div class="rounded-lg bg-emerald-50 border border-emerald-100 px-3 py-2">
-                                <div class="text-[10px] font-semibold text-emerald-600 uppercase">Subtotal Tahap II</div>
-                                <div class="text-sm font-bold text-emerald-700" x-text="sumTahap(2)"></div>
+                            <div class="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/30 px-3 py-2.5">
+                                <div class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase">Subtotal Tahap II</div>
+                                <div class="text-sm font-bold text-emerald-700 dark:text-emerald-300" x-text="sumTahap(2)"></div>
                             </div>
-                            <div class="rounded-lg bg-slate-800 border border-slate-900 px-3 py-2">
+                            <div class="rounded-xl bg-slate-800 dark:bg-slate-900 border border-slate-900 dark:border-slate-700 px-3 py-2.5">
                                 <div class="text-[10px] font-semibold text-slate-400 uppercase">Total Anggaran</div>
                                 <div class="text-sm font-bold text-white" x-text="totalAll()"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between pt-4 border-t border-slate-200 gap-3">
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700/60 gap-3">
                         <div class="text-[11px]" x-show="error" x-cloak style="color:#dc2626" x-text="error"></div>
                         <div class="flex items-center gap-2 ml-auto">
-                            <button @click="close()" class="px-5 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50">Tutup</button>
-                            <button @click="submit()" :disabled="saving" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold inline-flex items-center gap-2">
+                            <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">Tutup</button>
+                            <button @click="submit()" :disabled="saving" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold inline-flex items-center gap-2 shadow-md shadow-blue-600/20">
                                 <svg x-show="saving" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
                                 <span x-text="editingId ? 'Simpan Perubahan' : 'Simpan ke Anggaran'"></span>
                             </button>
