@@ -19,6 +19,10 @@
         <div>
             <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Review &amp; Monitoring Kepatuhan JUKNIS</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Permendikdasmen No. 8/2026 &mdash; referensi sebelum pengisian ARKAS resmi.</p>
+            <div class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Status Sekolah: {{ ucfirst($summary['status_sekolah'] ?? 'negeri') }} &middot; batas honor {{ $summary['honor']['batas_persen'] ?? 20 }}%
+            </div>
         </div>
         <a href="{{ route('dashboard.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">Kembali ke Dashboard</a>
     </div>

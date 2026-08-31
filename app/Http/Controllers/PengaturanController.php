@@ -25,6 +25,7 @@ class PengaturanController extends Controller
             'nip_kepala_sekolah' => 'nullable|string|max:50',
             'nama_bendahara' => 'nullable|string|max:150',
             'nip_bendahara' => 'nullable|string|max:50',
+            'status_sekolah' => 'required|in:negeri,swasta',
             'alamat' => 'nullable|string|max:255',
             'desa_kelurahan' => 'nullable|string|max:100',
             'kecamatan' => 'nullable|string|max:100',

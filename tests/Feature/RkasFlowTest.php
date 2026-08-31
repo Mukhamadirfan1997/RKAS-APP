@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\KategoriJuknis;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
+use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
@@ -122,6 +123,7 @@ class RkasFlowTest extends TestCase
         $this->post('/pengaturan/sekolah', [
             'nama_sekolah' => 'SD UJI COBA',
             'npsn' => '999999',
+            'status_sekolah' => 'negeri',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('pengaturan_sekolah', ['nama_sekolah' => 'SD UJI COBA']);
@@ -212,5 +214,31 @@ class RkasFlowTest extends TestCase
 
         // Hanya yang benar yang dihitung sarpras; bahan alat listrik persediaan TIDAK masuk
         $this->assertEquals(100000, (float) $summary['sarpras']['total']);
+    }
+
+    public function test_juknis_honor_batas_mengikuti_status_sekolah_negeri_swasta()
+    {
+        $ta = TahunAnggaran::where('tahun', 2026)->first();
+
+        // Negeri -> batas honor 20%
+        $sekolah = PengaturanSekolah::firstOrFail();
+        $sekolah->status_sekolah = 'negeri';
+        $sekolah->save();
+
+        $validatorNegeri = new JuknisValidator($ta);
+        $this->assertSame('negeri', $validatorNegeri->statusSekolah());
+        $this->assertEquals(20, (float) $validatorNegeri->honorBatasPersen());
+        $this->assertEquals(20, (float) $validatorNegeri->honor()['batas_persen']);
+
+        // Swasta -> batas honor 40%
+        $sekolah->status_sekolah = 'swasta';
+        $sekolah->save();
+
+        $validatorSwasta = new JuknisValidator($ta);
+        $this->assertSame('swasta', $validatorSwasta->statusSekolah());
+        $this->assertEquals(40, (float) $validatorSwasta->honorBatasPersen());
+        $this->assertEquals(40, (float) $validatorSwasta->honor()['batas_persen']);
+
+        $this->assertSame('swasta', $validatorSwasta->summary()['status_sekolah']);
     }
 }

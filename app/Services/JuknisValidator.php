@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\RkasItemBulan;
 use App\Models\TahunAnggaran;
@@ -20,9 +21,14 @@ class JuknisValidator
 
     protected float $tahap1Total = 0;
 
+    protected string $statusSekolah = 'negeri';
+
     public function __construct(?TahunAnggaran $tahun = null)
     {
         $tahun = $tahun ?? TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+
+        $this->statusSekolah = strtolower(PengaturanSekolah::value('status_sekolah') ?? 'negeri');
+        $this->statusSekolah = in_array($this->statusSekolah, ['negeri', 'swasta'], true) ? $this->statusSekolah : 'negeri';
 
         $this->paguTotal = (float) ($tahun->pagu_total ?? 0);
         $this->items = RkasItem::with(['program', 'kodeRekening', 'alokasiBulan'])
@@ -60,9 +66,24 @@ class JuknisValidator
         return $this->paguTotal > 0 ? round($value / $this->paguTotal * 100, 2) : 0;
     }
 
+    public function statusSekolah(): string
+    {
+        return $this->statusSekolah;
+    }
+
+    public function honorBatasPersen(): float
+    {
+        // Negeri maksimal 20%, swasta maksimal 40% (Permendikdasmen No. 8/2026).
+        if ($this->statusSekolah === 'swasta') {
+            return (float) (config('juknis.honor.batas_persen_swasta') ?? config('juknis.honor.batas_persen'));
+        }
+
+        return (float) config('juknis.honor.batas_persen');
+    }
+
     public function honor(): array
     {
-        $batas = (float) config('juknis.honor.batas_persen');
+        $batas = $this->honorBatasPersen();
         $pct = $this->pctOfPagu($this->honorTotal);
 
         return [
@@ -127,6 +148,7 @@ class JuknisValidator
         return [
             'pagu_total' => $this->paguTotal,
             'sudah_dianggarkan' => (float) collect($this->items)->sum('jumlah'),
+            'status_sekolah' => $this->statusSekolah,
             'honor' => $this->honor(),
             'buku' => $this->buku(),
             'sarpras' => $this->sarpras(),

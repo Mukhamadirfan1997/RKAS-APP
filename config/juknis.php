@@ -14,9 +14,13 @@ return [
     | keywords     : kata kunci uraian tambahan (diproses AND dengan program).
     |
     | Prioritas klasifikasi per item: honor > buku > sarpras (eksklusif).
+    |
+    | Batas honor bervariasi menurut status sekolah: negeri 20% / swasta 40%.
+    | Semua batas dihitung dari TOTAL pagu satu tahun anggaran.
     */
     'honor' => [
         'batas_persen' => 20,
+        'batas_persen_swasta' => 40,
         'kode_program' => ['07.12.01', '07.12.02', '07.12.03', '07.12.04'],
         'jenis_belanja' => ['Belanja Jasa'],
         'rekening' => ['5.1.02.02.01'],

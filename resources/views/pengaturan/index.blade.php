@@ -62,6 +62,14 @@
                     </div>
                 </div>
                 <div>
+                    <label class="label">Status Sekolah <span class="text-red-500">*</span></label>
+                    <select name="status_sekolah" class="input">
+                        <option value="negeri" {{ old('status_sekolah', $sekolah->status_sekolah ?? 'negeri') === 'negeri' ? 'selected' : '' }}>Negeri</option>
+                        <option value="swasta" {{ old('status_sekolah', $sekolah->status_sekolah ?? 'negeri') === 'swasta' ? 'selected' : '' }}>Swasta</option>
+                    </select>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">Penentu batas maksimal honor JUKNIS: <b class="text-slate-600 dark:text-slate-300">Negeri 20%</b> / <b class="text-slate-600 dark:text-slate-300">Swasta 40%</b> dari total pagu.</p>
+                </div>
+                <div>
                     <label class="label">Alamat</label>
                     <input type="text" name="alamat" value="{{ old('alamat', $sekolah->alamat) }}" class="input">
                 </div>

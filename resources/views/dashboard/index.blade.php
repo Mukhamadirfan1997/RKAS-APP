@@ -33,6 +33,7 @@
             <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Dashboard RKAS</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {{ $sekolah->nama_sekolah }} (NPSN {{ $sekolah->npsn }}) &middot; {{ $tahunAnggaran->sumber_dana }} {{ $tahunAnggaran->tahun ?? 2026 }}
+                <span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">Status: {{ ucfirst($summary['status_sekolah'] ?? 'negeri') }} &middot; Honor maks {{ $summary['honor']['batas_persen'] ?? 20 }}%</span>
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
