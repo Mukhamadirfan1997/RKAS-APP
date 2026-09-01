@@ -26,14 +26,21 @@ class DashboardController extends Controller
                 ->where('bulan', $b)->sum('jumlah');
         }
 
-        // Proporsi jenis belanja (BARJAS / MODAL / HONOR)
-        $jenisBelanja = MasterKodeRekening::all()->pluck('kategori_belanja')->unique();
+        // Proporsi 9 Jenis Belanja resmi ARKAS + Tanpa Klasifikasi
+        $jenisBelanjas = \App\Models\JenisBelanja::orderBy('nama')->get();
         $proporsiJenis = [];
-        foreach ($jenisBelanja as $jenis) {
-            $proporsiJenis[$jenis] = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
-                ->whereHas('kodeRekening', fn ($q) => $q->where('kategori_belanja', $jenis))
+        foreach ($jenisBelanjas as $jb) {
+            $proporsiJenis[$jb->nama] = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
+                ->whereHas('kodeRekening', fn ($q) => $q->where('jenis_belanja_id', $jb->id))
                 ->sum('jumlah');
         }
+        // Hapus yang 0 agar grafik tidak penuh kategori kosong, tapi tetap hitung Tanpa Klasifikasi bila ada
+        $proporsiJenis = array_filter($proporsiJenis, fn($v) => $v > 0);
+        $tanpa = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
+            ->whereHas('kodeRekening', fn ($q) => $q->whereNull('jenis_belanja_id'))
+            ->orWhereDoesntHave('kodeRekening')
+            ->sum('jumlah');
+        if ($tanpa > 0) $proporsiJenis['Tanpa Klasifikasi'] = $tanpa;
 
         // Total item & capaian
         $totalItem = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->count();

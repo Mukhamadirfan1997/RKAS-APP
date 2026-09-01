@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Masuk - RKAS 2026</title>
+    <title>Masuk - KARSA 2026</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -13,9 +13,9 @@
 <body class="h-full flex items-center justify-center bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 p-4">
     <div class="w-full max-w-sm">
         <div class="text-center mb-6">
-            <div class="w-14 h-14 mx-auto rounded-2xl bg-white/95 flex items-center justify-center text-blue-700 font-extrabold text-2xl shadow-xl">A</div>
-            <h1 class="text-white font-bold text-xl mt-4">ARKAS 4.2.18</h1>
-            <p class="text-blue-100 text-xs mt-1">Rencana Kegiatan dan Anggaran Sekolah 2026</p>
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-white/95 flex items-center justify-center text-blue-700 font-extrabold text-2xl shadow-xl">K</div>
+            <h1 class="text-white font-bold text-xl mt-4">KARSA 2026</h1>
+            <p class="text-blue-100 text-xs mt-1">Kertas Anggaran Sekolah — Rujukan sebelum ARKAS</p>
         </div>
 
         <div class="bg-white rounded-2xl shadow-2xl p-6">

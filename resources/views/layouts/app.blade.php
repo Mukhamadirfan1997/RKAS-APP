@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'ARKAS 4.2.18 - Rencana Kegiatan Anggaran Sekolah' }}</title>
+    <title>{{ $title ?? 'KARSA 2026 - Kertas Anggaran Sekolah' }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,10 +60,10 @@
             <!-- Brand -->
             <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-200 dark:border-slate-700/60">
                 <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-extrabold text-sm shadow-md shadow-blue-600/20 shrink-0">
-                    R
+                    K
                 </div>
                 <div x-show="!collapsed" x-cloak class="min-w-0">
-                    <div class="font-extrabold text-slate-800 dark:text-white leading-tight truncate">RKAS 2026</div>
+                    <div class="font-extrabold text-slate-800 dark:text-white leading-tight truncate">KARSA 2026</div>
                     <div class="text-[10px] font-medium text-slate-400 dark:text-slate-400 truncate">{{ $sekolah->nama_sekolah ?? 'SD NEGERI TOYANING 1' }}</div>
                 </div>
             </div>
@@ -131,6 +131,15 @@
                         <svg x-show="!dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                         <svg x-show="dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     </button>
+                    @auth
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-red-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-red-400" title="Keluar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            <span class="hidden sm:inline">Keluar</span>
+                        </button>
+                    </form>
+                    @endauth
                 </div>
             </header>
 

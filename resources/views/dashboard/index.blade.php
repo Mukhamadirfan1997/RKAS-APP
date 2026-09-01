@@ -76,23 +76,33 @@
     </div>
 
     <!-- Statistik utama + Skor kesiapan -->
+    @php $sisa = $summary['pagu_total'] - $summary['sudah_dianggarkan']; $sudahPct = $summary['pagu_total'] > 0 ? round($summary['sudah_dianggarkan'] / $summary['pagu_total'] * 100, 1) : 0; @endphp
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div class="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 text-white p-5 shadow-md shadow-blue-600/20">
-                <div class="text-[11px] font-medium text-blue-100 uppercase tracking-wide">Pagu Total</div>
-                <div class="text-lg lg:text-2xl font-extrabold mt-1">Rp {{ number_format($summary['pagu_total'], 0, ',', '.') }}</div>
-            </div>
-            <div class="rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-5 shadow-md shadow-indigo-600/20">
-                <div class="text-[11px] font-medium text-indigo-100 uppercase tracking-wide">Sudah Dianggarkan</div>
-                <div class="text-lg lg:text-2xl font-extrabold mt-1">Rp {{ number_format($summary['sudah_dianggarkan'], 0, ',', '.') }}</div>
-                <div class="text-[11px] text-indigo-200 mt-0.5">{{ $totalItem }} item belanja</div>
-            </div>
-            <div class="col-span-2 sm:col-span-1">
-                @php $sisa = $summary['pagu_total'] - $summary['sudah_dianggarkan']; @endphp
-                <div class="rounded-2xl bg-gradient-to-br {{ $sisa >= 0 ? 'from-emerald-600 to-emerald-700' : 'from-red-600 to-red-700' }} text-white p-5 shadow-md {{ $sisa >= 0 ? 'shadow-emerald-600/20' : 'shadow-red-600/20' }}">
-                    <div class="text-[11px] font-medium text-white/80 uppercase tracking-wide">Sisa Pagu</div>
-                    <div class="text-lg lg:text-2xl font-extrabold mt-1">Rp {{ number_format(abs($sisa), 0, ',', '.') }}</div>
+        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="card p-5 flex flex-col">
+                <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center text-blue-600 dark:text-blue-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v3m2 4v1a3 3 0 003 3h6a3 3 0 003-3v-1m-6-4l-3-3m0 0l-3 3m3-3v12"/></svg></span>
+                    Pagu Total
                 </div>
+                <div class="text-xl font-extrabold text-slate-800 dark:text-white mt-3">Rp {{ number_format($summary['pagu_total'], 0, ',', '.') }}</div>
+                <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Tahap I Rp {{ number_format($tahunAnggaran->pagu_tahap1 ?? 0, 0, ',', '.') }} · Tahap II Rp {{ number_format($tahunAnggaran->pagu_tahap2 ?? 0, 0, ',', '.') }}</div>
+            </div>
+            <div class="card p-5 flex flex-col">
+                <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/15 flex items-center justify-center text-indigo-600 dark:text-indigo-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></span>
+                    Sudah Dianggarkan
+                </div>
+                <div class="text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-3">Rp {{ number_format($summary['sudah_dianggarkan'], 0, ',', '.') }}</div>
+                <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ $totalItem }} item · {{ $sudahPct }}% dari pagu</div>
+                <div class="mt-3 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 overflow-hidden"><div class="h-full bg-indigo-500" style="width: {{ min($sudahPct,100) }}%"></div></div>
+            </div>
+            <div class="card p-5 flex flex-col {{ $sisa < 0 ? 'ring-2 ring-red-200 dark:ring-red-500/30' : ($sisa === 0 ? 'ring-2 ring-emerald-200 dark:ring-emerald-500/30' : '') }}">
+                <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide {{ $sisa < 0 ? 'text-red-600 dark:text-red-400' : ($sisa === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400') }}">
+                    <span class="w-8 h-8 rounded-lg {{ $sisa < 0 ? 'bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400' : ($sisa === 0 ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400') }} flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg></span>
+                    Sisa Pagu
+                </div>
+                <div class="text-xl font-extrabold mt-3 {{ $sisa < 0 ? 'text-red-600 dark:text-red-400' : ($sisa === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600 dark:text-emerald-400') }}">Rp {{ number_format(abs($sisa), 0, ',', '.') }}</div>
+                <div class="text-[11px] mt-1 {{ $sisa < 0 ? 'text-red-500' : 'text-slate-400 dark:text-slate-500' }}">{{ $sisa < 0 ? 'Melebihi pagu — kurangi anggaran' : ($sisa === 0 ? 'Pas — siap untuk pengesahan ✓' : 'Belum dianggarkan — harus Rp 0 sebelum pengesahan') }}</div>
             </div>
         </div>
 
@@ -153,26 +163,27 @@
 
         <div class="card p-6">
             <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Proporsi Jenis Belanja</h3>
-            <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-5">BARJAS / MODAL / HONOR terhadap total belanja.</p>
-            <div class="space-y-5">
-                @foreach($proporsiJenis as $jenis => $nominal)
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-5">9 Jenis resmi ARKAS terhadap total belanja.</p>
+            <div class="space-y-4">
+                @forelse($proporsiJenis as $jenis => $nominal)
                     @php
                         $pct = $totalBelanjaJenis > 0 ? round($nominal / $totalBelanjaJenis * 100) : 0;
-                        $colors = ['BARJAS' => 'bg-blue-500', 'MODAL' => 'bg-indigo-500', 'HONOR' => 'bg-rose-500'];
+                        $palette = ['bg-blue-500','bg-indigo-500','bg-violet-500','bg-emerald-500','bg-amber-500','bg-rose-500','bg-cyan-500','bg-orange-500','bg-slate-500','bg-red-500'];
+                        $idx = abs(crc32($jenis)) % count($palette);
+                        $color = $palette[$idx];
                     @endphp
                     <div>
                         <div class="flex items-center justify-between text-sm mb-1.5">
-                            <span class="font-semibold text-slate-600 dark:text-slate-300">{{ $jenis }}</span>
-                            <span class="text-slate-400 dark:text-slate-500">Rp {{ number_format($nominal, 0, ',', '.') }} ({{ $pct }}%)</span>
+                            <span class="font-semibold text-slate-600 dark:text-slate-300 text-xs leading-tight">{{ $jenis }}</span>
+                            <span class="text-slate-400 dark:text-slate-500 text-xs whitespace-nowrap ml-2">Rp {{ number_format($nominal, 0, ',', '.') }} ({{ $pct }}%)</span>
                         </div>
-                        <div class="h-3 rounded-full bg-slate-100 dark:bg-slate-700/60 overflow-hidden">
-                            <div class="h-full rounded-full {{ $colors[$jenis] ?? 'bg-slate-400' }} transition-all" style="width: {{ min($nominal / $maxJenis * 100, 100) }}%"></div>
+                        <div class="h-2.5 rounded-full bg-slate-100 dark:bg-slate-700/60 overflow-hidden">
+                            <div class="h-full rounded-full {{ $color }} transition-all" style="width: {{ min($nominal / $maxJenis * 100, 100) }}%"></div>
                         </div>
                     </div>
-                @endforeach
-                @if(empty($proporsiJenis))
+                @empty
                     <div class="text-xs text-slate-400 dark:text-slate-500 text-center py-6">Belum ada data belanja.</div>
-                @endif
+                @endforelse
             </div>
         </div>
     </div>

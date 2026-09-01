@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "RKAS 2026",
+  "productName": "KARSA 2026",
   "version": "0.1.0",
-  "identifier": "id.smartrkas.rkas2026",
+  "identifier": "id.karsa.rkas2026",
   "build": {
     "frontendDist": "../public",
     "devUrl": "http://127.0.0.1:9200",

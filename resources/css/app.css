@@ -124,3 +124,14 @@ html.dark body {
 .dark .label {
     @apply text-slate-300;
 }
+
+/* Aksesibilitas — kontras teks sekunder di tema terang */
+html:not(.dark) .text-slate-400 {
+    color: rgb(51 65 85); /* slate-700, kontras 7:1 di putih */
+}
+html:not(.dark) .text-slate-500 {
+    color: rgb(71 85 105); /* slate-600 */
+}
+html:not(.dark) .placeholder\:text-slate-400::placeholder {
+    color: rgb(100 116 139); /* slate-500 untuk placeholder tetap terbaca */
+}

@@ -3,7 +3,7 @@
 return [
     /*
     | Pemetaan komponen kepatuhan JUKNIS (Permendikdasmen No. 8/2026).
-    | Presisi ala ARKAS 4.2: satu pos belanja masuk ke sebuah komponen HANYA bila
+    | Presisi KARSA: satu pos belanja masuk ke sebuah komponen HANYA bila
     | kombinasi kode program (kegiatan) DAN rekening belanja keduanya terpetakan
     | ke komponen tersebut. Kombinasi (AND), bukan salah-satu (OR), agar tidak
     | salah klasifikasi dan tidak dihitung ganda.

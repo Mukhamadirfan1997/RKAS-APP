@@ -256,7 +256,22 @@
                     <button type="button" @click="clearSisip()" class="shrink-0 text-[11px] font-semibold underline hover:no-underline">Kosongkan</button>
                 </div>
 
+                <!-- Step indicator -->
+                <div class="mx-6 mt-4 flex items-center gap-3 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span :class="step===1 ? 'bg-blue-600 text-white' : 'bg-emerald-500 text-white'" class="w-7 h-7 rounded-full flex items-center justify-center font-bold">1</span>
+                        <span :class="step===1 ? 'text-slate-800 dark:text-white font-bold' : 'text-emerald-600 dark:text-emerald-400 font-semibold'">Pilih Kegiatan & Rekening</span>
+                    </div>
+                    <div class="flex-1 h-0.5" :class="step===2 ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'"></div>
+                    <div class="flex items-center gap-2">
+                        <span :class="step===2 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'" class="w-7 h-7 rounded-full flex items-center justify-center font-bold">2</span>
+                        <span :class="step===2 ? 'text-slate-800 dark:text-white font-bold' : 'text-slate-400'">Detail Uraian & Alokasi</span>
+                    </div>
+                </div>
+
                 <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+                    <!-- STEP 1 -->
+                    <div x-show="step===1" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="label">Kegiatan <span class="text-red-500">*</span></label>
@@ -301,7 +316,9 @@
                             </div>
                         </div>
                     </div>
-
+                    </div>
+                    <!-- STEP 2 -->
+                    <div x-show="step===2" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="label">Uraian <span class="text-red-500">*</span></label>
@@ -428,14 +445,23 @@
                         </div>
                     </div>
 
+                    </div>
                     <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700/60 gap-3">
                         <div class="text-[11px]" x-show="error" x-cloak style="color:#dc2626" x-text="error"></div>
                         <div class="flex items-center gap-2 ml-auto">
                             <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">Tutup</button>
-                            <button @click="submit()" :disabled="saving" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold inline-flex items-center gap-2 shadow-md shadow-blue-600/20">
-                                <svg x-show="saving" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-                                <span x-text="editingId ? 'Simpan Perubahan' : 'Simpan ke Anggaran'"></span>
-                            </button>
+                            <template x-if="step===1">
+                                <button @click="nextStep()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20">Lanjut ke Detail →</button>
+                            </template>
+                            <template x-if="step===2">
+                                <div class="flex items-center gap-2">
+                                    <button @click="prevStep()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">← Kembali</button>
+                                    <button @click="submit()" :disabled="saving" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold inline-flex items-center gap-2 shadow-md shadow-blue-600/20">
+                                        <svg x-show="saving" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                                        <span x-text="editingId ? 'Simpan Perubahan' : 'Simpan ke Anggaran'"></span>
+                                    </button>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -468,6 +494,7 @@ function modalForm() {
         saving: false,
         error: '',
         mode: 'new',
+        step: 1,
         sisipContext: '',
         months: BULAN_KE.map(m => ({ no: m, nama: NAMA_BULAN[m] })),
         form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null },
@@ -479,11 +506,19 @@ function modalForm() {
             this.editingId = null;
             this.error = '';
             this.mode = 'new';
+            this.step = 1;
             this.sisipContext = '';
             this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null };
             this.alokasi = makeAlokasi();
             this.pickers = { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() };
         },
+        nextStep(){
+            this.error='';
+            if(!this.pickers.kegiatan.value){ this.error='Silakan pilih Kegiatan terlebih dahulu.'; return; }
+            if(!this.pickers.rekening.value){ this.error='Silakan pilih Kode Rekening terlebih dahulu.'; return; }
+            this.step=2;
+        },
+        prevStep(){ this.error=''; this.step=1; },
         clearSisip() {
             this.mode = 'new';
             this.sisipContext = '';
