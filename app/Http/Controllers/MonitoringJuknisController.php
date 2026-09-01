@@ -20,6 +20,10 @@ class MonitoringJuknisController extends Controller
         // Kategori JUKNIS konfigurasi pengguna
         $kategoriList = KategoriJuknis::with('rekenings')->get();
 
+        // Semua rekening untuk checklist centang (group by Jenis Belanja)
+        $allRekenings = \App\Models\MasterKodeRekening::with('jenisBelanja')->orderBy('kode')->get();
+        $rekeningByJenis = $allRekenings->groupBy(fn($r) => $r->jenisBelanja->nama ?? 'Tanpa Klasifikasi');
+
         // Daftar item yang belum termapping ke kategori JUKNIS
         $mappedRekeningIds = KodeRekeningKategoriJuknis::pluck('master_kode_rekening_id');
         $unmapped = RkasItem::with(['program', 'kodeRekening'])
@@ -36,6 +40,8 @@ class MonitoringJuknisController extends Controller
             'tahunAnggaran',
             'summary',
             'kategoriList',
+            'allRekenings',
+            'rekeningByJenis',
             'unmapped',
             'filter'
         ));

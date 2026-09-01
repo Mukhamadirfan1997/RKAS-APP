@@ -24,6 +24,7 @@ class MasterDataController extends Controller
     public function program(Request $request)
     {
         $q = trim($request->input('q', ''));
+        $snp = trim($request->input('snp', ''));
 
         $query = MasterProgram::query();
         if ($q !== '') {
@@ -34,10 +35,14 @@ class MasterDataController extends Controller
                     ->orWhere('sub_program', 'like', "%{$q}%");
             });
         }
+        if ($snp !== '') {
+            $query->where('program', $snp);
+        }
 
-        $items = $query->orderBy('kode')->get();
+        $items = $query->orderBy('kode')->paginate(20)->withQueryString();
+        $snpList = MasterProgram::select('program')->distinct()->whereNotNull('program')->where('program', '!=', '')->orderBy('program')->pluck('program');
 
-        return view('master.program', compact('items', 'q'));
+        return view('master.program', compact('items', 'q', 'snp', 'snpList'));
     }
 
     public function storeProgram(Request $request)
@@ -80,6 +85,7 @@ class MasterDataController extends Controller
     public function rekening(Request $request)
     {
         $q = trim($request->input('q', ''));
+        $jenis = $request->input('jenis', '');
 
         $query = MasterKodeRekening::query()->with('jenisBelanja');
         if ($q !== '') {
@@ -89,12 +95,19 @@ class MasterDataController extends Controller
                     ->orWhereHas('jenisBelanja', fn ($jb) => $jb->where('nama', 'like', "%{$q}%"));
             });
         }
+        if ($jenis !== '') {
+            if ($jenis === '__null') {
+                $query->whereNull('jenis_belanja_id');
+            } else {
+                $query->where('jenis_belanja_id', $jenis);
+            }
+        }
 
-        $items = $query->orderBy('kode')->get();
+        $items = $query->orderBy('kode')->paginate(30)->withQueryString();
 
         $jenisBelanjas = JenisBelanja::orderBy('nama')->get();
 
-        return view('master.rekening', compact('items', 'q', 'jenisBelanjas'));
+        return view('master.rekening', compact('items', 'q', 'jenis', 'jenisBelanjas'));
     }
 
     public function storeRekening(Request $request)
@@ -137,18 +150,24 @@ class MasterDataController extends Controller
     public function barang(Request $request)
     {
         $q = trim($request->input('q', ''));
+        $kategori = trim($request->input('kategori', ''));
 
         $query = KodeBarang::query();
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "%{$q}%");
+                    ->orWhere('nama', 'like', "%{$q}%")
+                    ->orWhere('kode_rekening', 'like', "%{$q}%");
             });
+        }
+        if ($kategori !== '') {
+            $query->where('kategori', $kategori);
         }
 
         $items = $query->orderBy('kode')->paginate(50)->withQueryString();
+        $kategoriList = KodeBarang::select('kategori')->distinct()->whereNotNull('kategori')->where('kategori', '!=', '')->orderBy('kategori')->pluck('kategori');
 
-        return view('master.barang', compact('items', 'q'));
+        return view('master.barang', compact('items', 'q', 'kategori', 'kategoriList'));
     }
 
     public function storeBarang(Request $request)

@@ -21,6 +21,66 @@ html.dark body {
     color-scheme: dark;
 }
 
+/* Hide Alpine.js elements before initialization */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Column header help tooltip (KOREKSI / KONTROL) */
+.th-help {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: help;
+}
+.th-help .help-icon {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    color: #94a3b8;
+}
+.th-help .help-icon:hover {
+    color: #64748b;
+}
+.th-help .tooltip {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    width: 250px;
+    z-index: 60;
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11px;
+    line-height: 1.55;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    text-align: left;
+    white-space: normal;
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+.th-help .tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: 14px;
+    border: 6px solid transparent;
+    border-bottom-color: #0f172a;
+}
+.th-help:hover .tooltip,
+.th-help:focus-visible .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Custom scrollbar (premium, subtle) */
 ::-webkit-scrollbar {
     width: 8px;

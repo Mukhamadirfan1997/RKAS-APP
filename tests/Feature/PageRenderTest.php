@@ -52,4 +52,25 @@ class PageRenderTest extends TestCase
         $response->assertRedirect('/');
         $this->assertAuthenticated();
     }
+
+    public function test_rkas_worksheet_grouped_by_kegiatan()
+    {
+        $user = User::first();
+        $this->actingAs($user);
+
+        $response = $this->get('/rkas');
+        $response->assertStatus(200);
+        $response->assertViewHas('kegiatanGroups');
+
+        $groups = $response->viewData('kegiatanGroups');
+        $this->assertTrue($groups->isNotEmpty(), 'Kertas kerja harus punya minimal 1 kelompok kegiatan.');
+
+        foreach ($groups as $g) {
+            $this->assertArrayHasKey('kode', $g);
+            $this->assertArrayHasKey('nama', $g);
+            $this->assertArrayHasKey('items', $g);
+            $this->assertArrayHasKey('total_sudah', $g);
+            $this->assertIsNumeric($g['total_sudah']);
+        }
+    }
 }

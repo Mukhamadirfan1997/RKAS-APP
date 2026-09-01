@@ -53,7 +53,7 @@ class RkasSearchController extends Controller
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
                     ->orWhere('nama', 'like', "%{$q}%")
-                    ->orWhereHas('jenisBelanja', fn ($jb) => $jb->where('nama', 'like', "%{$q}%"));
+                    ->orWhereHas('jenisBelanja', fn($jb) => $jb->where('nama', 'like', "%{$q}%"));
             });
         }
 
@@ -64,7 +64,7 @@ class RkasSearchController extends Controller
                 'nama' => $item->nama,
                 'kategori' => $item->jenisBelanja->nama ?? $item->kategori_belanja,
                 'text' => "[{$item->kode}] {$item->nama}",
-                'subtext' => 'Jenis Belanja: '.($item->jenisBelanja->nama ?? '-'),
+                'subtext' => 'Jenis Belanja: ' . ($item->jenisBelanja->nama ?? '-'),
             ];
         });
 
@@ -87,14 +87,21 @@ class RkasSearchController extends Controller
         }
 
         $results = $query->limit(30)->get()->map(function ($item) {
+            $sshInfo = '';
+            if ((float) $item->harga_min > 0 || (float) $item->harga_max > 0) {
+                $sshInfo = ' | SSH: Rp ' . number_format((float) $item->harga_min, 0, ',', '.') . ' - Rp ' . number_format((float) $item->harga_max, 0, ',', '.');
+            }
+
             return [
                 'id' => $item->id,
                 'kode' => $item->kode,
                 'nama' => $item->nama,
                 'satuan' => $item->satuan_default ?? 'satuan',
                 'harga' => (float) $item->harga_acuan,
+                'harga_min' => (float) ($item->harga_min ?? 0),
+                'harga_max' => (float) ($item->harga_max ?? 0),
                 'text' => $item->nama,
-                'subtext' => 'Satuan: '.($item->satuan_default ?? '-').' | Harga Acuan: Rp '.number_format($item->harga_acuan, 0, ',', '.'),
+                'subtext' => 'Satuan: ' . ($item->satuan_default ?? '-') . ' | Acuan: Rp ' . number_format((float) $item->harga_acuan, 0, ',', '.') . $sshInfo,
             ];
         });
 

@@ -39,17 +39,52 @@ class RkasController extends Controller
 
         $items = $query->get();
 
+        // Attach monthly volume and amount if specific month is selected
+        if ($selectedBulan > 0) {
+            $items->each(function ($item) use ($selectedBulan) {
+                $bulanItem = $item->alokasiBulan->firstWhere('bulan', $selectedBulan);
+                $item->volume_bulan = $bulanItem ? (float) $bulanItem->volume : 0;
+                $item->jumlah_bulan = $bulanItem ? (float) $bulanItem->jumlah : 0;
+            });
+        }
+
         // Calculate total summary
         $allItems = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->with('alokasiBulan')->get();
         $totalSudahDianggarkan = $allItems->sum('jumlah');
         $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $totalSudahDianggarkan;
+        $totalBulanTerpilih = $selectedBulan > 0
+            ? $allItems->sum(fn($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
+            : $totalSudahDianggarkan;
+
+        // Group items per Kegiatan (ARKAS Kertas Kerja structure) - Urut otomatis berdasarkan kode SNP
+        $kegiatanGroups = $items->groupBy('master_program_id')->map(function ($group) use ($selectedBulan) {
+            $prog = $group->first()->program;
+            $total1Tahun = $group->sum(fn($i) => $i->jumlah_koreksi);
+            $totalBulan = $selectedBulan > 0
+                ? $group->sum(fn($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
+                : $total1Tahun;
+
+            return [
+                'id' => $group->first()->master_program_id,
+                'kode' => $prog->kode ?? '-',
+                'nama' => $prog->nama ?? 'Kegiatan',
+                'sub_program' => $prog->sub_program ?? '',
+                'items' => $group,
+                'jumlah_item' => $group->count(),
+                'total_sudah' => $total1Tahun,
+                'total_bulan' => $totalBulan,
+                'bulan_aktif' => $group->flatMap(fn($i) => $i->alokasiBulan->where('volume', '>', 0)->pluck('bulan'))->unique()->sort()->values(),
+            ];
+        })->sortBy('kode', SORT_NATURAL)->values();
 
         return view('rkas.index', compact(
             'sekolah',
             'tahunAnggaran',
             'selectedBulan',
             'items',
+            'kegiatanGroups',
             'totalSudahDianggarkan',
+            'totalBulanTerpilih',
             'sisaPagu'
         ));
     }
@@ -83,6 +118,8 @@ class RkasController extends Controller
             'satuan' => $item->satuan,
             'harga_satuan' => (float) $item->harga_satuan,
             'harga_satuan_arkas' => (float) $item->harga_satuan_arkas,
+            'harga_min' => (float) ($item->barang->harga_min ?? 0),
+            'harga_max' => (float) ($item->barang->harga_max ?? 0),
             'koreksi' => (float) $item->koreksi,
             'jumlah' => (float) $item->jumlah,
             'alokasi' => $alokasiMap,
@@ -285,9 +322,9 @@ class RkasController extends Controller
             ->orderBy('no_urut')
             ->get();
 
-        $totalTahap1 = RkasItemBulan::whereHas('item', fn ($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
+        $totalTahap1 = RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
             ->whereBetween('bulan', [1, 6])->sum('jumlah');
-        $totalTahap2 = RkasItemBulan::whereHas('item', fn ($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
+        $totalTahap2 = RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
             ->whereBetween('bulan', [7, 12])->sum('jumlah');
 
         $pdf = Pdf::loadView('rkas.pdf', compact(
@@ -298,7 +335,7 @@ class RkasController extends Controller
             'totalTahap2'
         ))->setPaper('a4', 'landscape');
 
-        return $pdf->download('kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.pdf');
+        return $pdf->download('kertas-kerja-rkas-' . ($tahunAnggaran->tahun ?? 2026) . '.pdf');
     }
 
     /**
@@ -316,7 +353,7 @@ class RkasController extends Controller
 
         return Excel::download(
             new RkasKertasKerjaExport($sekolah, $tahunAnggaran, $items),
-            'kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.xlsx'
+            'kertas-kerja-rkas-' . ($tahunAnggaran->tahun ?? 2026) . '.xlsx'
         );
     }
 }
