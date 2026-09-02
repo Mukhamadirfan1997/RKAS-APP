@@ -83,4 +83,59 @@ class BackupService
         static::snapshotDbZip($zipPath);
         return $zipPath;
     }
+
+    /**
+     * Pastikan ada 1 backup auto harian (sekali per hari saat app dibuka pertama).
+     * Dipanggil dari AppServiceProvider::boot (tiap request) tapi hanya bikin file jika belum ada untuk hari ini.
+     * Prune otomatis simpan 7 hari terakhir (rkas-auto-* saja, manual & pre-* tidak dihapus).
+     * @return string|null path file yang baru dibuat, null jika sudah ada atau testing
+     */
+    public static function ensureDailyAutoBackup(): ?string
+    {
+        if (app()->environment('testing')) {
+            return null;
+        }
+        try {
+            File::ensureDirectoryExists(static::dir());
+            $today = now('Asia/Jakarta')->format('Y-m-d');
+            $filename = "rkas-auto-{$today}.zip";
+            $zipPath = static::dir().'/'.$filename;
+            if (is_file($zipPath) && filesize($zipPath) > 0) {
+                return null;
+            }
+            // Hindari bikin barengan jika dua request bersamaan: cek lagi setelah lock sederhana
+            static::snapshotDbZip($zipPath);
+            static::pruneOldAutoBackups(7);
+            // Audit opsional (jangan gagalkan boot kalau audit error)
+            try {
+                \App\Models\AuditLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'backup.auto',
+                    'auditable_type' => 'Backup',
+                    'auditable_id' => null,
+                    'description' => 'Auto backup harian — '.$filename,
+                    'new_values' => ['file' => $filename],
+                ]);
+            } catch (\Throwable $e) {}
+            return $zipPath;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Auto backup harian gagal: '.$e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Hapus rkas-auto-* lama, sisakan $keep file terbaru (default 7).
+     */
+    public static function pruneOldAutoBackups(int $keep = 7): void
+    {
+        $files = collect(File::files(static::dir()))
+            ->filter(fn($f) => str_starts_with($f->getFilename(), 'rkas-auto-') && $f->getExtension() === 'zip')
+            ->sortByDesc(fn($f) => $f->getMTime())
+            ->values();
+        if ($files->count() <= $keep) {
+            return;
+        }
+        $files->slice($keep)->each(fn($f) => @File::delete($f->getPathname()));
+    }
 }

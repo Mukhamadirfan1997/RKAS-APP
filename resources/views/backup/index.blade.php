@@ -88,7 +88,7 @@
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
                             <td class="px-5 py-3.5 font-mono text-xs text-slate-700 dark:text-slate-300">{{ $f['nama'] }}</td>
                             <td class="px-5 py-3.5 text-right text-slate-500 dark:text-slate-400">{{ round($f['ukuran'] / 1048576, 2) }} MB</td>
-                            <td class="px-5 py-3.5 text-slate-500 dark:text-slate-400">{{ \Illuminate\Support\Carbon::createFromTimestamp($f['waktu'])->format('d M Y H:i:s') }}</td>
+                            <td class="px-5 py-3.5 text-slate-500 dark:text-slate-400">{{ \Illuminate\Support\Carbon::createFromTimestamp($f['waktu'])->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M Y H:i:s') }} WIB</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <a href="{{ route('backup.download', $f['nama']) }}" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">Unduh</a>

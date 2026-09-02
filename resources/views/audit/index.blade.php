@@ -39,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{{ $log->created_at->format('d M Y H:i:s') }}</div>
+                    <div class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{{ $log->created_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M Y H:i:s') }} WIB</div>
                 </div>
             @empty
                 <div class="px-4 py-12 text-center text-xs text-slate-400 dark:text-slate-500">Belum ada aktivitas tercatat.</div>

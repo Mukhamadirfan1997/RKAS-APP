@@ -38,12 +38,12 @@
                     <div class="rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 p-4">
                         <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase">Jumlah Barang</div>
                         <div class="text-lg font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">{{ number_format($jumlahSaatIni,0,',','.') }}</div>
-                        <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Meta: {{ number_format($meta->jumlah_barang ?? 0,0,',','.') }} • {{ $meta->tanggal_update ? $meta->tanggal_update->format('d M Y H:i') : '-' }}</div>
+                        <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Meta: {{ number_format($meta->jumlah_barang ?? 0,0,',','.') }} • {{ $meta->tanggal_update ? $meta->tanggal_update->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M Y H:i') . ' WIB' : '-' }}</div>
                     </div>
                 </div>
                 <div class="rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 p-3 text-xs text-slate-600 dark:text-slate-300">
                     <div><b>Sumber:</b> {{ $meta->source_file ?? '-' }}</div>
-                    <div class="text-[11px] text-slate-400 dark:text-slate-500">Update terakhir: {{ $meta->tanggal_update ? $meta->tanggal_update->format('d/m/Y H:i:s') : '-' }} • ID #{{ $meta->id }}</div>
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500">Update terakhir: {{ $meta->tanggal_update ? $meta->tanggal_update->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d/m/Y H:i:s') . ' WIB' : '-' }} • ID #{{ $meta->id }}</div>
                 </div>
                 <div class="text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700/60 pt-3">
                     <p class="font-semibold text-slate-700 dark:text-slate-200">Catatan:</p>
