@@ -128,10 +128,31 @@ class RkasController extends Controller
     }
 
     /**
+     * Helper: cek apakah RKAS masih editable (Draft/Pergeseran boleh, Disahkan terkunci).
+     */
+    private function assertRkasEditable(Request $request, ?TahunAnggaran $tahunAnggaran)
+    {
+        if ($tahunAnggaran && $tahunAnggaran->status_pengesahan === 'Disahkan') {
+            $msg = 'RKAS TA ini sudah disahkan dan tidak bisa diedit. Buka kembali dari halaman Pengaturan jika perlu revisi.';
+            if ($request->wantsJson() || $request->ajax() || $request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 403);
+            }
+            return redirect()->back()->withErrors(['error' => $msg]);
+        }
+        return null;
+    }
+
+    /**
      * Store new RKAS item with 12-month allocation.
      */
     public function store(Request $request)
     {
+        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+
+        if ($guard = $this->assertRkasEditable($request, $tahunAnggaran)) {
+            return $guard;
+        }
+
         $validated = $request->validate([
             'master_program_id' => 'required|exists:master_program,id',
             'master_kode_rekening_id' => 'required|exists:master_kode_rekening,id',
@@ -142,8 +163,6 @@ class RkasController extends Controller
             'koreksi' => 'nullable|numeric',
             'alokasi' => 'required|array',
         ]);
-
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
 
         DB::beginTransaction();
         try {
@@ -227,6 +246,11 @@ class RkasController extends Controller
     public function update(Request $request, $id)
     {
         $item = RkasItem::findOrFail($id);
+        $tahunAnggaran = TahunAnggaran::find($item->tahun_anggaran_id) ?? TahunAnggaran::where('tahun', 2026)->first();
+
+        if ($guard = $this->assertRkasEditable($request, $tahunAnggaran)) {
+            return $guard;
+        }
 
         $validated = $request->validate([
             'master_program_id' => 'required|exists:master_program,id',
@@ -316,10 +340,20 @@ class RkasController extends Controller
     /**
      * Delete an RKAS item.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $item = RkasItem::findOrFail($id);
+        $tahunAnggaran = TahunAnggaran::find($item->tahun_anggaran_id) ?? TahunAnggaran::where('tahun', 2026)->first();
+
+        if ($guard = $this->assertRkasEditable($request, $tahunAnggaran)) {
+            return $guard;
+        }
+
         $item->delete();
+
+        if ($request->wantsJson() || $request->ajax() || $request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Item anggaran berhasil dihapus.']);
+        }
 
         return redirect()->back()->with('success', 'Item anggaran berhasil dihapus.');
     }

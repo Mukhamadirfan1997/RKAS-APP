@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Services\BackupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -51,19 +52,9 @@ class BackupController extends Controller
             DB::connection()->getPdo()->exec('PRAGMA busy_timeout = 30000');
 
             $stamp = now()->format('Y-m-d_H-i-s');
-            $tmp = $this->dir.'/rkas-tmp-'.$stamp.'.sqlite';
             $zipPath = $this->dir.'/rkas-backup-'.$stamp.'.zip';
 
-            // Snapshot database yang konsisten (anti WAL)
-            $this->buatSnapshot($tmp);
-
-            $zip = new ZipArchive;
-            if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-                throw new \RuntimeException('Tidak dapat membuat file zip.');
-            }
-            $zip->addFile($tmp, 'database/database.sqlite');
-            $zip->close();
-            File::delete($tmp);
+            BackupService::snapshotDbZip($zipPath);
 
             $this->catatAudit('backup.create', $zipPath);
 
@@ -145,7 +136,7 @@ class BackupController extends Controller
 
             // Simpan cadangan keselamatan DB saat ini sebelum menimpa
             $safetyZip = $this->dir.'/rkas-pre-restore-'.$stamp.'.zip';
-            $this->snapshotDbZip($safetyZip);
+            BackupService::snapshotDbZip($safetyZip);
 
             // Hanya timpa file database aktif bila memang memakai file (bukan :memory:/testing)
             // Mendukung DB di app_data_dir (Tauri produksi, writable tanpa admin) maupun install dir (dev)
@@ -210,49 +201,6 @@ class BackupController extends Controller
         return $path;
     }
 
-    /**
-     * Buat snapshot file sqlite yang konsisten.
-     * Prioritas: VACUUM INTO; bila sedang dalam transaksi (mis. saat pengujian),
-     * fallback: checkpoint lalu salin file database langsung.
-     */
-    private function buatSnapshot(string $tmp): void
-    {
-        $inTransaction = DB::transactionLevel() > 0;
-        if (! $inTransaction) {
-            try {
-                DB::connection()->getPdo()->exec("VACUUM INTO '".str_replace("'", "''", $tmp)."'");
-                if (is_file($tmp) && filesize($tmp) > 0) {
-                    return;
-                }
-            } catch (\Throwable $e) {
-                // lanjut ke strategi copy
-            }
-        }
-
-        // Fallback saat sedang dalam transaksi (mis. lingkungan pengujian):
-        // salin file database langsung tanpa SQL (VACUUM & checkpoint dilarang di tengah transaksi).
-        // Gunakan path aktif (app_data_dir di produksi) agar backup konsisten
-        $dbName = DB::connection()->getDatabaseName();
-        $source = ($dbName !== '' && $dbName !== ':memory:' && is_file($dbName)) ? $dbName : database_path('database.sqlite');
-        if (! is_file($source)) {
-            throw new \RuntimeException('Snapshot gagal: file database tidak ditemukan.');
-        }
-        $io = @fopen($source, 'rb');
-        $out = @fopen($tmp, 'wb');
-        if ($io === false || $out === false) {
-            if ($io !== false) {
-                fclose($io);
-            }
-            throw new \RuntimeException('Snapshot gagal: tidak dapat membaca/menulis file.');
-        }
-        stream_copy_to_stream($io, $out);
-        fclose($io);
-        fclose($out);
-        if (filesize($tmp) === 0) {
-            throw new \RuntimeException('Snapshot gagal: file cadangan kosong.');
-        }
-    }
-
     private function isValidSqlite(string $path): bool
     {
         $handle = fopen($path, 'rb');
@@ -265,16 +213,15 @@ class BackupController extends Controller
         return $header === "SQLite format 3\x00";
     }
 
+    // Delegasi ke BackupService untuk reuse di Pengesahan (jangan duplikat logika VACUUM)
+    private function buatSnapshot(string $tmp): void
+    {
+        BackupService::buatSnapshot($tmp);
+    }
+
     private function snapshotDbZip(string $zipPath): void
     {
-        $tmp = $zipPath.'.sqlite';
-        $this->buatSnapshot($tmp);
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
-            $zip->addFile($tmp, 'database/database.sqlite');
-            $zip->close();
-        }
-        File::delete($tmp);
+        BackupService::snapshotDbZip($zipPath);
     }
 
     private function catatAudit(string $action, ?string $file): void

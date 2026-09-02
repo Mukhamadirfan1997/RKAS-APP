@@ -24,6 +24,8 @@
             {{ $sekolah->alamat }} {{ $sekolah->kecamatan }} {{ $sekolah->kabupaten_kota }} {{ $sekolah->provinsi }}
         </div>
         <div class="sub">{{ $tahunAnggaran->sumber_dana ?? 'BOSP REGULER' }} Tahun {{ $tahunAnggaran->tahun ?? 2026 }} &middot; {{ $tahunAnggaran->status_pengesahan ?? 'Draft' }}</div>
+        @php $st = strtoupper($tahunAnggaran->status_pengesahan ?? 'DRAFT'); @endphp
+        <div style="margin-top:6px;"><span style="display:inline-block; padding:3px 12px; border:2px solid {{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; color:{{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; font-size:11px; font-weight:800; letter-spacing:2px;">{{ $st }}</span></div>
     </div>
 
     <table>

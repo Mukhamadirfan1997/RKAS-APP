@@ -24,6 +24,11 @@
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {{ $tahunAnggaran->sumber_dana }} &mdash; {{ $sekolah->nama_sekolah }}
                 (NPSN {{ $sekolah->npsn }})
+                <span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold border
+                    @if($tahunAnggaran->status_pengesahan === 'Disahkan') bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30
+                    @elseif($tahunAnggaran->status_pengesahan === 'Pergeseran') bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30
+                    @else bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600
+                    @endif">{{ $tahunAnggaran->status_pengesahan }}</span>
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
@@ -35,12 +40,37 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak / PDF
             </a>
+            @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
             <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Anggaran
             </button>
+            @else
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 text-sm font-semibold border border-slate-200 dark:border-slate-600 cursor-not-allowed" title="RKAS terkunci — buka kembali di Pengaturan untuk revisi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Terkunci
+            </span>
+            @endif
         </div>
     </div>
+
+    @if($tahunAnggaran->status_pengesahan === 'Disahkan')
+        <div class="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400 flex items-start gap-3">
+            <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <div>
+                <div class="font-bold">RKAS ini sudah disahkan. Data terkunci — tidak bisa ditambah/diedit/dihapus.</div>
+                <div class="text-xs mt-1 opacity-80">Jika perlu revisi, buka kembali dari <a href="{{ route('pengaturan.index') }}" class="underline font-semibold hover:no-underline">halaman Pengaturan → Status RKAS</a>.</div>
+            </div>
+        </div>
+    @elseif($tahunAnggaran->status_pengesahan === 'Pergeseran')
+        <div class="px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm dark:bg-amber-500/10 dark:border-amber-500/30 dark:text-amber-300 flex items-start gap-3">
+            <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div>
+                <div class="font-bold">RKAS ini sedang dalam masa revisi (dibuka kembali dari status Disahkan).</div>
+                <div class="text-xs mt-1 opacity-80">Perubahan tetap tercatat di audit log. Sahkan kembali jika revisi selesai.</div>
+            </div>
+        </div>
+    @endif
 
     @php
         $tahap1Total = \App\Models\RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))->whereBetween('bulan', [1, 6])->sum('jumlah');
@@ -121,10 +151,14 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                        @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
                                         <button type="button" data-action="sisip-kegiatan" data-kegiatan-id="{{ $g['id'] }}" data-kegiatan-text="[{{ $g['kode'] }}] {{ $g['nama'] }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-600 border border-blue-200 dark:border-slate-600 shadow-xs transition-colors" title="Sisipkan belanja baru pada kegiatan ini">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                             <span>Sisip Uraian</span>
                                         </button>
+                                        @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-600 cursor-not-allowed" title="Terkunci — RKAS sudah disahkan"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Terkunci</span>
+                                        @endif
                                         <span>{{ $g['jumlah_item'] }} item</span>
                                         @if($selectedBulan > 0)
                                             <span class="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400">Bulan {{ $bulanIndonesia[$selectedBulan] }}: Rp {{ number_format($g['total_bulan'], 0, ',', '.') }}</span>
@@ -195,6 +229,7 @@
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 block leading-snug">{{ $manyBulan < 12 && $manyBulan > 0 ? $labelBulan : ($manyBulan === 12 ? 'Januari s.d. Desember' : '-') }}</span>
                             </td>
                             <td class="px-4 py-4 text-center">
+                                @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
                                 <div class="flex items-center justify-center gap-1">
                                     <button type="button" data-action="sisip-item"
                                         data-kegiatan-id="{{ $item->master_program_id }}"
@@ -211,6 +246,9 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </div>
+                                @else
+                                <span class="inline-flex items-center justify-center p-1.5 text-slate-300 dark:text-slate-600" title="Terkunci — RKAS sudah disahkan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></span>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

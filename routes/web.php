@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::post('/pengaturan/sekolah', [PengaturanController::class, 'updateSekolah'])->name('pengaturan.update-sekolah');
     Route::post('/pengaturan/pagu', [PengaturanController::class, 'updatePagu'])->name('pengaturan.update-pagu');
+    Route::post('/pengaturan/pengesahan/sahkan', [PengaturanController::class, 'sahkan'])->name('pengaturan.pengesahan.sahkan');
+    Route::post('/pengaturan/pengesahan/buka-kembali', [PengaturanController::class, 'bukaKembali'])->name('pengaturan.pengesahan.buka-kembali');
     Route::get('/pengaturan/katalog', [KatalogUpdateController::class, 'index'])->name('pengaturan.katalog');
     Route::post('/pengaturan/katalog/update', [KatalogUpdateController::class, 'update'])->name('pengaturan.katalog.update');
 

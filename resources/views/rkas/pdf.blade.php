@@ -48,6 +48,10 @@
 
     <h2 class="center">RINCIAN RENCANA BELANJA {{ $tahunAnggaran->tahun ?? 2026 }}</h2>
     <p class="center">{{ $tahunAnggaran->sumber_dana ?? 'BOSP REGULER' }} &middot; {{ $tahunAnggaran->status_pengesahan ?? 'Draft' }}</p>
+    @php $st = strtoupper($tahunAnggaran->status_pengesahan ?? 'DRAFT'); @endphp
+    <div style="text-align:center; margin-bottom:10px;">
+        <span style="display:inline-block; padding:4px 14px; border:2px solid {{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; color:{{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; font-size:11px; font-weight:800; letter-spacing:2px; border-radius:6px;">{{ $st }}</span>
+    </div>
 
     <table>
         <thead>

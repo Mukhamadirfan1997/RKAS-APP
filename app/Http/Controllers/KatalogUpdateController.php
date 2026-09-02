@@ -33,6 +33,10 @@ class KatalogUpdateController extends Controller
 
     public function update(Request $request)
     {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(120);
+        }
+
         $request->validate([
             'file' => 'required|file|mimes:zip|max:51200', // 50MB max
         ]);
@@ -72,7 +76,8 @@ class KatalogUpdateController extends Controller
             $algo = $manifest['checksum_algo'] ?? 'sha256';
             $actualChecksum = hash_file($algo, $csvPath);
             if (! hash_equals(strtolower($expectedChecksum), strtolower($actualChecksum))) {
-                throw new \RuntimeException("Checksum tidak cocok. Expected {$expectedChecksum}, actual {$actualChecksum}. File mungkin korup.");
+                Log::warning("Katalog checksum mismatch: expected {$expectedChecksum} actual {$actualChecksum}");
+                throw new \RuntimeException('File paket rusak atau tidak sesuai — checksum tidak cocok. Silakan download ulang file paket terbaru dari developer atau minta kirim ulang via USB/WA. Tidak ada data yang diubah.');
             }
 
             // Validasi CSV header
@@ -146,6 +151,15 @@ class KatalogUpdateController extends Controller
                         $batch = [];
                     }
                 }
+                // TEST-ONLY HOOK — sengaja untuk KatalogUpdateTest::test_rollback_total_jika_error_di_tengah_upsert.
+                // Memicu exception di dalam transaksi agar dapat memverifikasi rollback total (paruh katalog ter-update)
+                // tanpa mocking DB yang rumit. Aman di produksi: hanya aktif saat APP_ENV=testing dan header custom
+                // X-Trigger-Mid-Error yang tidak pernah dikirim user biasa; bukan backdoor, jangan dihapus tanpa ganti test.
+                if (app()->environment('testing') && $request->header('X-Trigger-Mid-Error')) {
+                    fclose($fh);
+                    throw new \RuntimeException('Simulasi error di tengah proses upsert (test)');
+                }
+
                 if (count($batch) > 0) {
                     DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori','updated_at']);
                 }

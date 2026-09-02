@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
                 'pagu_tahap1' => 90160000,
                 'pagu_tahap2' => 90160000,
                 'is_active' => true,
-                'status_pengesahan' => 'Disahkan',
+                'status_pengesahan' => 'Draft',
             ]
         );
 
