@@ -151,6 +151,8 @@ class BackupController extends Controller
             if (DB::connection()->getDatabaseName() === database_path('database.sqlite')) {
                 DB::disconnect();
                 copy($dbBaru, database_path('database.sqlite'));
+            } else {
+                throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar');
             }
 
             $this->catatAudit('backup.restore', $safetyZip);
