@@ -73,12 +73,17 @@ class RkasSearchController extends Controller
 
     /**
      * Live search for Katalog Kode Barang / Jasa.
+     * Opsional: filter by kode_rekening (exact) agar barang sesuai rekening terpilih.
      */
     public function searchBarang(Request $request)
     {
         $q = trim($request->input('q', ''));
+        $kodeRekening = trim($request->input('kode_rekening', ''));
 
         $query = KodeBarang::query();
+        if ($kodeRekening !== '') {
+            $query->where('kode_rekening', $kodeRekening);
+        }
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")

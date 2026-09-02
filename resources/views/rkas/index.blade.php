@@ -389,6 +389,7 @@
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500" x-show="pickers.barang.open" x-cloak>Saran dari katalog barang resmi ARKAS</span>
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 ml-auto" x-text="form.uraian.length + ' / 500'"></span>
                             </div>
+                            <div x-show="pickers.rekening.kode" x-cloak class="mt-1 text-[10px] text-indigo-600 dark:text-indigo-400">Filter aktif: hanya barang untuk rekening <span class="font-mono font-bold" x-text="pickers.rekening.kode"></span> • kosongkan rekening untuk lihat semua</div>
                         </div>
                         <div>
                             <label class="label">Keterangan Khusus / Peruntukan Anggaran</label>
@@ -530,7 +531,7 @@ function makeAlokasi() {
 }
 
 function makePickerState() {
-    return { q: '', results: [], open: false, loading: false, value: '', label: '' };
+    return { q: '', results: [], open: false, loading: false, value: '', label: '', kode: '' };
 }
 
 function modalForm() {
@@ -593,10 +594,19 @@ function modalForm() {
         async search(key) {
             const url = key === 'kegiatan' ? '/api/search/kegiatan' : key === 'rekening' ? '/api/search/rekening' : '/api/search/barang';
             const p = this.pickers[key];
+            // Jika mengetik rekening baru (q != label), reset pilihan sebelumnya agar filter tidak salah
+            if (key === 'rekening' && p.q !== p.label) {
+                p.value = '';
+                p.kode = '';
+            }
             p.loading = true;
             p.open = true;
             try {
-                const res = await fetch(url + '?q=' + encodeURIComponent(p.q));
+                let fetchUrl = url + '?q=' + encodeURIComponent(p.q);
+                if (key === 'barang' && this.pickers.rekening.kode) {
+                    fetchUrl += '&kode_rekening=' + encodeURIComponent(this.pickers.rekening.kode);
+                }
+                const res = await fetch(fetchUrl);
                 const d = await res.json();
                 p.results = d.results || [];
             } catch (e) {
@@ -608,11 +618,15 @@ function modalForm() {
 
         selectKegiatan(r) {
             const p = this.pickers.kegiatan;
-            p.q = r.text; p.value = r.id; p.label = r.text; p.open = false;
+            p.q = r.text; p.value = r.id; p.label = r.text; p.kode = r.kode || ''; p.open = false;
         },
         selectRekening(r) {
             const p = this.pickers.rekening;
-            p.q = r.text; p.value = r.id; p.label = r.text; p.open = false;
+            p.q = r.text; p.value = r.id; p.label = r.text; p.kode = r.kode || ''; p.open = false;
+            // Reset barang selection karena filter rekening berubah
+            this.pickers.barang.q = '';
+            this.pickers.barang.results = [];
+            this.pickers.barang.open = false;
         },
         searchUraianSuggestion(ev) {
             const v = (ev && ev.target && ev.target.value) || this.form.uraian || '';
@@ -667,8 +681,8 @@ function modalForm() {
                     koreksi: Number(d.koreksi) || 0,
                     kode_barang_id: d.kode_barang_id || null
                 };
-                if (d.kegiatan_id) { this.pickers.kegiatan.value = d.kegiatan_id; this.pickers.kegiatan.label = d.kegiatan_text; this.pickers.kegiatan.q = d.kegiatan_text; }
-                if (d.rekening_id) { this.pickers.rekening.value = d.rekening_id; this.pickers.rekening.label = d.rekening_text; this.pickers.rekening.q = d.rekening_text; }
+                if (d.kegiatan_id) { this.pickers.kegiatan.value = d.kegiatan_id; this.pickers.kegiatan.label = d.kegiatan_text; this.pickers.kegiatan.q = d.kegiatan_text; this.pickers.kegiatan.kode = d.kegiatan_kode || (d.kegiatan_text.match(/\[(.*?)\]/)?.[1] || ''); }
+                if (d.rekening_id) { this.pickers.rekening.value = d.rekening_id; this.pickers.rekening.label = d.rekening_text; this.pickers.rekening.q = d.rekening_text; this.pickers.rekening.kode = d.rekening_kode || (d.rekening_text.match(/\[(.*?)\]/)?.[1] || ''); }
                 const a = makeAlokasi();
                 for (const b in d.alokasi) {
                     a[b] = { volume: Number(d.alokasi[b].volume) || 0, satuan: d.alokasi[b].satuan || '' };
@@ -754,12 +768,14 @@ window.__rkasModalHost = {
             m.pickers.kegiatan.value = kegiatanId;
             m.pickers.kegiatan.label = kegiatanText;
             m.pickers.kegiatan.q = kegiatanText;
+            m.pickers.kegiatan.kode = (kegiatanText.match(/\[(.*?)\]/)?.[1] || '');
             parts.push(kegiatanText);
         }
         if (rekeningId) {
             m.pickers.rekening.value = rekeningId;
             m.pickers.rekening.label = rekeningText;
             m.pickers.rekening.q = rekeningText;
+            m.pickers.rekening.kode = (rekeningText.match(/\[(.*?)\]/)?.[1] || '');
             parts.push(rekeningText);
         }
         m.sisipContext = parts.join(' → ');
