@@ -51,8 +51,13 @@ Route::middleware('auth')->group(function () {
     // Audit Log
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit.index');
 
-    // Pengaturan
+    // Pengaturan — 5 halaman terpisah (B)
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::get('/pengaturan/profil', [PengaturanController::class, 'indexProfil'])->name('pengaturan.profil');
+    Route::get('/pengaturan/akun', [PengaturanController::class, 'indexAkun'])->name('pengaturan.akun');
+    Route::get('/pengaturan/pagu', [PengaturanController::class, 'indexPagu'])->name('pengaturan.pagu');
+    Route::get('/pengaturan/status', [PengaturanController::class, 'indexStatus'])->name('pengaturan.status');
+    Route::get('/pengaturan/tahun', [PengaturanController::class, 'indexTahun'])->name('pengaturan.tahun.index');
     Route::post('/pengaturan/sekolah', [PengaturanController::class, 'updateSekolah'])->name('pengaturan.update-sekolah');
     Route::post('/pengaturan/akun', [PengaturanController::class, 'updateAkun'])->name('pengaturan.update-akun');
     Route::post('/pengaturan/pagu', [PengaturanController::class, 'updatePagu'])->name('pengaturan.update-pagu');

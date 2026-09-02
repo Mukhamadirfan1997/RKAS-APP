@@ -52,7 +52,7 @@ class PengesahanRkasTest extends TestCase
             ->count();
 
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.index'));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
         $resp->assertSessionHas('success');
 
         $this->ta->refresh();
@@ -101,7 +101,7 @@ class PengesahanRkasTest extends TestCase
         // Pergeseran -> Disahkan harus berhasil (point 4)
         $this->ta->update(['status_pengesahan' => 'Pergeseran']);
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.index'));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Disahkan', $this->ta->fresh()->status_pengesahan);
     }
@@ -194,7 +194,7 @@ class PengesahanRkasTest extends TestCase
         $this->ta->update(['status_pengesahan' => 'Disahkan']);
 
         $resp = $this->post(route('pengaturan.pengesahan.buka-kembali'));
-        $resp->assertRedirect(route('pengaturan.index'));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Pergeseran', $this->ta->fresh()->status_pengesahan);
 

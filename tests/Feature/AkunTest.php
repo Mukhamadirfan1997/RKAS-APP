@@ -28,7 +28,7 @@ class AkunTest extends TestCase
             'password' => 'newpass123',
             'password_confirmation' => 'newpass123',
         ]);
-        $resp->assertRedirect(route('pengaturan.index'));
+        $resp->assertRedirect(route('pengaturan.akun'));
         $resp->assertSessionHas('success');
         $user->refresh();
         $this->assertEquals('Operator Baru', $user->name);

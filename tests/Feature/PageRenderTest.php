@@ -32,7 +32,10 @@ class PageRenderTest extends TestCase
         $user = User::first();
         $this->actingAs($user);
 
-        $pages = ['/', '/rkas', '/dashboard', '/pengaturan', '/monitoring/juknis', '/master/program', '/master/rekening', '/master/barang', '/audit-log', '/backup', '/api/search/kegiatan?q=03', '/api/search/rekening?q=5.1', '/api/search/barang?q=Nasi'];
+        // /pengaturan lama redirect ke /pengaturan/profil (302)
+        $this->get('/pengaturan')->assertRedirect('/pengaturan/profil');
+
+        $pages = ['/', '/rkas', '/dashboard', '/pengaturan/profil', '/pengaturan/akun', '/pengaturan/pagu', '/pengaturan/status', '/pengaturan/tahun', '/monitoring/juknis', '/master/program', '/master/rekening', '/master/barang', '/audit-log', '/backup', '/api/search/kegiatan?q=03', '/api/search/rekening?q=5.1', '/api/search/barang?q=Nasi'];
 
         foreach ($pages as $page) {
             $response = $this->get($page);
