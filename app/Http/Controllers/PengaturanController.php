@@ -6,9 +6,11 @@ use App\Models\AuditLog;
 use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
+use App\Models\User;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class PengaturanController extends Controller
@@ -17,8 +19,9 @@ class PengaturanController extends Controller
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
         $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $user = auth()->user();
 
-        return view('pengaturan.index', compact('sekolah', 'tahunAnggaran'));
+        return view('pengaturan.index', compact('sekolah', 'tahunAnggaran', 'user'));
     }
 
     public function updateSekolah(Request $request)
@@ -41,6 +44,41 @@ class PengaturanController extends Controller
         PengaturanSekolah::updateOrCreate(['id' => 1], $validated);
 
         return redirect()->route('pengaturan.index')->with('success', 'Profil sekolah berhasil disimpan.');
+    }
+
+    public function updateAkun(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
+            'current_password' => 'required|string|current_password',
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
+            'current_password.current_password' => 'Password saat ini tidak cocok.',
+        ]);
+
+        $old = $user->only(['name', 'email']);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        if (! empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+        $user->save();
+
+        AuditLog::create([
+            'user_id' => $user->id,
+            'action' => 'akun.update',
+            'auditable_type' => User::class,
+            'auditable_id' => $user->id,
+            'description' => 'Akun operator diperbarui',
+            'old_values' => $old,
+            'new_values' => ['name' => $user->name, 'email' => $user->email, 'password_changed' => ! empty($validated['password'])],
+            'ip_address' => $request->ip(),
+        ]);
+
+        return redirect()->route('pengaturan.index')->with('success', 'Akun berhasil diperbarui.');
     }
 
     public function updatePagu(Request $request)

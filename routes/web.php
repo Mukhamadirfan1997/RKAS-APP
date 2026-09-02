@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
+    Route::get('/lupa-password', [AuthController::class, 'showForgot'])->name('auth.forgot');
+    Route::post('/lupa-password', [AuthController::class, 'handleForgot'])->middleware('throttle:5,1')->name('auth.forgot.attempt');
+    Route::get('/reset-password', [AuthController::class, 'showReset'])->name('auth.reset');
+    Route::post('/reset-password', [AuthController::class, 'handleReset'])->middleware('throttle:5,1')->name('auth.reset.attempt');
 });
 
 Route::middleware('auth')->group(function () {
@@ -50,6 +54,7 @@ Route::middleware('auth')->group(function () {
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::post('/pengaturan/sekolah', [PengaturanController::class, 'updateSekolah'])->name('pengaturan.update-sekolah');
+    Route::post('/pengaturan/akun', [PengaturanController::class, 'updateAkun'])->name('pengaturan.update-akun');
     Route::post('/pengaturan/pagu', [PengaturanController::class, 'updatePagu'])->name('pengaturan.update-pagu');
     Route::post('/pengaturan/pengesahan/sahkan', [PengaturanController::class, 'sahkan'])->name('pengaturan.pengesahan.sahkan');
     Route::post('/pengaturan/pengesahan/buka-kembali', [PengaturanController::class, 'bukaKembali'])->name('pengaturan.pengesahan.buka-kembali');
