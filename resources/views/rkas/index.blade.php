@@ -32,19 +32,19 @@
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('rkas.export') }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat (flat)">
+            <a href="{{ route('rkas.export', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat (flat)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Excel Ringkas
             </a>
-            <a href="{{ route('rkas.export-grouped') }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-indigo-300 dark:border-indigo-600 text-sm font-semibold text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 hover:border-indigo-400 dark:hover:bg-indigo-500/10 transition-colors" title="Per kegiatan + 12 bulan (untuk paste ke ARKAS)">
+            <a href="{{ route('rkas.export-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-indigo-300 dark:border-indigo-600 text-sm font-semibold text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 hover:border-indigo-400 dark:hover:bg-indigo-500/10 transition-colors" title="Per kegiatan + 12 bulan (untuk paste ke ARKAS)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h13M3 12h13M3 16h13M3 20h13M16 8l3 3-3 3"/></svg>
                 Excel Bulanan
             </a>
-            <a href="{{ route('rkas.pdf') }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat">
+            <a href="{{ route('rkas.pdf', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 PDF Ringkas
             </a>
-            <a href="{{ route('rkas.pdf-grouped') }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Per kegiatan + 12 bulan">
+            <a href="{{ route('rkas.pdf-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Per kegiatan + 12 bulan">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 PDF Bulanan
             </a>
@@ -116,11 +116,12 @@
                 </div>
                 <div class="flex items-center gap-2">
                     @if($selectedBulan > 0)
-                        <a href="{{ route('rkas.index', ['bulan' => 0]) }}" class="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500">Reset</a>
+                        <a href="{{ route('rkas.index', array_filter(['tahun' => request('tahun'), 'bulan' => 0])) }}" class="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500">Reset</a>
                     @endif
                 </div>
             </div>
             <form method="GET" action="{{ route('rkas.index') }}" class="mt-4">
+                @if(request('tahun'))<input type="hidden" name="tahun" value="{{ request('tahun') }}">@endif
                 <div class="flex gap-1.5 overflow-x-auto pb-1 items-center">
                     <button type="submit" name="bulan" value="0" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
                     @for($b = 1; $b <= 12; $b++)
@@ -702,6 +703,7 @@ function modalForm() {
 
             const payload = {
                 _token: CSRF,
+                tahun: {{ $tahunAnggaran->tahun }},
                 master_program_id: keg.value,
                 master_kode_rekening_id: rek.value,
                 kode_barang_id: this.form.kode_barang_id || null,

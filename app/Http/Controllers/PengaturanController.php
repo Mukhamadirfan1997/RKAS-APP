@@ -15,13 +15,25 @@ use Illuminate\Support\Facades\Log;
 
 class PengaturanController extends Controller
 {
-    public function index()
+    private function resolveTahun(Request $request, bool $allowQuery = false): ?TahunAnggaran
+    {
+        if ($allowQuery && $request->filled('tahun')) {
+            $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
+            if ($ta) return $ta;
+        }
+        return TahunAnggaran::where('is_active', true)->first()
+            ?? TahunAnggaran::where('tahun', 2026)->first()
+            ?? TahunAnggaran::first();
+    }
+
+    public function index(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
         $user = auth()->user();
 
-        return view('pengaturan.index', compact('sekolah', 'tahunAnggaran', 'user'));
+        return view('pengaturan.index', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
     public function updateSekolah(Request $request)
@@ -83,11 +95,11 @@ class PengaturanController extends Controller
 
     public function updatePagu(Request $request)
     {
-        $ta = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $ta = $this->resolveTahun($request, true) ?? TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
 
         // Guard: pagu tidak boleh diubah saat Disahkan
         if ($ta && $ta->status_pengesahan === 'Disahkan') {
-            return redirect()->back()->withErrors(['error' => 'RKAS TA ini sudah disahkan dan tidak bisa diedit. Buka kembali dari halaman Pengaturan jika perlu revisi.']);
+            return redirect()->back()->withErrors(['error' => "RKAS TA {$ta->tahun} sudah disahkan dan tidak bisa diedit. Buka kembali dari halaman Pengaturan jika perlu revisi."]);
         }
 
         $validated = $request->validate([
@@ -107,7 +119,7 @@ class PengaturanController extends Controller
 
     public function sahkan(Request $request)
     {
-        $ta = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $ta = $this->resolveTahun($request, true) ?? TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
         if (! $ta) {
             return redirect()->back()->withErrors(['error' => 'Tahun anggaran tidak ditemukan.']);
         }
@@ -156,7 +168,7 @@ class PengaturanController extends Controller
 
     public function bukaKembali(Request $request)
     {
-        $ta = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $ta = $this->resolveTahun($request, true) ?? TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
         if (! $ta) {
             return redirect()->back()->withErrors(['error' => 'Tahun anggaran tidak ditemukan.']);
         }
@@ -179,5 +191,81 @@ class PengaturanController extends Controller
         ]);
 
         return redirect()->route('pengaturan.index')->with('success', 'RKAS TA '.$ta->tahun.' dibuka kembali untuk revisi (status: Pergeseran). Perubahan akan tercatat di audit log.');
+    }
+
+    public function storeTahun(Request $request)
+    {
+        $validated = $request->validate([
+            'tahun' => 'required|integer|min:2020|max:2100|unique:tahun_anggaran,tahun',
+            'sumber_dana' => 'nullable|string|max:50',
+            'pagu_total' => 'nullable|numeric|min:0',
+            'pagu_tahap1' => 'nullable|numeric|min:0',
+            'pagu_tahap2' => 'nullable|numeric|min:0',
+            'copy_from' => 'nullable|integer|exists:tahun_anggaran,tahun',
+        ]);
+
+        $paguTotal = $validated['pagu_total'] ?? 180320000;
+        $paguT1 = $validated['pagu_tahap1'] ?? (int)($paguTotal/2);
+        $paguT2 = $validated['pagu_tahap2'] ?? ($paguTotal - $paguT1);
+
+        $ta = TahunAnggaran::create([
+            'tahun' => $validated['tahun'],
+            'sumber_dana' => $validated['sumber_dana'] ?? 'BOSP REGULER',
+            'pagu_total' => $paguTotal,
+            'pagu_tahap1' => $paguT1,
+            'pagu_tahap2' => $paguT2,
+            'is_active' => false,
+            'status_pengesahan' => 'Draft',
+        ]);
+
+        if (! empty($validated['copy_from'])) {
+            $src = TahunAnggaran::where('tahun', $validated['copy_from'])->first();
+            if ($src) {
+                $items = RkasItem::where('tahun_anggaran_id', $src->id)->with('alokasiBulan')->get();
+                foreach ($items as $srcItem) {
+                    $new = $srcItem->replicate();
+                    $new->tahun_anggaran_id = $ta->id;
+                    $new->no_urut = $srcItem->no_urut;
+                    $new->save();
+                    foreach ($srcItem->alokasiBulan as $ab) {
+                        $new->alokasiBulan()->create([
+                            'bulan' => $ab->bulan,
+                            'volume' => $ab->volume,
+                            'satuan' => $ab->satuan,
+                            'jumlah' => $ab->jumlah,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'tahun.create',
+            'auditable_type' => TahunAnggaran::class,
+            'auditable_id' => $ta->id,
+            'description' => "Buat TA {$ta->tahun} (copy dari ".($validated['copy_from'] ?? 'kosong').")",
+            'new_values' => ['tahun'=>$ta->tahun,'pagu_total'=>$ta->pagu_total],
+        ]);
+
+        return redirect()->route('pengaturan.index', ['tahun'=>$ta->tahun])->with('success', "TA {$ta->tahun} berhasil dibuat (Draft).");
+    }
+
+    public function activateTahun(Request $request, $id)
+    {
+        $ta = TahunAnggaran::findOrFail($id);
+        TahunAnggaran::query()->update(['is_active'=>false]);
+        $ta->update(['is_active'=>true]);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'tahun.aktifkan',
+            'auditable_type' => TahunAnggaran::class,
+            'auditable_id' => $ta->id,
+            'description' => "Aktifkan TA {$ta->tahun} sebagai tahun aktif",
+            'new_values' => ['tahun'=>$ta->tahun],
+        ]);
+
+        return redirect()->route('pengaturan.index', ['tahun'=>$ta->tahun])->with('success', "TA {$ta->tahun} diaktifkan. Lembar kerja sekarang menampilkan TA {$ta->tahun}.");
     }
 }

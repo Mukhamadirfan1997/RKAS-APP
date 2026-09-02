@@ -16,6 +16,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class RkasController extends Controller
 {
+    private function resolveTahun(Request $request): TahunAnggaran
+    {
+        if ($request->filled('tahun')) {
+            $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
+            if ($ta) return $ta;
+        }
+        return TahunAnggaran::where('is_active', true)->first()
+            ?? TahunAnggaran::where('tahun', 2026)->first()
+            ?? TahunAnggaran::first()
+            ?? new TahunAnggaran(['tahun'=>2026, 'pagu_total'=>0]);
+    }
+
     /**
      * Display the RKAS 2026 Worksheet / Dashboard.
      */
@@ -25,7 +37,7 @@ class RkasController extends Controller
             'nama_sekolah' => 'SD NEGERI TOYANING 1',
         ]);
 
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
 
         $selectedBulan = (int) $request->input('bulan', 1); // 1 = Januari default, 0 = Semua
 
@@ -79,9 +91,12 @@ class RkasController extends Controller
             ];
         })->sortBy('kode', SORT_NATURAL)->values();
 
+        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+
         return view('rkas.index', compact(
             'sekolah',
             'tahunAnggaran',
+            'daftarTahun',
             'selectedBulan',
             'items',
             'kegiatanGroups',
@@ -150,7 +165,7 @@ class RkasController extends Controller
      */
     public function store(Request $request)
     {
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
 
         if ($guard = $this->assertRkasEditable($request, $tahunAnggaran)) {
             return $guard;
@@ -431,10 +446,10 @@ class RkasController extends Controller
     /**
      * Export the worksheet as PDF kertas kerja (A4) - flat legacy.
      */
-    public function pdf()
+    public function pdf(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
 
         $items = RkasItem::with(['program', 'kodeRekening', 'barang', 'alokasiBulan'])
             ->where('tahun_anggaran_id', $tahunAnggaran->id)
@@ -460,10 +475,10 @@ class RkasController extends Controller
     /**
      * Export grouped per kegiatan with 12-month breakdown - PDF.
      */
-    public function pdfGrouped()
+    public function pdfGrouped(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
         $data = $this->buildGroupedForExport($tahunAnggaran);
 
         $pdf = Pdf::loadView('rkas.pdf-grouped', array_merge(compact('sekolah', 'tahunAnggaran'), $data))
@@ -475,10 +490,10 @@ class RkasController extends Controller
     /**
      * Export the worksheet as Excel .xlsx (kertas kerja ARKAS + KOREKSI/KONTROL) - flat legacy.
      */
-    public function export()
+    public function export(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
 
         $items = RkasItem::with(['program', 'kodeRekening', 'barang', 'alokasiBulan'])
             ->where('tahun_anggaran_id', $tahunAnggaran->id)
@@ -494,10 +509,10 @@ class RkasController extends Controller
     /**
      * Export grouped per kegiatan with 12-month breakdown - Excel.
      */
-    public function exportGrouped()
+    public function exportGrouped(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
         $data = $this->buildGroupedForExport($tahunAnggaran);
 
         return Excel::download(

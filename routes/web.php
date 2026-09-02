@@ -58,6 +58,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pengaturan/pagu', [PengaturanController::class, 'updatePagu'])->name('pengaturan.update-pagu');
     Route::post('/pengaturan/pengesahan/sahkan', [PengaturanController::class, 'sahkan'])->name('pengaturan.pengesahan.sahkan');
     Route::post('/pengaturan/pengesahan/buka-kembali', [PengaturanController::class, 'bukaKembali'])->name('pengaturan.pengesahan.buka-kembali');
+    Route::post('/pengaturan/tahun', [PengaturanController::class, 'storeTahun'])->name('pengaturan.tahun.store');
+    Route::post('/pengaturan/tahun/{id}/aktifkan', [PengaturanController::class, 'activateTahun'])->name('pengaturan.tahun.aktifkan');
     Route::get('/pengaturan/katalog', [KatalogUpdateController::class, 'index'])->name('pengaturan.katalog');
     Route::post('/pengaturan/katalog/update', [KatalogUpdateController::class, 'update'])->name('pengaturan.katalog.update');
 

@@ -123,7 +123,16 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             Mode Desktop Offline
                         </span>
-                        <span class="text-xs text-slate-400 dark:text-slate-500">Tahun Anggaran 2026</span>
+                        @php
+                            $tahunAktifTop = \App\Models\TahunAnggaran::where('is_active', true)->first() ?? \App\Models\TahunAnggaran::where('tahun', 2026)->first();
+                            $daftarTahunTop = \App\Models\TahunAnggaran::orderBy('tahun','desc')->get();
+                            $curTahunTop = request('tahun') ? (int)request('tahun') : ($tahunAktifTop->tahun ?? 2026);
+                        @endphp
+                        <select onchange="const u=new URL(window.location.href); u.searchParams.set('tahun', this.value); window.location.href=u.toString()" class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 focus:ring-1 focus:ring-blue-500">
+                            @foreach($daftarTahunTop as $tOpt)
+                                <option value="{{ $tOpt->tahun }}" @if($curTahunTop==$tOpt->tahun) selected @endif>TA {{ $tOpt->tahun }} @if($tOpt->is_active) • Aktif @endif — {{ $tOpt->status_pengesahan }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">

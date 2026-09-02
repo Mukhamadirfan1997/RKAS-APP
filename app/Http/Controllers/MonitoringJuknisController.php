@@ -11,9 +11,21 @@ use Illuminate\Http\Request;
 
 class MonitoringJuknisController extends Controller
 {
+    private function resolveTahun(Request $request): TahunAnggaran
+    {
+        if ($request->filled('tahun')) {
+            $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
+            if ($ta) return $ta;
+        }
+        return TahunAnggaran::where('is_active', true)->first()
+            ?? TahunAnggaran::where('tahun', 2026)->first()
+            ?? TahunAnggaran::first()
+            ?? new TahunAnggaran(['tahun'=>2026]);
+    }
+
     public function index(Request $request)
     {
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
         $validator = new JuknisValidator($tahunAnggaran);
         $summary = $validator->summary();
 
@@ -35,9 +47,11 @@ class MonitoringJuknisController extends Controller
             ->get();
 
         $filter = $request->input('filter', 'all');
+        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
 
         return view('monitoring.index', compact(
             'tahunAnggaran',
+            'daftarTahun',
             'summary',
             'kategoriList',
             'allRekenings',

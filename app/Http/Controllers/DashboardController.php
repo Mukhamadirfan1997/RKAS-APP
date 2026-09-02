@@ -11,10 +11,22 @@ use App\Services\JuknisValidator;
 
 class DashboardController extends Controller
 {
-    public function index()
+    private function resolveTahun(\Illuminate\Http\Request $request): TahunAnggaran
+    {
+        if ($request->filled('tahun')) {
+            $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
+            if ($ta) return $ta;
+        }
+        return TahunAnggaran::where('is_active', true)->first()
+            ?? TahunAnggaran::where('tahun', 2026)->first()
+            ?? TahunAnggaran::first()
+            ?? new TahunAnggaran(['tahun'=>2026]);
+    }
+
+    public function index(\Illuminate\Http\Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = TahunAnggaran::where('tahun', 2026)->first() ?? TahunAnggaran::first();
+        $tahunAnggaran = $this->resolveTahun($request);
 
         $validator = new JuknisValidator($tahunAnggaran);
         $summary = $validator->summary();
@@ -46,10 +58,12 @@ class DashboardController extends Controller
 
         // Total item & capaian
         $totalItem = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->count();
+        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
 
         return view('dashboard.index', compact(
             'sekolah',
             'tahunAnggaran',
+            'daftarTahun',
             'summary',
             'bulanData',
             'proporsiJenis',
