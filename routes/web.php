@@ -27,7 +27,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/rkas/{id}/update', [RkasController::class, 'update'])->name('rkas.update');
     Route::delete('/rkas/{id}/delete', [RkasController::class, 'destroy'])->name('rkas.destroy');
     Route::get('/rkas/pdf', [RkasController::class, 'pdf'])->name('rkas.pdf');
+    Route::get('/rkas/pdf-grouped', [RkasController::class, 'pdfGrouped'])->name('rkas.pdf-grouped');
     Route::get('/rkas/export', [RkasController::class, 'export'])->name('rkas.export');
+    Route::get('/rkas/export-grouped', [RkasController::class, 'exportGrouped'])->name('rkas.export-grouped');
 
     // Backup & Restore
     Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
