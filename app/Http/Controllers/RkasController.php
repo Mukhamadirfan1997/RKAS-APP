@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\RkasKertasKerjaExport;
+use App\Models\KodeBarang;
 use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\RkasItemBulan;
@@ -162,6 +163,13 @@ class RkasController extends Controller
             $hargaSatuan = (float) $validated['harga_satuan'];
             $totalJumlah = $totalVolume * $hargaSatuan;
 
+            // harga_satuan_arkas diambil dari harga_acuan katalog, bukan input user (fix kontrol SELISIH)
+            $hargaSatuanArkas = 0;
+            if (! empty($validated['kode_barang_id'])) {
+                $barang = KodeBarang::find($validated['kode_barang_id']);
+                $hargaSatuanArkas = $barang ? (float) $barang->harga_acuan : 0;
+            }
+
             $maxNoUrut = (int) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->max('no_urut');
 
             $item = RkasItem::create([
@@ -174,7 +182,7 @@ class RkasController extends Controller
                 'volume' => $totalVolume,
                 'satuan' => $satuanUtama,
                 'harga_satuan' => $hargaSatuan,
-                'harga_satuan_arkas' => $hargaSatuan,
+                'harga_satuan_arkas' => $hargaSatuanArkas,
                 'jumlah' => $totalJumlah,
                 'koreksi' => $validated['koreksi'] ?? 0,
                 'no_urut' => $maxNoUrut + 1,
@@ -248,6 +256,13 @@ class RkasController extends Controller
             $hargaSatuan = (float) $validated['harga_satuan'];
             $totalJumlah = $totalVolume * $hargaSatuan;
 
+            // harga_satuan_arkas diambil dari harga_acuan katalog, bukan input user
+            $hargaSatuanArkas = 0;
+            if (! empty($validated['kode_barang_id'])) {
+                $barang = KodeBarang::find($validated['kode_barang_id']);
+                $hargaSatuanArkas = $barang ? (float) $barang->harga_acuan : 0;
+            }
+
             $item->update([
                 'master_program_id' => $validated['master_program_id'],
                 'master_kode_rekening_id' => $validated['master_kode_rekening_id'],
@@ -257,7 +272,7 @@ class RkasController extends Controller
                 'volume' => $totalVolume,
                 'satuan' => $satuanUtama,
                 'harga_satuan' => $hargaSatuan,
-                'harga_satuan_arkas' => $hargaSatuan,
+                'harga_satuan_arkas' => $hargaSatuanArkas,
                 'jumlah' => $totalJumlah,
                 'koreksi' => $validated['koreksi'] ?? 0,
             ]);

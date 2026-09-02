@@ -66,9 +66,14 @@ class RkasItem extends Model
 
     /**
      * Status KONTROL per baris: OK bila harga sesuai acuan, SELISIH bila berbeda.
+     * Jika harga_satuan_arkas 0 (tanpa katalog), KONTROL tidak berlaku -> OK.
      */
     public function getKontrolAttribute()
     {
+        if ((float) $this->harga_satuan_arkas == 0.0) {
+            return 'OK';
+        }
+
         return abs($this->selisih_harga) > 0.009 ? 'SELISIH' : 'OK';
     }
 }

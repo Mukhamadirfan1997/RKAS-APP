@@ -648,6 +648,7 @@ function modalForm() {
                 uraian: this.form.uraian,
                 keterangan_kustom: this.form.keterangan_kustom || null,
                 harga_satuan: this.form.harga_satuan || 0,
+                harga_satuan_arkas: this.form.harga_satuan_arkas || 0, // dikirim untuk audit, server tetap ambil dari harga_acuan KodeBarang
                 koreksi: this.form.koreksi || 0,
                 alokasi: {}
             };
