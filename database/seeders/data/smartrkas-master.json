@@ -245,14 +245,14 @@
             "kode": "03.04.01",
             "nama": "Pelaksanaan supervisi pembelajaran semua mapel/guru di sekolah",
             "program": "Pengembangan Standar Proses",
-            "sub_program": "Pelaksanaan Kegiatan Asesmen/Evaluasi Pembelajaran",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "03.04.02",
             "nama": "Pelaksanaan Evaluasi kegiatan ekstrakurikuler",
             "program": "Pengembangan Standar Proses",
-            "sub_program": "Pelaksanaan Kegiatan Asesmen/Evaluasi Pembelajaran",
+            "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
@@ -272,735 +272,735 @@
         {
             "kode": "04.06.01",
             "nama": "Pelaksanaan kegiatan komunitas belajar di satuan pendidikan",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.02",
             "nama": "Kegiatan Komunitas Belajar antar sekolah (termasuk KKG, MGMP, MGMPS, MGMPK, KKKS, atau MKKS)",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.03",
             "nama": "Pengembangan diri guru dan tenaga kependidikan materi lain di luar PMM",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.04",
             "nama": "Pengembangan diri guru dan tenaga kependidikan materi lain melalui PMM",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.05",
             "nama": "Peningkatan Kompetensi Guru",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.06",
             "nama": "Peningkatan Kompetensi Kepala Sekolah",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.07",
             "nama": "Pembinaan dan Peningkatan Kompetensi Tenaga Pelaksana Sekolah (Tenaga Ekstrakurikuler, TU, Laboratorium, Perustakaan, dan UKS)",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.08",
             "nama": "Fasilitasi kepesertaan Guru dalam berbagai kegiatan prestasi guru",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.09",
             "nama": "Kegiatan Magang Guru di Sekolah Lain",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.11",
             "nama": "Peningkatan Kompetensi Guru untuk keterlibatan orangtua/wali dan masyarakat dalam pembelajaran",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.12",
             "nama": "Peningkatan Kompetensi Guru untuk pengelolaan lingkungan pembelajaran yang aman dan nyaman",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.13",
             "nama": "Peningkatan Kompetensi Guru untuk memperkuat numerasi",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.14",
             "nama": "Peningkatan Kompetensi Guru untuk memperkuat literasi",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.22",
             "nama": "Peningkatan Kompetensi Guru untuk memahami konten pembelajaran dan cara mengajarkannya",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.23",
             "nama": "Peningkatan Kompetensi Guru untuk memahami Kurikulum dan cara mengajarkannya",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.24",
             "nama": "Peningkatan Kompetensi Guru untuk pengembangan diri melalui kebiasaan refleksi",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.25",
             "nama": "Peningkatan Kompetensi Guru untuk pembelajaran berorientasi pada peserta didik",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.26",
             "nama": "Peningkatan Kompetensi Guru untuk meamahami kematangam moral, emosi, dan spiritaul untuk berperilaku sesuai kode etik guru",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.27",
             "nama": "Peningkatan Kompetensi Guru untuk asesmen, umpan balik dan pelaporan yang berpusat pada peserta didik",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.31",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Bertakwa Kepada Tuhan YME dan Berakhlak Mulia",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.32",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Gotong Royong",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.33",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kreativitas",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.34",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Nalar Kritis",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.35",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kebinekaan Global",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.36",
             "nama": "Peningkatan Kompetensi Guru untuk Pemahaman Profil Pelajar Pancasila: Kemandirian",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.41",
             "nama": "Peningkatan Kompetensi Guru untuk memahami tentang perundungan, kekerasan, dan kekerasan seksual",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.42",
             "nama": "Peningkatan Kompetensi Guru untuk memahami tentang disiplin positif (dan menghindari hukuman fisik)",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.43",
             "nama": "Peningkatan Kompetensi Guru untuk memahami penyalahgunaan narkotika, psikotropika, zat adiktif (narkoba), minuman keras, merokok, dan HIV AIDS",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.44",
             "nama": "Peningkatan Kompetensi Guru untuk memahami toleransi/kesetaraan/moderasi beragama dan budaya",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.45",
             "nama": "Peningkatan Kompetensi Guru untuk memahami komitmen dan nilai-nilai kebangsaan",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "04.06.46",
             "nama": "Peningkatan Kompetensi Guru untuk memahami sikap inklusif, toleran, dan kesertaan gender (termasuk pendidikan inklusif/disabilitas)",
-            "program": "Pengembangan pendidik dan tenaga kependidikan",
+            "program": "Pengembangan Pendidik dan Tenaga Kependidikan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "05.02.01",
             "nama": "Pemeliharaan buku/koleksi perpustakaan",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pengembangan Perpustakaan",
             "level": 4
         },
         {
             "kode": "05.02.02",
             "nama": "Pengadaan buku/koleksi perpustakaan (selain buku teks, pengayaan, dan referensi)",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pengembangan Perpustakaan",
             "level": 4
         },
         {
             "kode": "05.02.03",
             "nama": "Pengadaan Buku Teks Utama/Pendamping Peserta Didik",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pengembangan Perpustakaan",
             "level": 4
         },
         {
             "kode": "05.02.04",
             "nama": "Pengadaan Buku Teks Utama/Pendamping Guru",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pengembangan Perpustakaan",
             "level": 4
         },
         {
             "kode": "05.02.05",
             "nama": "Pengadaan buku pengayaan dan referensi",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pengembangan Perpustakaan",
             "level": 4
         },
         {
             "kode": "05.05.01",
             "nama": "Penyediaan atau pembuatan media pembelajaran",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "05.05.02",
             "nama": "Pengembangan sekolah sehat, sekolah aman, sekolah ramah anak, sekolah inklusi, sekolah adiwiyata dan sejenisnya",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.01",
             "nama": "Pemeliharaan Prasarana Lahan, Bangunan dan Ruang",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.02",
             "nama": "Pengadaan Peralatan Sekolah diluar diluar komponen penyediaan alat multimedia pembelajaran",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.03",
             "nama": "Pemeliharaan Peralatan Sekolah",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.04",
             "nama": "Pengadaan Perlengkapan Sekolah diluar komponen penyediaan alat multimedia pembelajaran",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.05",
             "nama": "Pemeliharaan Perlengkapan Sekolah",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.06",
             "nama": "Penyediaan prasarana akses/fasilitas bagi Peserta Didik Penyandang Disabilitas",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.07",
             "nama": "Pengadaan Peralatan untuk menunjang pembelajaran Peserta Didik Penyandang Disabilitas",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.08",
             "nama": "Pengadaan Sarana Perlengkapan untuk mendukung Peserta Didik Disabilitas",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.09",
             "nama": "Pengadaan Perlengkapan Daya dan Jasa Sekolah (instalasi air, listrik, telepon, internet, termasuk genset/panel surya)",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.10",
             "nama": "Pemeliharaan Perlengkapan Daya dan Jasa Sekolah (instalasi air, listrik, internet, termasuk genset/panel surya)",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.11",
             "nama": "Pengadaan seragam untuk peserta didik, pendidik, dan tenaga kependidikan yang menjadi inventaris sekolah",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.08.12",
             "nama": "Tindakan tanggap darurat dampak bencana (tidak termasuk perbaikan setelah lewat tanggap darurat)",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Pemeliharaan Sarana dan Prasarana Sekolah",
             "level": 4
         },
         {
             "kode": "05.09.01",
             "nama": "Pengadaan Komputer Desktop/Work-station untuk Pembelajaran, Administrasi dan Perpustakaan",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
             "level": 4
         },
         {
             "kode": "05.09.02",
             "nama": "Pengadaan Komputer Laptop, Notebook untuk Pembelajaran, Administrasi dan Perpustakaan",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
             "level": 4
         },
         {
             "kode": "05.09.04",
             "nama": "Pengadaan Printer, Printer+Scanner, dan Scanner",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
             "level": 4
         },
         {
             "kode": "05.09.05",
             "nama": "Pengadaan Proyektor, Layar Proyektor, dan Layar LCD/LED >= 32\"",
-            "program": "Pengembangan sarana dan prasarana sekolah",
+            "program": "Pengembangan Sarana dan Prasarana Sekolah",
             "sub_program": "Penyediaan Alat Multi Media Pembelajaran",
             "level": 4
         },
         {
             "kode": "06.05.01",
             "nama": "Penyusunan perencanaan program satuan pendidikan (Visi Misi Sekolah, RKJM, RKT, RKAS)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.02",
             "nama": "Pengembangan dan Pelaksanaan Program Kerja Kepala Sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.03",
             "nama": "Pendataan Dapodik",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.04",
             "nama": "Pelaksanaan Monitoring Program/Kegiatan Sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.05",
             "nama": "Pelaksanaan Supervisi Administrasi Tata Usaha",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.06",
             "nama": "Konsumsi Rapat Kedinasan dan Tamu Sekolah (diluar kegiatan lain)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.07",
             "nama": "Pengadaan Bahan Pembelajaran dan Praktik (termasuk Kejuruan/Bengkel)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.08",
             "nama": "Pembelian Bahan Habis Pakai untuk mendukung pembelajaran dan administrasi sekolah (termasuk ATK, Tinta Printer, Kabel Ekstension, dsb)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.09",
             "nama": "Pembelian bahan habis pakai/alat penunjang kebersihan dan sanitasi sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.10",
             "nama": "Pembelian Bahan Habis Pakai (termasuk Suku Cadang Alat) untuk Kegiatan Rumah Tangga Sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.11",
             "nama": "Pengelolaan dan operasional rutin sekolah dalam pembelajaran jarak jauh",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.12",
             "nama": "Pengembangan dan pemeliharaan Website Sekolah (termasuk media sosial sekolah)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.13",
             "nama": "Pengembangan Sistem Informasi untuk menunjang Manajemen Sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.05.14",
             "nama": "Transportasi atau perjalanan dinas dalam rangka koordinasi dan pelaporan ke Dinas Pendidikan",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "06.06.01",
             "nama": "Kegiatan kerjasama dengan sekolah bertaraf internasional untuk peningkatan kompetensi guru",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         },
         {
             "kode": "06.07.01",
             "nama": "Pembayaran daya listrik",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.02",
             "nama": "Penambahan daya listrik",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.03",
             "nama": "Pembayaran langganan air",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.04",
             "nama": "Pembayaran biaya telepon",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.05",
             "nama": "Pembayaran jasa internet",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.06",
             "nama": "Penambahan daya internet",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.07",
             "nama": "Pembelian Bahan Bakar Minyak/Gas untuk keperluan pembelajaran/RT Sekolah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.08",
             "nama": "Pembayaran Retribusi keamanan dan sampah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.09",
             "nama": "Pembayaran langganan koran dan majalah",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.10",
             "nama": "Sewa genset",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "06.07.12",
             "nama": "Belanja Sewa Rumah/Gedung/Gudang/Parkir/tanah (diluar bangunan utama sekolah, kecuali untuk Sekolah Swasta)",
-            "program": "Pengembangan standar pengelolaan",
+            "program": "Pengembangan Standar Pengelolaan",
             "sub_program": "Pembiayaan Langganan Daya dan Jasa",
             "level": 4
         },
         {
             "kode": "07.05.01",
             "nama": "Bea materai, administrasi bank",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.02",
             "nama": "Penggandaan laporan dan/atau surat-menyurat",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.03",
             "nama": "Penyelenggaraan sosialisasi dan pelaporan program, kegiatan hasil-hasil, dan pengelolaan keuangan sekolah",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.04",
             "nama": "Penyelenggaraan kegiatan inventarisasi dan pendokumentasian nilai aset semua sarpras sekolah pada tahun berjalan",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.05",
             "nama": "Penggalangan, pengelolaan dan pelaporan pendanaan dari pihak ketiga (masyarakat umum, dunia industri, dan CSR)",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.06",
             "nama": "Perjalanan dinas dalam rangka mengambil dana BOS di Bank (untuk sekolah terpencil)",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.05.07",
             "nama": "Pencetakan Ijazah",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pelaksanaan Administrasi Kegiatan Sekolah",
             "level": 4
         },
         {
             "kode": "07.12.01",
             "nama": "Pembayaran honor Guru/Pendidik",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pembayaran Honor",
             "level": 4
         },
         {
             "kode": "07.12.02",
             "nama": "Pembayaran honor Tenaga Kependidikan (selain pendidik)",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pembayaran Honor",
             "level": 4
         },
         {
             "kode": "07.12.03",
             "nama": "Pembayaran Honor tenaga administrasi",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pembayaran Honor",
             "level": 4
         },
         {
             "kode": "07.12.04",
             "nama": "Pembayaran honor Tenaga Penunjang atau pelaksana",
-            "program": "Pengembangan standar pembiayaan",
+            "program": "Pengembangan Standar Pembiayaan",
             "sub_program": "Pembayaran Honor",
             "level": 4
         },
         {
             "kode": "08.03.01",
             "nama": "Seleksi Siswa Program Bilingual",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
             "level": 4
         },
         {
             "kode": "08.03.02",
             "nama": "Seleksi Peserta Didik Program Kelas Akselerasi",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
             "level": 4
         },
         {
             "kode": "08.04.01",
             "nama": "Persiapan, uji coba, simulasi, dan pelaksanaan Asesmen Nasional",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.02",
             "nama": "Penyiapan dan Pelaksanaan Asesmen di Awal Pembelajaran",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.03",
             "nama": "Penyusunan kisi-kisi dan penyusunan soal penilaian formatif (ulangan harian)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.04",
             "nama": "Pelaksanaan penilaian formatif (ulangan harian)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.05",
             "nama": "Penyusunan kisi-kisi dan penyusunan soal penilaian sumatif (ulangan tengah semester/akhir semester/kenaikan kelas)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.06",
             "nama": "Pelaksanaan penilaian sumatif (ulangan tengah semester/akhir semester/kenaikan kelas)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.07",
             "nama": "Penyusunan Kisi-Kisi dan Penyusunan Soal Penilaian/Asesmen Sekolah (Akhir Sekolah)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.08",
             "nama": "Penyiapan, Uji Coba, dan Pelaksanaan Penilaian/Asesmen Sekolah (Akhir Sekolah) - Termasuk Asesmen Sekolah Berbasis Komputer",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.09",
             "nama": "Penyusunan Kriteria Kenaikan Kelas",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.10",
             "nama": "Penyusunan Kompetensi Ketuntasan Minimal",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.04.11",
             "nama": "Pengembangan Perangkat Asesmen Kejuruan",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
             "level": 4
         },
         {
             "kode": "08.06.01",
             "nama": "Fasilitasi pengembangan kompetensi guru melalui diseminasi PSP (IHT, Pelatihan, Penugasan, Pengembangan Portofolio, Pelaksanaan P5, dan Workshop)",
-            "program": "Pengembangan dan implementasi sistem penilaian",
+            "program": "Pengembangan Standar Penilaian",
             "sub_program": "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
             "level": 4
         }
