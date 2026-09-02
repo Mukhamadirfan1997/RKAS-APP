@@ -37,8 +37,10 @@ class DashboardController extends Controller
         // Hapus yang 0 agar grafik tidak penuh kategori kosong, tapi tetap hitung Tanpa Klasifikasi bila ada
         $proporsiJenis = array_filter($proporsiJenis, fn($v) => $v > 0);
         $tanpa = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
-            ->whereHas('kodeRekening', fn ($q) => $q->whereNull('jenis_belanja_id'))
-            ->orWhereDoesntHave('kodeRekening')
+            ->where(function ($q) {
+                $q->whereHas('kodeRekening', fn ($qq) => $qq->whereNull('jenis_belanja_id'))
+                    ->orWhereDoesntHave('kodeRekening');
+            })
             ->sum('jumlah');
         if ($tanpa > 0) $proporsiJenis['Tanpa Klasifikasi'] = $tanpa;
 
