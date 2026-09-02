@@ -4,6 +4,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KatalogUpdateController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
 use App\Http\Controllers\PengaturanController;
@@ -48,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     Route::post('/pengaturan/sekolah', [PengaturanController::class, 'updateSekolah'])->name('pengaturan.update-sekolah');
     Route::post('/pengaturan/pagu', [PengaturanController::class, 'updatePagu'])->name('pengaturan.update-pagu');
+    Route::get('/pengaturan/katalog', [KatalogUpdateController::class, 'index'])->name('pengaturan.katalog');
+    Route::post('/pengaturan/katalog/update', [KatalogUpdateController::class, 'update'])->name('pengaturan.katalog.update');
 
     // Master Data
     Route::get('/master/program', [MasterDataController::class, 'program'])->name('master.program');

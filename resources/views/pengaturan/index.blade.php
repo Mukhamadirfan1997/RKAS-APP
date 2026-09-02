@@ -97,6 +97,21 @@
             </form>
         </div>
 
+        <!-- Update Katalog -->
+        <div class="card overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60">
+                <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Update Katalog</h2>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">Perbarui 81rb kode barang via paket .zip offline.</p>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-600 dark:text-slate-300">Katalog barang pusat (ARKAS) dapat diperbarui tanpa install ulang. Upload paket <code>.zip</code> dari developer.</p>
+                <a href="{{ route('pengaturan.katalog') }}" class="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-600/20 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    Buka Halaman Update Katalog
+                </a>
+            </div>
+        </div>
+
         <!-- Pagu Anggaran -->
         <div class="card overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60">
