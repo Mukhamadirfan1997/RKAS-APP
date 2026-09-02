@@ -5,5 +5,4 @@
     <a href="{{ route('pengaturan.pagu', ['tahun'=>$tahunAnggaran->tahun ?? 2026]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $cur==='pengaturan.pagu' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">Pagu</a>
     <a href="{{ route('pengaturan.status', ['tahun'=>$tahunAnggaran->tahun ?? 2026]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $cur==='pengaturan.status' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">Status</a>
     <a href="{{ route('pengaturan.tahun.index') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $cur==='pengaturan.tahun.index' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">Tahun</a>
-    <a href="{{ route('pengaturan.katalog') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $cur==='pengaturan.katalog' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">Katalog</a>
 </div>
