@@ -28,8 +28,24 @@ class ArkasKodeBarangSeeder extends Seeder
             return;
         }
 
-        DB::table('kode_barang')->truncate();
-        $this->command->info('Tabel kode_barang dikosongkan.');
+        // Guard: jangan truncate buta — jika sudah terisi 81k (first-run via copy pre-seeded),
+        // skip agar tidak menghapus data dan tidak memperlambat startup.
+        // Manual dev tetap bisa force dengan --fresh atau truncate manual dahulu.
+        $existing = DB::table('kode_barang')->count();
+        if ($existing >= 80000) {
+            $this->command->warn("kode_barang sudah terisi {$existing} baris, skip truncate & impor (sudah pre-seeded).");
+            $this->command->warn("Hapus manual (truncate) jika ingin re-import dari .xlsm.");
+
+            return;
+        }
+
+        // Jika ada data parsial (mis. 9 sample), truncate dulu baru isi penuh
+        if ($existing > 0) {
+            DB::table('kode_barang')->truncate();
+            $this->command->info("Tabel kode_barang dikosongkan ({$existing} baris sample dihapus).");
+        } else {
+            $this->command->info('Tabel kode_barang kosong, mulai impor.');
+        }
 
         $this->loadSharedStrings();
         $this->streamSheet5();

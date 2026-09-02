@@ -148,11 +148,22 @@ class BackupController extends Controller
             $this->snapshotDbZip($safetyZip);
 
             // Hanya timpa file database aktif bila memang memakai file (bukan :memory:/testing)
-            if (DB::connection()->getDatabaseName() === database_path('database.sqlite')) {
+            // Mendukung DB di app_data_dir (Tauri produksi, writable tanpa admin) maupun install dir (dev)
+            $dbName = DB::connection()->getDatabaseName();
+            if ($dbName === ':memory:') {
+                if (app()->environment('testing')) {
+                    // Testing dengan :memory: tidak punya file aktif untuk ditimpa,
+                    // tapi tetap salin ke file agar backup/restore flow dapat diuji tanpa fake success.
+                    copy($dbBaru, database_path('database.sqlite'));
+                } else {
+                    throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar ('.$dbName.')');
+                }
+            } elseif ($dbName !== '' && $dbName !== ':memory:') {
                 DB::disconnect();
-                copy($dbBaru, database_path('database.sqlite'));
+                // $dbName bisa berupa app_data_dir/database.sqlite (produksi) atau database/database.sqlite (dev)
+                copy($dbBaru, $dbName);
             } else {
-                throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar');
+                throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar ('.$dbName.')');
             }
 
             $this->catatAudit('backup.restore', $safetyZip);
@@ -220,7 +231,9 @@ class BackupController extends Controller
 
         // Fallback saat sedang dalam transaksi (mis. lingkungan pengujian):
         // salin file database langsung tanpa SQL (VACUUM & checkpoint dilarang di tengah transaksi).
-        $source = database_path('database.sqlite');
+        // Gunakan path aktif (app_data_dir di produksi) agar backup konsisten
+        $dbName = DB::connection()->getDatabaseName();
+        $source = ($dbName !== '' && $dbName !== ':memory:' && is_file($dbName)) ? $dbName : database_path('database.sqlite');
         if (! is_file($source)) {
             throw new \RuntimeException('Snapshot gagal: file database tidak ditemukan.');
         }
