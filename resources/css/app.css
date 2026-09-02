@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,13 +8,27 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-display: "Outfit", "Plus Jakarta Sans", sans-serif;
+}
+
+.font-display {
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+}
+
+/* Tabular figures for crisp financial numbers */
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
 }
 
 /* Smooth theme transition */
 html {
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 html.dark body {
@@ -65,10 +79,12 @@ html.dark body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.15s ease, visibility 0.15s ease;
+    transition:
+        opacity 0.15s ease,
+        visibility 0.15s ease;
 }
 .th-help .tooltip::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 100%;
     right: 14px;

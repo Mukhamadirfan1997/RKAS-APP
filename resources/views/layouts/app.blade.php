@@ -4,18 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'KARSA 2026 - Kertas Anggaran Sekolah' }}</title>
+    <title>{{ $title ?? 'KARSA - Kertas Anggaran Sekolah' }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
 
-    <!-- Fonts -->
+    <!-- Fonts: Inter for UI & Outfit for Brand/Headings -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         [x-cloak] { display: none !important; }
     </style>
@@ -66,11 +67,11 @@
         >
             <!-- Brand -->
             <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-200 dark:border-slate-700/60">
-                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-extrabold text-sm shadow-md shadow-blue-600/20 shrink-0">
-                    K
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-700 p-0.5 shadow-md shadow-blue-600/10 shrink-0 border border-slate-200/60 dark:border-slate-600 overflow-hidden">
+                    <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
                 </div>
                 <div x-show="!collapsed" x-cloak class="min-w-0">
-                    <div class="font-extrabold text-slate-800 dark:text-white leading-tight truncate">KARSA 2026</div>
+                    <div class="font-display font-extrabold text-slate-800 dark:text-white text-base tracking-wide leading-tight truncate">KARSA</div>
                     <div class="text-[10px] font-medium text-slate-400 dark:text-slate-400 truncate">{{ $sekolah->nama_sekolah ?? 'SD NEGERI TOYANING 1' }}</div>
                 </div>
             </div>

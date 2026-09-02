@@ -4,15 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reset Password - KARSA 2026</title>
+    <title>Reset Password - KARSA</title>
+    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}</style>
+    <style>body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}</style>
 </head>
 <body class="h-full flex items-center justify-center bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 p-4">
     <div class="w-full max-w-sm">
         <div class="text-center mb-6">
-            <div class="w-14 h-14 mx-auto rounded-2xl bg-white/95 flex items-center justify-center text-blue-700 font-extrabold text-2xl shadow-xl">K</div>
-            <h1 class="text-white font-bold text-xl mt-4">Reset Password</h1>
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-white p-2 shadow-xl flex items-center justify-center">
+                <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+            </div>
+            <h1 class="text-white font-display font-bold text-xl mt-4">Reset Password</h1>
             <p class="text-blue-100 text-xs mt-1">Buat password baru (min 8 karakter)</p>
         </div>
         <div class="bg-white rounded-2xl shadow-2xl p-6">
