@@ -82,7 +82,7 @@ class RkasSearchController extends Controller
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('kode', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "%{$q}%");
+                    ->orWhere('nama', 'like', "{$q}%");
             });
         }
 
