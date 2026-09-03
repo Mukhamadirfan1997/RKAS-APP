@@ -17,6 +17,7 @@ class PengesahanRkasTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected TahunAnggaran $ta;
 
     protected function setUp(): void
@@ -34,6 +35,7 @@ class PengesahanRkasTest extends TestCase
     {
         $prog = MasterProgram::first();
         $rek = MasterKodeRekening::first();
+
         return [
             'master_program_id' => $prog->id,
             'master_kode_rekening_id' => $rek->id,
@@ -48,11 +50,11 @@ class PengesahanRkasTest extends TestCase
         $this->assertEquals('Draft', $this->ta->fresh()->status_pengesahan);
 
         $backupsBefore = collect(File::files(storage_path('app/backups')))
-            ->filter(fn($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'))
+            ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'))
             ->count();
 
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
 
         $this->ta->refresh();
@@ -71,11 +73,11 @@ class PengesahanRkasTest extends TestCase
         $this->assertArrayHasKey('backup_file', $log->new_values);
 
         $files = collect(File::files(storage_path('app/backups')))
-            ->filter(fn($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'.$this->ta->tahun.'-'))
+            ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'.$this->ta->tahun.'-'))
             ->values();
         $this->assertGreaterThan($backupsBefore, $files->count(), 'File rkas-pengesahan-*.zip harus terbuat');
         // Pastikan file yang baru ada dan valid zip
-        $latest = $files->sortByDesc(fn($f) => $f->getMTime())->first();
+        $latest = $files->sortByDesc(fn ($f) => $f->getMTime())->first();
         $this->assertNotNull($latest);
         $this->assertStringEndsWith('.zip', $latest->getFilename());
         $this->assertGreaterThan(0, $latest->getSize());
@@ -101,7 +103,7 @@ class PengesahanRkasTest extends TestCase
         // Pergeseran -> Disahkan harus berhasil (point 4)
         $this->ta->update(['status_pengesahan' => 'Pergeseran']);
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Disahkan', $this->ta->fresh()->status_pengesahan);
     }
@@ -194,7 +196,7 @@ class PengesahanRkasTest extends TestCase
         $this->ta->update(['status_pengesahan' => 'Disahkan']);
 
         $resp = $this->post(route('pengaturan.pengesahan.buka-kembali'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun'=>$this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Pergeseran', $this->ta->fresh()->status_pengesahan);
 

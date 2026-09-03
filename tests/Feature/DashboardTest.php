@@ -15,6 +15,7 @@ class DashboardTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected TahunAnggaran $ta2026;
 
     protected function setUp(): void

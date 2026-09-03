@@ -26,6 +26,7 @@ class BuildKatalogUpdate extends Command
         if (! is_file($source)) {
             $this->error("File sumber tidak ditemukan: {$source}");
             $this->line('Gunakan --source=path/ke/file.xlsm yang valid.');
+
             return self::FAILURE;
         }
 
@@ -52,6 +53,7 @@ class BuildKatalogUpdate extends Command
         $zip = new ZipArchive;
         if ($zip->open($source) !== true) {
             $this->error('Gagal membuka file sebagai zip (xlsm). File korup atau bukan xlsm valid.');
+
             return self::FAILURE;
         }
         $hasSheet = $zip->getFromName('xl/worksheets/sheet5.xml') !== false;
@@ -59,6 +61,7 @@ class BuildKatalogUpdate extends Command
         $zip->close();
         if (! $hasSheet) {
             $this->error('Struktur tidak valid: xl/worksheets/sheet5.xml tidak ditemukan. Pastikan file adalah RKAS master dengan sheet KODE BARANG di sheet5.');
+
             return self::FAILURE;
         }
         if (! $hasStrings) {
@@ -76,6 +79,7 @@ class BuildKatalogUpdate extends Command
         $jumlah = $this->countCsvRows($csvPath);
         if ($jumlah === 0) {
             $this->error('CSV hasil kosong (0 baris). Cek struktur kolom sumber.');
+
             return self::FAILURE;
         }
 
@@ -88,7 +92,7 @@ class BuildKatalogUpdate extends Command
             'checksum_algo' => 'sha256',
             'source_file' => basename($source),
             'format' => 'csv',
-            'csv_header' => ['kode','id_barang_arkas','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori'],
+            'csv_header' => ['kode', 'id_barang_arkas', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori'],
             'catatan' => 'Paket update katalog KARSA — hanya update/insert match kode/id_barang_arkas, tidak hapus custom sekolah. Proses via upsert chunk 1000.',
         ];
 
@@ -99,6 +103,7 @@ class BuildKatalogUpdate extends Command
         $zipOut = new ZipArchive;
         if ($zipOut->open($output, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             $this->error("Gagal membuat zip output: {$output}");
+
             return self::FAILURE;
         }
         $zipOut->addFile($csvPath, 'katalog.csv');
@@ -128,7 +133,7 @@ class BuildKatalogUpdate extends Command
 
         $out = fopen($csvPath, 'w');
         // Header
-        fputcsv($out, ['kode','id_barang_arkas','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori']);
+        fputcsv($out, ['kode', 'id_barang_arkas', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori']);
 
         $reader = new \XMLReader;
         $reader->XML($xml);
@@ -224,6 +229,7 @@ class BuildKatalogUpdate extends Command
                 $cells[$col] = trim(html_entity_decode((string) $val));
             }
         }
+
         return $cells;
     }
 
@@ -236,6 +242,7 @@ class BuildKatalogUpdate extends Command
             $count++;
         }
         fclose($fh);
+
         return $count;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\BackupService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,10 +30,10 @@ class AppServiceProvider extends ServiceProvider
         // Hanya untuk request web (bukan console test/migrate) — guard testing ada di service
         try {
             if (! app()->runningInConsole()) {
-                \App\Services\BackupService::ensureDailyAutoBackup();
+                BackupService::ensureDailyAutoBackup();
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Auto backup boot gagal: '.$e->getMessage());
+            Log::warning('Auto backup boot gagal: '.$e->getMessage());
         }
     }
 }

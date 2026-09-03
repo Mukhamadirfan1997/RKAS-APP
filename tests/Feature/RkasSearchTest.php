@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\KodeBarang;
-use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,7 +29,7 @@ class RkasSearchTest extends TestCase
         $resp->assertJsonStructure(['results']);
         $results = $resp->json('results');
         $this->assertNotEmpty($results);
-        $this->assertTrue(collect($results)->contains(fn($r) => str_contains($r['kode'], '03.02') || str_contains($r['nama'], '03.02')));
+        $this->assertTrue(collect($results)->contains(fn ($r) => str_contains($r['kode'], '03.02') || str_contains($r['nama'], '03.02')));
     }
 
     public function test_search_kegiatan_empty_query_tidak_error_dan_limit_25(): void
@@ -57,7 +56,7 @@ class RkasSearchTest extends TestCase
         $resp->assertOk();
         $results = $resp->json('results');
         $this->assertNotEmpty($results);
-        $this->assertTrue(collect($results)->contains(fn($r) => str_contains($r['kode'], '5.1.02.02.01')));
+        $this->assertTrue(collect($results)->contains(fn ($r) => str_contains($r['kode'], '5.1.02.02.01')));
     }
 
     public function test_search_rekening_empty_query_limit_25(): void
@@ -74,7 +73,7 @@ class RkasSearchTest extends TestCase
         $resp->assertOk();
         $results = $resp->json('results');
         $this->assertNotEmpty($results);
-        $this->assertTrue(collect($results)->contains(fn($r) => str_starts_with($r['nama'], 'Kertas HVS')));
+        $this->assertTrue(collect($results)->contains(fn ($r) => str_starts_with($r['nama'], 'Kertas HVS')));
     }
 
     public function test_search_barang_custom_prefix_dan_kode(): void
@@ -82,7 +81,7 @@ class RkasSearchTest extends TestCase
         KodeBarang::create(['kode' => 'KB-UNIQ-SEARCH', 'nama' => 'UNIQTEST Barang Cari', 'satuan_default' => 'buah', 'harga_acuan' => 9999]);
         $resp = $this->getJson(route('api.search.barang', ['q' => 'UNIQTEST']));
         $resp->assertOk();
-        $this->assertTrue(collect($resp->json('results'))->contains(fn($r) => $r['kode'] === 'KB-UNIQ-SEARCH'));
+        $this->assertTrue(collect($resp->json('results'))->contains(fn ($r) => $r['kode'] === 'KB-UNIQ-SEARCH'));
 
         // Cari via kode substring
         $resp2 = $this->getJson(route('api.search.barang', ['q' => 'KB-UNIQ']));

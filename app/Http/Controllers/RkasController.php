@@ -20,12 +20,15 @@ class RkasController extends Controller
     {
         if ($request->filled('tahun')) {
             $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
-            if ($ta) return $ta;
+            if ($ta) {
+                return $ta;
+            }
         }
+
         return TahunAnggaran::where('is_active', true)->first()
             ?? TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first()
-            ?? new TahunAnggaran(['tahun'=>2026, 'pagu_total'=>0]);
+            ?? new TahunAnggaran(['tahun' => 2026, 'pagu_total' => 0]);
     }
 
     /**
@@ -67,15 +70,15 @@ class RkasController extends Controller
         $totalSudahDianggarkan = $allItems->sum('jumlah');
         $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $totalSudahDianggarkan;
         $totalBulanTerpilih = $selectedBulan > 0
-            ? $allItems->sum(fn($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
+            ? $allItems->sum(fn ($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
             : $totalSudahDianggarkan;
 
         // Group items per Kegiatan (ARKAS Kertas Kerja structure) - Urut otomatis berdasarkan kode SNP
         $kegiatanGroups = $items->groupBy('master_program_id')->map(function ($group) use ($selectedBulan) {
             $prog = $group->first()->program;
-            $total1Tahun = $group->sum(fn($i) => $i->jumlah_koreksi);
+            $total1Tahun = $group->sum(fn ($i) => $i->jumlah_koreksi);
             $totalBulan = $selectedBulan > 0
-                ? $group->sum(fn($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
+                ? $group->sum(fn ($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
                 : $total1Tahun;
 
             return [
@@ -87,11 +90,11 @@ class RkasController extends Controller
                 'jumlah_item' => $group->count(),
                 'total_sudah' => $total1Tahun,
                 'total_bulan' => $totalBulan,
-                'bulan_aktif' => $group->flatMap(fn($i) => $i->alokasiBulan->where('volume', '>', 0)->pluck('bulan'))->unique()->sort()->values(),
+                'bulan_aktif' => $group->flatMap(fn ($i) => $i->alokasiBulan->where('volume', '>', 0)->pluck('bulan'))->unique()->sort()->values(),
             ];
         })->sortBy('kode', SORT_NATURAL)->values();
 
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
 
         return view('rkas.index', compact(
             'sekolah',
@@ -155,8 +158,10 @@ class RkasController extends Controller
             if ($request->wantsJson() || $request->ajax() || $request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => $msg], 403);
             }
+
             return redirect()->back()->withErrors(['error' => $msg]);
         }
+
         return null;
     }
 
@@ -377,6 +382,331 @@ class RkasController extends Controller
     }
 
     /**
+     * Build FLAT data for export — struktur ARKAS RINCIAN asli.
+     * Hanya 3 level: Kegiatan → Rekening → Item (TANPA Standar/Program).
+     * Tiap item dilengkapi Volume+Jumlah per bulan terpisah (24 kolom),
+     * Validasi Bulanan (BENAR/SALAH), dan Kontrol (OK/SELISIH).
+     */
+    private function buildFlatForExport(TahunAnggaran $tahunAnggaran): array
+    {
+        $items = RkasItem::with(['program', 'kodeRekening.jenisBelanja', 'barang', 'alokasiBulan'])
+            ->where('tahun_anggaran_id', $tahunAnggaran->id)
+            ->orderBy('no_urut')
+            ->get();
+
+        foreach ($items as $item) {
+            $mapVol = [];
+            $mapJml = [];
+            for ($b = 1; $b <= 12; $b++) {
+                $ab = $item->alokasiBulan->firstWhere('bulan', $b);
+                $mapVol[$b] = $ab ? (float) $ab->volume : 0;
+                $mapJml[$b] = $ab ? (float) $ab->jumlah : 0;
+            }
+            $item->bulanVol = $mapVol;
+            $item->bulanJml = $mapJml;
+            // Legacy alias untuk view lama yang masih pakai bulanMap (hanya Jumlah)
+            $item->bulanMap = $mapJml;
+            $item->tahap1Vol = array_sum(array_slice($mapVol, 0, 6, true));
+            $item->tahap1Jml = array_sum(array_slice($mapJml, 0, 6, true));
+            $item->tahap2Vol = array_sum(array_slice($mapVol, 6, 6, true));
+            $item->tahap2Jml = array_sum(array_slice($mapJml, 6, 6, true));
+            // Alias lama
+            $item->tahap1 = $item->tahap1Jml;
+            $item->tahap2 = $item->tahap2Jml;
+            // Validasi Bulanan: BENAR jika Jumlah 1 tahun == Tahap I + Tahap II (tanpa koreksi)
+            $sumBulanan = $item->tahap1Jml + $item->tahap2Jml;
+            $item->validasiBulanan = abs((float) $item->jumlah - $sumBulanan) < 0.01 ? 'BENAR' : 'SALAH';
+            // Kategori untuk Excel
+            $item->kategori = $item->kodeRekening->jenisBelanja->nama ?? ($item->kodeRekening->kategori_belanja ?? '');
+        }
+
+        // Group flat: Kegiatan -> Rekening -> Item
+        $flatGroups = $items->groupBy('master_program_id')->map(function ($group) {
+            $prog = $group->first()->program;
+            // Rekening dalam kegiatan, urut natural kode
+            $byRek = $group->groupBy('master_kode_rekening_id');
+            $rekenings = $byRek->map(function ($rekItems) {
+                $rek = $rekItems->first()->kodeRekening;
+                $perBulanVol = [];
+                $perBulanJml = [];
+                for ($b = 1; $b <= 12; $b++) {
+                    $perBulanVol[$b] = $rekItems->sum(fn ($it) => $it->bulanVol[$b] ?? 0);
+                    $perBulanJml[$b] = $rekItems->sum(fn ($it) => $it->bulanJml[$b] ?? 0);
+                }
+
+                return [
+                    'id' => $rekItems->first()->master_kode_rekening_id,
+                    'kode' => $rek->kode ?? '-',
+                    'nama' => $rek->nama ?? 'Rekening',
+                    'kategori' => $rek->jenisBelanja->nama ?? ($rek->kategori_belanja ?? ''),
+                    'jenis' => $rek->jenisBelanja->nama ?? ($rek->kategori_belanja ?? ''),
+                    'items' => $rekItems->sortBy('no_urut')->values(),
+                    'jumlah_item' => $rekItems->count(),
+                    'perBulanVol' => $perBulanVol,
+                    'perBulanJml' => $perBulanJml,
+                    'perBulan' => $perBulanJml, // alias lama (Jumlah)
+                    'subTahap1Vol' => array_sum(array_slice($perBulanVol, 0, 6, true)),
+                    'subTahap1' => array_sum(array_slice($perBulanJml, 0, 6, true)),
+                    'subTahap1Jml' => array_sum(array_slice($perBulanJml, 0, 6, true)),
+                    'subTahap2Vol' => array_sum(array_slice($perBulanVol, 6, 6, true)),
+                    'subTahap2' => array_sum(array_slice($perBulanJml, 6, 6, true)),
+                    'subTahap2Jml' => array_sum(array_slice($perBulanJml, 6, 6, true)),
+                    'total_sudah' => $rekItems->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                    'total_kontrol' => $rekItems->sum(fn ($it) => (float) $it->jumlah),
+                    'total_koreksi' => $rekItems->sum(fn ($it) => (float) $it->koreksi),
+                ];
+            })->sortBy('kode', SORT_NATURAL)->values();
+
+            $perBulanVol = [];
+            $perBulanJml = [];
+            for ($b = 1; $b <= 12; $b++) {
+                $perBulanVol[$b] = $group->sum(fn ($it) => $it->bulanVol[$b] ?? 0);
+                $perBulanJml[$b] = $group->sum(fn ($it) => $it->bulanJml[$b] ?? 0);
+            }
+
+            return [
+                'id' => $group->first()->master_program_id,
+                'kode' => $prog->kode ?? '-',
+                'nama' => $prog->nama ?? 'Kegiatan',
+                'program' => $prog->program ?? '',
+                'sub_program' => $prog->sub_program ?? '',
+                'rekenings' => $rekenings,
+                'items' => $group->sortBy('no_urut')->values(),
+                'jumlah_item' => $group->count(),
+                'jumlah_rekening' => $rekenings->count(),
+                'perBulanVol' => $perBulanVol,
+                'perBulanJml' => $perBulanJml,
+                'perBulan' => $perBulanJml, // alias
+                'subTahap1Vol' => array_sum(array_slice($perBulanVol, 0, 6, true)),
+                'subTahap1' => array_sum(array_slice($perBulanJml, 0, 6, true)),
+                'subTahap1Jml' => array_sum(array_slice($perBulanJml, 0, 6, true)),
+                'subTahap2Vol' => array_sum(array_slice($perBulanVol, 6, 6, true)),
+                'subTahap2' => array_sum(array_slice($perBulanJml, 6, 6, true)),
+                'subTahap2Jml' => array_sum(array_slice($perBulanJml, 6, 6, true)),
+                'total_sudah' => $group->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                'total_kontrol' => $group->sum(fn ($it) => (float) $it->jumlah),
+                'total_koreksi' => $group->sum(fn ($it) => (float) $it->koreksi),
+            ];
+        })->sortBy('kode', SORT_NATURAL)->values();
+
+        // Alias untuk view lama yang masih pakai $groups
+        $groups = $flatGroups;
+
+        // Grand totals — Volume & Jumlah per bulan terpisah
+        $grandPerBulanVol = [];
+        $grandPerBulanJml = [];
+        for ($b = 1; $b <= 12; $b++) {
+            $grandPerBulanVol[$b] = $items->sum(fn ($it) => $it->bulanVol[$b] ?? 0);
+            $grandPerBulanJml[$b] = $items->sum(fn ($it) => $it->bulanJml[$b] ?? 0);
+        }
+        // Legacy alias (hanya Jumlah)
+        $grandPerBulan = $grandPerBulanJml;
+        $grandTahap1Vol = array_sum(array_slice($grandPerBulanVol, 0, 6, true));
+        $grandTahap1 = array_sum(array_slice($grandPerBulanJml, 0, 6, true));
+        $grandTahap1Jml = $grandTahap1;
+        $grandTahap2Vol = array_sum(array_slice($grandPerBulanVol, 6, 6, true));
+        $grandTahap2 = array_sum(array_slice($grandPerBulanJml, 6, 6, true));
+        $grandTahap2Jml = $grandTahap2;
+        $grandTotal = $items->sum(fn ($it) => (float) $it->jumlah_koreksi);
+        $grandKoreksi = $items->sum(fn ($it) => (float) $it->koreksi);
+        $grandKontrol = $items->sum(fn ($it) => (float) $it->jumlah);
+        $grandJumlah = $grandKontrol;
+        $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $grandTotal;
+
+        return compact('flatGroups', 'groups', 'items', 'grandPerBulanVol', 'grandPerBulanJml', 'grandPerBulan', 'grandTahap1Vol', 'grandTahap1', 'grandTahap1Jml', 'grandTahap2Vol', 'grandTahap2', 'grandTahap2Jml', 'grandTotal', 'grandKoreksi', 'grandKontrol', 'grandJumlah', 'sisaPagu');
+    }
+
+    /**
+     * Build hierarchical 5-level data for export.
+     * Struktur: Standar (master_program.program) → Program (master_program.sub_program)
+     *         → Kegiatan (master_program kode/nama) → Rekening (master_kode_rekening)
+     *         → Item (rkas_item + 12 bulan).
+     * Tetap menghitung groups flat per kegiatan & grand totals untuk kompatibilitas.
+     *
+     * @deprecated Gunakan buildFlatForExport() — hierarki 5 level diganti flat 3 level ARKAS RINCIAN.
+     */
+    private function buildHierarchicalForExport(TahunAnggaran $tahunAnggaran): array
+    {
+        $items = RkasItem::with(['program', 'kodeRekening.jenisBelanja', 'barang', 'alokasiBulan'])
+            ->where('tahun_anggaran_id', $tahunAnggaran->id)
+            ->orderBy('no_urut')
+            ->get();
+
+        foreach ($items as $item) {
+            $map = [];
+            for ($b = 1; $b <= 12; $b++) {
+                $ab = $item->alokasiBulan->firstWhere('bulan', $b);
+                $map[$b] = $ab ? (float) $ab->jumlah : 0;
+            }
+            $item->bulanMap = $map;
+            $item->tahap1 = array_sum(array_slice($map, 0, 6, true));
+            $item->tahap2 = array_sum(array_slice($map, 6, 6, true));
+        }
+
+        // Reuse grouped per kegiatan untuk kompatibilitas (dipakai test lama & fallback view)
+        $groups = $items->groupBy('master_program_id')->map(function ($group) {
+            $prog = $group->first()->program;
+            $perBulan = [];
+            for ($b = 1; $b <= 12; $b++) {
+                $perBulan[$b] = $group->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+            }
+            $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
+            $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
+            $totalKoreksi = $group->sum(fn ($it) => (float) $it->jumlah_koreksi);
+            $totalKontrol = $group->sum(fn ($it) => (float) $it->jumlah);
+            $totalKoreksiAdj = $group->sum(fn ($it) => (float) $it->koreksi);
+
+            return [
+                'id' => $group->first()->master_program_id,
+                'kode' => $prog->kode ?? '-',
+                'nama' => $prog->nama ?? 'Kegiatan',
+                'program' => $prog->program ?? 'Tanpa Standar',
+                'sub_program' => $prog->sub_program ?? '',
+                'items' => $group->values(),
+                'jumlah_item' => $group->count(),
+                'total_sudah' => $totalKoreksi,
+                'total_kontrol' => $totalKontrol,
+                'total_koreksi' => $totalKoreksiAdj,
+                'perBulan' => $perBulan,
+                'subTahap1' => $subTahap1,
+                'subTahap2' => $subTahap2,
+            ];
+        })->sortBy('kode', SORT_NATURAL)->values();
+
+        // Grand totals
+        $grandPerBulan = [];
+        for ($b = 1; $b <= 12; $b++) {
+            $grandPerBulan[$b] = $items->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+        }
+        $grandTahap1 = array_sum(array_slice($grandPerBulan, 0, 6, true));
+        $grandTahap2 = array_sum(array_slice($grandPerBulan, 6, 6, true));
+        $grandTotal = $items->sum(fn ($it) => (float) $it->jumlah_koreksi);
+        $grandKoreksi = $items->sum(fn ($it) => (float) $it->koreksi);
+        $grandKontrol = $items->sum(fn ($it) => (float) $it->jumlah);
+        $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $grandTotal;
+
+        // --- Hierarki 5 level ---
+        // Level 1: Standar = master_program.program
+        $byStandar = $items->groupBy(function ($it) {
+            $v = trim((string) ($it->program->program ?? ''));
+
+            return $v !== '' ? $v : 'Tanpa Standar';
+        });
+
+        $hierarchy = $byStandar->map(function ($standarItems, $standarNama) {
+            // Level 2: Program = master_program.sub_program
+            $bySub = $standarItems->groupBy(function ($it) {
+                $v = trim((string) ($it->program->sub_program ?? ''));
+
+                return $v !== '' ? $v : 'Tanpa Program';
+            });
+
+            $subs = $bySub->map(function ($subItems, $subNama) {
+                // Level 3: Kegiatan = master_program
+                $byKegiatan = $subItems->groupBy('master_program_id');
+
+                $kegiatans = $byKegiatan->map(function ($kegItems) {
+                    $prog = $kegItems->first()->program;
+                    // Level 4: Rekening
+                    $byRek = $kegItems->groupBy('master_kode_rekening_id');
+                    $rekenings = $byRek->map(function ($rekItems) {
+                        $rek = $rekItems->first()->kodeRekening;
+                        $perBulan = [];
+                        for ($b = 1; $b <= 12; $b++) {
+                            $perBulan[$b] = $rekItems->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+                        }
+                        $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
+                        $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
+
+                        return [
+                            'id' => $rekItems->first()->master_kode_rekening_id,
+                            'kode' => $rek->kode ?? '-',
+                            'nama' => $rek->nama ?? 'Rekening',
+                            'jenis' => $rek->jenisBelanja->nama ?? ($rek->kategori_belanja ?? ''),
+                            'items' => $rekItems->values(),
+                            'jumlah_item' => $rekItems->count(),
+                            'total_sudah' => $rekItems->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                            'total_kontrol' => $rekItems->sum(fn ($it) => (float) $it->jumlah),
+                            'total_koreksi' => $rekItems->sum(fn ($it) => (float) $it->koreksi),
+                            'perBulan' => $perBulan,
+                            'subTahap1' => $subTahap1,
+                            'subTahap2' => $subTahap2,
+                        ];
+                    })->sortBy('kode', SORT_NATURAL)->values();
+
+                    $perBulan = [];
+                    for ($b = 1; $b <= 12; $b++) {
+                        $perBulan[$b] = $kegItems->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+                    }
+                    $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
+                    $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
+
+                    return [
+                        'id' => $kegItems->first()->master_program_id,
+                        'kode' => $prog->kode ?? '-',
+                        'nama' => $prog->nama ?? 'Kegiatan',
+                        'program' => $prog->program ?? '',
+                        'sub_program' => $prog->sub_program ?? '',
+                        'rekenings' => $rekenings,
+                        'items' => $kegItems->values(),
+                        'jumlah_item' => $kegItems->count(),
+                        'jumlah_rekening' => $rekenings->count(),
+                        'total_sudah' => $kegItems->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                        'total_kontrol' => $kegItems->sum(fn ($it) => (float) $it->jumlah),
+                        'total_koreksi' => $kegItems->sum(fn ($it) => (float) $it->koreksi),
+                        'perBulan' => $perBulan,
+                        'subTahap1' => $subTahap1,
+                        'subTahap2' => $subTahap2,
+                    ];
+                })->sortBy('kode', SORT_NATURAL)->values();
+
+                $perBulan = [];
+                for ($b = 1; $b <= 12; $b++) {
+                    $perBulan[$b] = $subItems->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+                }
+                $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
+                $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
+
+                return [
+                    'sub' => $subNama,
+                    'kegiatans' => $kegiatans,
+                    'jumlah_kegiatan' => $kegiatans->count(),
+                    'jumlah_item' => $subItems->count(),
+                    'total_sudah' => $subItems->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                    'total_kontrol' => $subItems->sum(fn ($it) => (float) $it->jumlah),
+                    'total_koreksi' => $subItems->sum(fn ($it) => (float) $it->koreksi),
+                    'perBulan' => $perBulan,
+                    'subTahap1' => $subTahap1,
+                    'subTahap2' => $subTahap2,
+                ];
+            })->sortBy('sub')->values();
+
+            $perBulan = [];
+            for ($b = 1; $b <= 12; $b++) {
+                $perBulan[$b] = $standarItems->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
+            }
+            $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
+            $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
+
+            return [
+                'standar' => $standarNama,
+                'subs' => $subs,
+                'jumlah_program' => $subs->count(),
+                'jumlah_kegiatan' => $standarItems->groupBy('master_program_id')->count(),
+                'jumlah_item' => $standarItems->count(),
+                'total_sudah' => $standarItems->sum(fn ($it) => (float) $it->jumlah_koreksi),
+                'total_kontrol' => $standarItems->sum(fn ($it) => (float) $it->jumlah),
+                'total_koreksi' => $standarItems->sum(fn ($it) => (float) $it->koreksi),
+                'perBulan' => $perBulan,
+                'subTahap1' => $subTahap1,
+                'subTahap2' => $subTahap2,
+            ];
+        })->sortBy('standar')->values();
+
+        return compact('hierarchy', 'groups', 'items', 'grandPerBulan', 'grandTahap1', 'grandTahap2', 'grandTotal', 'grandKoreksi', 'grandKontrol', 'sisaPagu');
+    }
+
+    /**
      * Build grouped data for export (reusable by index/pdfGrouped/exportGrouped).
      * Returns groups sorted natural + per-item 12-month breakdown.
      */
@@ -404,13 +734,13 @@ class RkasController extends Controller
             // Per-month subtotal per kegiatan
             $perBulan = [];
             for ($b = 1; $b <= 12; $b++) {
-                $perBulan[$b] = $group->sum(fn($it) => $it->bulanMap[$b] ?? 0);
+                $perBulan[$b] = $group->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
             }
             $subTahap1 = array_sum(array_slice($perBulan, 0, 6, true));
             $subTahap2 = array_sum(array_slice($perBulan, 6, 6, true));
-            $totalKoreksi = $group->sum(fn($it) => (float) $it->jumlah_koreksi);
-            $totalKontrol = $group->sum(fn($it) => (float) $it->jumlah);
-            $totalKoreksiAdj = $group->sum(fn($it) => (float) $it->koreksi);
+            $totalKoreksi = $group->sum(fn ($it) => (float) $it->jumlah_koreksi);
+            $totalKontrol = $group->sum(fn ($it) => (float) $it->jumlah);
+            $totalKoreksiAdj = $group->sum(fn ($it) => (float) $it->koreksi);
 
             return [
                 'id' => $group->first()->master_program_id,
@@ -431,13 +761,13 @@ class RkasController extends Controller
         // Grand totals
         $grandPerBulan = [];
         for ($b = 1; $b <= 12; $b++) {
-            $grandPerBulan[$b] = $items->sum(fn($it) => $it->bulanMap[$b] ?? 0);
+            $grandPerBulan[$b] = $items->sum(fn ($it) => $it->bulanMap[$b] ?? 0);
         }
         $grandTahap1 = array_sum(array_slice($grandPerBulan, 0, 6, true));
         $grandTahap2 = array_sum(array_slice($grandPerBulan, 6, 6, true));
-        $grandTotal = $items->sum(fn($it) => (float) $it->jumlah_koreksi);
-        $grandKoreksi = $items->sum(fn($it) => (float) $it->koreksi);
-        $grandKontrol = $items->sum(fn($it) => (float) $it->jumlah);
+        $grandTotal = $items->sum(fn ($it) => (float) $it->jumlah_koreksi);
+        $grandKoreksi = $items->sum(fn ($it) => (float) $it->koreksi);
+        $grandKontrol = $items->sum(fn ($it) => (float) $it->jumlah);
         $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $grandTotal;
 
         return compact('groups', 'items', 'grandPerBulan', 'grandTahap1', 'grandTahap2', 'grandTotal', 'grandKoreksi', 'grandKontrol', 'sisaPagu');
@@ -456,9 +786,9 @@ class RkasController extends Controller
             ->orderBy('no_urut')
             ->get();
 
-        $totalTahap1 = RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
+        $totalTahap1 = RkasItemBulan::whereHas('item', fn ($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
             ->whereBetween('bulan', [1, 6])->sum('jumlah');
-        $totalTahap2 = RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
+        $totalTahap2 = RkasItemBulan::whereHas('item', fn ($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))
             ->whereBetween('bulan', [7, 12])->sum('jumlah');
 
         $pdf = Pdf::loadView('rkas.pdf', compact(
@@ -469,22 +799,22 @@ class RkasController extends Controller
             'totalTahap2'
         ))->setPaper('a4', 'landscape');
 
-        return $pdf->download('kertas-kerja-rkas-' . ($tahunAnggaran->tahun ?? 2026) . '.pdf');
+        return $pdf->download('kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.pdf');
     }
 
     /**
-     * Export grouped per kegiatan with 12-month breakdown - PDF.
+     * Export grouped per kegiatan with 12-month breakdown - PDF (flat ARKAS RINCIAN, custom lebar).
      */
     public function pdfGrouped(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
         $tahunAnggaran = $this->resolveTahun($request);
-        $data = $this->buildGroupedForExport($tahunAnggaran);
+        $data = $this->buildFlatForExport($tahunAnggaran);
 
         $pdf = Pdf::loadView('rkas.pdf-grouped', array_merge(compact('sekolah', 'tahunAnggaran'), $data))
-            ->setPaper('a4', 'landscape');
+            ->setPaper('a3', 'landscape');
 
-        return $pdf->download('kertas-kerja-rkas-grouped-' . ($tahunAnggaran->tahun ?? 2026) . '.pdf');
+        return $pdf->download('kertas-kerja-rkas-grouped-'.($tahunAnggaran->tahun ?? 2026).'.pdf');
     }
 
     /**
@@ -502,22 +832,22 @@ class RkasController extends Controller
 
         return Excel::download(
             new RkasKertasKerjaExport($sekolah, $tahunAnggaran, $items),
-            'kertas-kerja-rkas-' . ($tahunAnggaran->tahun ?? 2026) . '.xlsx'
+            'kertas-kerja-rkas-'.($tahunAnggaran->tahun ?? 2026).'.xlsx'
         );
     }
 
     /**
-     * Export grouped per kegiatan with 12-month breakdown - Excel.
+     * Export grouped per kegiatan with 12-month breakdown - Excel (flat ARKAS RINCIAN, 41 kolom).
      */
     public function exportGrouped(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
         $tahunAnggaran = $this->resolveTahun($request);
-        $data = $this->buildGroupedForExport($tahunAnggaran);
+        $data = $this->buildFlatForExport($tahunAnggaran);
 
         return Excel::download(
             new RkasKertasKerjaGroupedExport($sekolah, $tahunAnggaran, $data['groups'], $data),
-            'kertas-kerja-rkas-grouped-' . ($tahunAnggaran->tahun ?? 2026) . '.xlsx'
+            'kertas-kerja-rkas-grouped-'.($tahunAnggaran->tahun ?? 2026).'.xlsx'
         );
     }
 }

@@ -62,6 +62,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('rkas.index');
         }
+
         return view('auth.lupa-password');
     }
 
@@ -87,6 +88,7 @@ class AuthController extends Controller
                 'description' => 'Gagal verifikasi NPSN+email (email tidak ditemukan): '.trim($request->email),
                 'ip_address' => $request->ip(),
             ]);
+
             return back()->withErrors(['email' => 'Email tidak ditemukan.'])->onlyInput('email');
         }
 
@@ -102,6 +104,7 @@ class AuthController extends Controller
                 'description' => 'Gagal verifikasi NPSN+email',
                 'ip_address' => $request->ip(),
             ]);
+
             return back()->withErrors(['npsn' => 'NPSN atau email tidak cocok.'])->onlyInput('email');
         }
 
@@ -123,8 +126,10 @@ class AuthController extends Controller
         $at = $request->session()->get('pw_reset_npsn_at', 0);
         if (now()->timestamp - $at > 600) {
             $request->session()->forget(['pw_reset_npsn_verified', 'pw_reset_npsn_at', 'pw_reset_user_id']);
+
             return redirect()->route('auth.forgot')->withErrors(['npsn' => 'Sesi verifikasi kedaluwarsa (10 menit). Silakan verifikasi ulang.']);
         }
+
         return view('auth.reset-password');
     }
 
@@ -136,6 +141,7 @@ class AuthController extends Controller
         $at = $request->session()->get('pw_reset_npsn_at', 0);
         if (now()->timestamp - $at > 600) {
             $request->session()->forget(['pw_reset_npsn_verified', 'pw_reset_npsn_at', 'pw_reset_user_id']);
+
             return redirect()->route('auth.forgot')->withErrors(['npsn' => 'Sesi kedaluwarsa. Verifikasi ulang.']);
         }
 

@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MasterKodeRekening;
+use App\Models\JenisBelanja;
 use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\RkasItemBulan;
 use App\Models\TahunAnggaran;
 use App\Services\JuknisValidator;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    private function resolveTahun(\Illuminate\Http\Request $request): TahunAnggaran
+    private function resolveTahun(Request $request): TahunAnggaran
     {
         if ($request->filled('tahun')) {
             $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
-            if ($ta) return $ta;
+            if ($ta) {
+                return $ta;
+            }
         }
+
         return TahunAnggaran::where('is_active', true)->first()
             ?? TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first()
-            ?? new TahunAnggaran(['tahun'=>2026]);
+            ?? new TahunAnggaran(['tahun' => 2026]);
     }
 
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
         $tahunAnggaran = $this->resolveTahun($request);
@@ -39,7 +43,7 @@ class DashboardController extends Controller
         }
 
         // Proporsi 9 Jenis Belanja resmi ARKAS + Tanpa Klasifikasi
-        $jenisBelanjas = \App\Models\JenisBelanja::orderBy('nama')->get();
+        $jenisBelanjas = JenisBelanja::orderBy('nama')->get();
         $proporsiJenis = [];
         foreach ($jenisBelanjas as $jb) {
             $proporsiJenis[$jb->nama] = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
@@ -47,18 +51,20 @@ class DashboardController extends Controller
                 ->sum('jumlah');
         }
         // Hapus yang 0 agar grafik tidak penuh kategori kosong, tapi tetap hitung Tanpa Klasifikasi bila ada
-        $proporsiJenis = array_filter($proporsiJenis, fn($v) => $v > 0);
+        $proporsiJenis = array_filter($proporsiJenis, fn ($v) => $v > 0);
         $tanpa = (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
             ->where(function ($q) {
                 $q->whereHas('kodeRekening', fn ($qq) => $qq->whereNull('jenis_belanja_id'))
                     ->orWhereDoesntHave('kodeRekening');
             })
             ->sum('jumlah');
-        if ($tanpa > 0) $proporsiJenis['Tanpa Klasifikasi'] = $tanpa;
+        if ($tanpa > 0) {
+            $proporsiJenis['Tanpa Klasifikasi'] = $tanpa;
+        }
 
         // Total item & capaian
         $totalItem = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->count();
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
 
         return view('dashboard.index', compact(
             'sekolah',

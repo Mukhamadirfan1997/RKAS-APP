@@ -47,6 +47,7 @@ class MasterDataTest extends TestCase
         }
         $path = sys_get_temp_dir().'/master-'.uniqid().'.xlsx';
         (new Xlsx($ss))->save($path);
+
         return $path;
     }
 

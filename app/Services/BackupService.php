@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\AuditLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class BackupService
@@ -74,6 +76,7 @@ class BackupService
 
     /**
      * Helper: buat backup dengan nama file tertentu di folder backup.
+     *
      * @return string full path zip
      */
     public static function createNamedBackup(string $filename): string
@@ -81,6 +84,7 @@ class BackupService
         File::ensureDirectoryExists(static::dir());
         $zipPath = static::dir().'/'.$filename;
         static::snapshotDbZip($zipPath);
+
         return $zipPath;
     }
 
@@ -88,6 +92,7 @@ class BackupService
      * Pastikan ada 1 backup auto harian (sekali per hari saat app dibuka pertama).
      * Dipanggil dari AppServiceProvider::boot (tiap request) tapi hanya bikin file jika belum ada untuk hari ini.
      * Prune otomatis simpan 7 hari terakhir (rkas-auto-* saja, manual & pre-* tidak dihapus).
+     *
      * @return string|null path file yang baru dibuat, null jika sudah ada atau testing
      */
     public static function ensureDailyAutoBackup(): ?string
@@ -108,7 +113,7 @@ class BackupService
             static::pruneOldAutoBackups(7);
             // Audit opsional (jangan gagalkan boot kalau audit error)
             try {
-                \App\Models\AuditLog::create([
+                AuditLog::create([
                     'user_id' => auth()->id(),
                     'action' => 'backup.auto',
                     'auditable_type' => 'Backup',
@@ -116,10 +121,13 @@ class BackupService
                     'description' => 'Auto backup harian — '.$filename,
                     'new_values' => ['file' => $filename],
                 ]);
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
+
             return $zipPath;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Auto backup harian gagal: '.$e->getMessage());
+            Log::warning('Auto backup harian gagal: '.$e->getMessage());
+
             return null;
         }
     }
@@ -130,12 +138,12 @@ class BackupService
     public static function pruneOldAutoBackups(int $keep = 7): void
     {
         $files = collect(File::files(static::dir()))
-            ->filter(fn($f) => str_starts_with($f->getFilename(), 'rkas-auto-') && $f->getExtension() === 'zip')
-            ->sortByDesc(fn($f) => $f->getMTime())
+            ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-auto-') && $f->getExtension() === 'zip')
+            ->sortByDesc(fn ($f) => $f->getMTime())
             ->values();
         if ($files->count() <= $keep) {
             return;
         }
-        $files->slice($keep)->each(fn($f) => @File::delete($f->getPathname()));
+        $files->slice($keep)->each(fn ($f) => @File::delete($f->getPathname()));
     }
 }

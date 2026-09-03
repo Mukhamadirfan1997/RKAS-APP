@@ -19,8 +19,11 @@ class PengaturanController extends Controller
     {
         if ($allowQuery && $request->filled('tahun')) {
             $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
-            if ($ta) return $ta;
+            if ($ta) {
+                return $ta;
+            }
         }
+
         return TahunAnggaran::where('is_active', true)->first()
             ?? TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first();
@@ -34,45 +37,50 @@ class PengaturanController extends Controller
     public function indexProfil(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+
         return view('pengaturan.profil', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
     public function indexAkun(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+
         return view('pengaturan.akun', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
     public function indexPagu(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+
         return view('pengaturan.pagu', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
     public function indexStatus(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+
         return view('pengaturan.status', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
     public function indexTahun(Request $request)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun'=>2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+
         return view('pengaturan.tahun', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
     }
 
@@ -154,7 +162,7 @@ class PengaturanController extends Controller
             $ta->update($validated);
         }
 
-        return redirect()->route('pengaturan.pagu', ['tahun'=>$ta->tahun ?? 2026])->with('success', 'Pagu anggaran berhasil disimpan.');
+        return redirect()->route('pengaturan.pagu', ['tahun' => $ta->tahun ?? 2026])->with('success', 'Pagu anggaran berhasil disimpan.');
     }
 
     public function sahkan(Request $request)
@@ -182,6 +190,7 @@ class PengaturanController extends Controller
             BackupService::snapshotDbZip($zipPath);
         } catch (\Throwable $e) {
             Log::error('Gagal membuat backup pengesahan: '.$e->getMessage());
+
             return redirect()->back()->withErrors(['error' => 'Gagal membuat backup pengesahan: '.$e->getMessage().' — pengesahan dibatalkan, silakan coba lagi.']);
         }
 
@@ -203,7 +212,7 @@ class PengaturanController extends Controller
             ],
         ]);
 
-        return redirect()->route('pengaturan.status', ['tahun'=>$ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.');
+        return redirect()->route('pengaturan.status', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.');
     }
 
     public function bukaKembali(Request $request)
@@ -230,7 +239,7 @@ class PengaturanController extends Controller
             'new_values' => ['status_pengesahan' => 'Pergeseran'],
         ]);
 
-        return redirect()->route('pengaturan.status', ['tahun'=>$ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' dibuka kembali untuk revisi (status: Pergeseran). Perubahan akan tercatat di audit log.');
+        return redirect()->route('pengaturan.status', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' dibuka kembali untuk revisi (status: Pergeseran). Perubahan akan tercatat di audit log.');
     }
 
     public function storeTahun(Request $request)
@@ -245,7 +254,7 @@ class PengaturanController extends Controller
         ]);
 
         $paguTotal = $validated['pagu_total'] ?? 180320000;
-        $paguT1 = $validated['pagu_tahap1'] ?? (int)($paguTotal/2);
+        $paguT1 = $validated['pagu_tahap1'] ?? (int) ($paguTotal / 2);
         $paguT2 = $validated['pagu_tahap2'] ?? ($paguTotal - $paguT1);
 
         $ta = TahunAnggaran::create([
@@ -284,18 +293,18 @@ class PengaturanController extends Controller
             'action' => 'tahun.create',
             'auditable_type' => TahunAnggaran::class,
             'auditable_id' => $ta->id,
-            'description' => "Buat TA {$ta->tahun} (copy dari ".($validated['copy_from'] ?? 'kosong').")",
-            'new_values' => ['tahun'=>$ta->tahun,'pagu_total'=>$ta->pagu_total],
+            'description' => "Buat TA {$ta->tahun} (copy dari ".($validated['copy_from'] ?? 'kosong').')',
+            'new_values' => ['tahun' => $ta->tahun, 'pagu_total' => $ta->pagu_total],
         ]);
 
-        return redirect()->route('pengaturan.tahun.index', ['tahun'=>$ta->tahun])->with('success', "TA {$ta->tahun} berhasil dibuat (Draft).");
+        return redirect()->route('pengaturan.tahun.index', ['tahun' => $ta->tahun])->with('success', "TA {$ta->tahun} berhasil dibuat (Draft).");
     }
 
     public function activateTahun(Request $request, $id)
     {
         $ta = TahunAnggaran::findOrFail($id);
-        TahunAnggaran::query()->update(['is_active'=>false]);
-        $ta->update(['is_active'=>true]);
+        TahunAnggaran::query()->update(['is_active' => false]);
+        $ta->update(['is_active' => true]);
 
         AuditLog::create([
             'user_id' => auth()->id(),
@@ -303,9 +312,9 @@ class PengaturanController extends Controller
             'auditable_type' => TahunAnggaran::class,
             'auditable_id' => $ta->id,
             'description' => "Aktifkan TA {$ta->tahun} sebagai tahun aktif",
-            'new_values' => ['tahun'=>$ta->tahun],
+            'new_values' => ['tahun' => $ta->tahun],
         ]);
 
-        return redirect()->route('pengaturan.tahun.index', ['tahun'=>$ta->tahun])->with('success', "TA {$ta->tahun} diaktifkan. Lembar kerja sekarang menampilkan TA {$ta->tahun}.");
+        return redirect()->route('pengaturan.tahun.index', ['tahun' => $ta->tahun])->with('success', "TA {$ta->tahun} diaktifkan. Lembar kerja sekarang menampilkan TA {$ta->tahun}.");
     }
 }

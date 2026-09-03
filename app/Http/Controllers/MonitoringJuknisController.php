@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KategoriJuknis;
 use App\Models\KodeRekeningKategoriJuknis;
+use App\Models\MasterKodeRekening;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Services\JuknisValidator;
@@ -15,12 +16,15 @@ class MonitoringJuknisController extends Controller
     {
         if ($request->filled('tahun')) {
             $ta = TahunAnggaran::where('tahun', (int) $request->tahun)->first();
-            if ($ta) return $ta;
+            if ($ta) {
+                return $ta;
+            }
         }
+
         return TahunAnggaran::where('is_active', true)->first()
             ?? TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first()
-            ?? new TahunAnggaran(['tahun'=>2026]);
+            ?? new TahunAnggaran(['tahun' => 2026]);
     }
 
     public function index(Request $request)
@@ -33,8 +37,8 @@ class MonitoringJuknisController extends Controller
         $kategoriList = KategoriJuknis::with('rekenings')->get();
 
         // Semua rekening untuk checklist centang (group by Jenis Belanja)
-        $allRekenings = \App\Models\MasterKodeRekening::with('jenisBelanja')->orderBy('kode')->get();
-        $rekeningByJenis = $allRekenings->groupBy(fn($r) => $r->jenisBelanja->nama ?? 'Tanpa Klasifikasi');
+        $allRekenings = MasterKodeRekening::with('jenisBelanja')->orderBy('kode')->get();
+        $rekeningByJenis = $allRekenings->groupBy(fn ($r) => $r->jenisBelanja->nama ?? 'Tanpa Klasifikasi');
 
         // Daftar item yang belum termapping ke kategori JUKNIS
         $mappedRekeningIds = KodeRekeningKategoriJuknis::pluck('master_kode_rekening_id');
@@ -47,7 +51,7 @@ class MonitoringJuknisController extends Controller
             ->get();
 
         $filter = $request->input('filter', 'all');
-        $daftarTahun = TahunAnggaran::orderBy('tahun','desc')->get();
+        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
 
         return view('monitoring.index', compact(
             'tahunAnggaran',

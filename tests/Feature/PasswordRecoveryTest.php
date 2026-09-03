@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\PengaturanSekolah;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class PasswordRecoveryTest extends TestCase

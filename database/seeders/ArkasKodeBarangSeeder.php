@@ -34,7 +34,7 @@ class ArkasKodeBarangSeeder extends Seeder
         $existing = DB::table('kode_barang')->count();
         if ($existing >= 80000) {
             $this->command->warn("kode_barang sudah terisi {$existing} baris, skip truncate & impor (sudah pre-seeded).");
-            $this->command->warn("Hapus manual (truncate) jika ingin re-import dari .xlsm.");
+            $this->command->warn('Hapus manual (truncate) jika ingin re-import dari .xlsm.');
 
             return;
         }

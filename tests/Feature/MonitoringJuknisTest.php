@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\KategoriJuknis;
-use App\Models\KodeRekeningKategoriJuknis;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\RkasItem;
@@ -18,6 +17,7 @@ class MonitoringJuknisTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected TahunAnggaran $ta;
 
     protected function setUp(): void
@@ -46,6 +46,7 @@ class MonitoringJuknisTest extends TestCase
         foreach ($alokasi as $bulan => $j) {
             $item->alokasiBulan()->create(['bulan' => $bulan, 'volume' => 1, 'satuan' => 'paket', 'jumlah' => $j]);
         }
+
         return $item;
     }
 
@@ -102,7 +103,7 @@ class MonitoringJuknisTest extends TestCase
         $resp = $this->get(route('monitoring.juknis'));
         $resp->assertViewHas('unmapped');
         $unmapped = $resp->viewData('unmapped');
-        $this->assertTrue($unmapped->contains(fn($i) => $i->id === $item->id), 'Item dengan rekening belum terpetakan harus muncul di unmapped');
+        $this->assertTrue($unmapped->contains(fn ($i) => $i->id === $item->id), 'Item dengan rekening belum terpetakan harus muncul di unmapped');
     }
 
     public function test_program_honor_tanpa_jenis_prefix_keyword_tidak_terhitung_honor(): void

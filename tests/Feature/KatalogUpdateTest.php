@@ -31,7 +31,7 @@ class KatalogUpdateTest extends TestCase
         mkdir($tmpDir, 0777, true);
         $csvPath = $tmpDir.'/katalog.csv';
         $fh = fopen($csvPath, 'w');
-        $header = ['kode','id_barang_arkas','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori'];
+        $header = ['kode', 'id_barang_arkas', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori'];
         fputcsv($fh, $header);
         foreach ($rows as $r) {
             // Ensure 10 cols
@@ -74,6 +74,7 @@ class KatalogUpdateTest extends TestCase
             $existing->update(['id_barang_arkas' => $existing->kode]);
             $existing->refresh();
         }
+
         return [
             // update existing: same id_barang_arkas/kode, ubah harga
             [$existing->kode, $existing->id_barang_arkas, $existing->nama.' UPDATED', $existing->kode_rekening ?? '5.1.02.01.01.0001', $existing->satuan_default ?? 'unit', '99999', '90000', '110000', 'TEST', 'TestKat'],

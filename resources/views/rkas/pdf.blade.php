@@ -137,19 +137,18 @@
     <div class="footer">
         <table class="ttd">
             <tr>
-                <td class="kolom">
-                    <p>Dibuat oleh,</p>
+                <td class="kolom" style="width:50%; text-align:center;">
+                    <p>Bendahara,</p>
+                    <div style="height:70px;"></div>
                     <p><b>{{ $sekolah->nama_bendahara ?? '................................' }}</b></p>
-                    <p>Bendahara</p>
                     <p>NIP. {{ $sekolah->nip_bendahara ?? '........................' }}</p>
                 </td>
-                <td class="kolom">
-                    <p>Mengetahui,</p>
+                <td class="kolom" style="width:50%; text-align:center;">
+                    <p>Kepala Sekolah,</p>
+                    <div style="height:70px;"></div>
                     <p><b>{{ $sekolah->nama_kepala_sekolah ?? '................................' }}</b></p>
-                    <p>Kepala Sekolah</p>
                     <p>NIP. {{ $sekolah->nip_kepala_sekolah ?? '........................' }}</p>
                 </td>
-                <td class="kolom"></td>
             </tr>
         </table>
     </div>

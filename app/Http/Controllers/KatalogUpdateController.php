@@ -65,7 +65,7 @@ class KatalogUpdateController extends Controller
             }
 
             $manifest = json_decode(file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
-            $required = ['versi','tanggal_generate','jumlah_baris','checksum','checksum_algo'];
+            $required = ['versi', 'tanggal_generate', 'jumlah_baris', 'checksum', 'checksum_algo'];
             foreach ($required as $k) {
                 if (! isset($manifest[$k]) || $manifest[$k] === '') {
                     throw new \RuntimeException("manifest.json tidak valid: field '{$k}' hilang.");
@@ -84,7 +84,7 @@ class KatalogUpdateController extends Controller
             $fh = fopen($csvPath, 'r');
             $header = fgetcsv($fh);
             fclose($fh);
-            $expectedHeader = ['kode','id_barang_arkas','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori'];
+            $expectedHeader = ['kode', 'id_barang_arkas', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori'];
             if ($header !== $expectedHeader) {
                 throw new \RuntimeException('Header CSV tidak sesuai. Expected: '.implode(',', $expectedHeader).' Got: '.implode(',', $header ?? []));
             }
@@ -147,7 +147,7 @@ class KatalogUpdateController extends Controller
                     ];
                     $total++;
                     if (count($batch) >= $batchSize) {
-                        DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori','updated_at']);
+                        DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori', 'updated_at']);
                         $batch = [];
                     }
                 }
@@ -161,7 +161,7 @@ class KatalogUpdateController extends Controller
                 }
 
                 if (count($batch) > 0) {
-                    DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori','updated_at']);
+                    DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori', 'updated_at']);
                 }
                 fclose($fh);
 
@@ -200,6 +200,7 @@ class KatalogUpdateController extends Controller
         } catch (\Throwable $e) {
             Log::error('Gagal update katalog: '.$e->getMessage());
             File::deleteDirectory($tmpDir);
+
             return redirect()->route('pengaturan.katalog')->withErrors(['error' => 'Gagal update katalog: '.$e->getMessage()]);
         }
     }
@@ -213,6 +214,7 @@ class KatalogUpdateController extends Controller
             $count++;
         }
         fclose($fh);
+
         return $count;
     }
 
