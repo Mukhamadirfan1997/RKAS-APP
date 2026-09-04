@@ -48,6 +48,19 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 PDF Bulanan
             </a>
+            @php $pdfBulanAktif = $selectedBulan > 0 ? $selectedBulan : (int) date('n'); @endphp
+            <a href="{{ route('rkas.pdf-per-bulan', ['tahun' => $tahunAnggaran->tahun, 'bulan' => $pdfBulanAktif]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-teal-300 dark:border-teal-600 text-sm font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-50 hover:border-teal-400 dark:hover:bg-teal-500/10 transition-colors" title="Unduh rincian hanya untuk bulan yang sedang dipilih di filter ({{ $bulanIndonesia[$pdfBulanAktif] }})">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
+                PDF Per Bulan — {{ $bulanIndonesia[$pdfBulanAktif] }}
+            </a>
+            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 1]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-50 hover:border-violet-400 dark:hover:bg-violet-500/10 transition-colors" title="Rincian breakdown Jan–Jun (Tahap I)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                PDF Tahap I
+            </a>
+            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 2]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-600 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-50 hover:border-amber-400 dark:hover:bg-amber-500/10 transition-colors" title="Rincian breakdown Jul–Des (Tahap II)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                PDF Tahap II
+            </a>
             @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
             <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>

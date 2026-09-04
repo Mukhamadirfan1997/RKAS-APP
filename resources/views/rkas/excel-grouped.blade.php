@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Kertas Kerja RKAS Grouped {{ $tahunAnggaran->tahun ?? 2026 }}</title>
+    <title>Kertas Kerja RKAS {{ $tahunAnggaran->tahun ?? 2026 }}</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; }
         h1 { font-size: 13px; margin: 0 0 4px; }
@@ -21,17 +21,17 @@
 </head>
 <body>
     <div class="kop">
-        <h1>KERTAS KERJA RENCANA KEGIATAN DAN ANGGARAN SEKOLAH (RKAS) — RINCIAN FLAT ARKAS (Kegiatan &gt; Rekening &gt; Item)</h1>
-        <div class="sub">
+        <h1>KERTAS KERJA RENCANA KEGIATAN DAN ANGGARAN SEKOLAH (RKAS) TA {{ $tahunAnggaran->tahun ?? 2026 }}<br><span style="font-size:9px; font-weight:700; color:#1e293b;">Rincian Rencana Belanja Dana BOSP Reguler</span></h1>
+        <p class="sub" style="margin:0 0 2px;">
             {{ $sekolah->nama_sekolah }} &middot; NPSN {{ $sekolah->npsn }} &middot;
-            {{ $sekolah->alamat }} {{ $sekolah->kecamatan }} {{ $sekolah->kabupaten_kota }} {{ $sekolah->provinsi }}
-        </div>
-        <div class="sub">{{ $tahunAnggaran->sumber_dana ?? 'BOSP REGULER' }} Tahun {{ $tahunAnggaran->tahun ?? 2026 }} &middot; {{ $tahunAnggaran->status_pengesahan ?? 'Draft' }} &middot; Kegiatan &gt; Rekening &gt; Item</div>
-        @php $st = strtoupper($tahunAnggaran->status_pengesahan ?? 'DRAFT'); @endphp
-        <div style="margin-top:4px;"><span style="display:inline-block; padding:2px 10px; border:1.5px solid {{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; color:{{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; font-size:9px; font-weight:800; letter-spacing:1px;">{{ $st }}</span></div>
+            {{ $sekolah->alamat }} {{ $sekolah->kecamatan }} {{ $sekolah->kabupaten_kota }} {{ $sekolah->provinsi }}<br>
+            {{ $tahunAnggaran->sumber_dana ?? 'BOSP REGULER' }} Tahun {{ $tahunAnggaran->tahun ?? 2026 }} &middot; {{ $tahunAnggaran->status_pengesahan ?? 'Draft' }} &middot; Rincian per Kegiatan dan Rekening Belanja
+            @php $st = strtoupper($tahunAnggaran->status_pengesahan ?? 'DRAFT'); @endphp
+            &middot; <span style="display:inline-block; padding:1px 6px; border:1px solid {{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; color:{{ $st === 'DISAHKAN' ? '#059669' : ($st === 'PERGESERAN' ? '#d97706' : '#64748b') }}; font-size:8px; font-weight:800; letter-spacing:0.5px;">{{ $st }}</span>
+        </p>
     </div>
 
-    @php $displayGroups = $flatGroups ?? $groups ?? collect(); @endphp
+    @php $displayGroups = $flatGroups ?? $groups ?? collect(); $noExcel = 1; @endphp
 
     <table>
         <thead>
@@ -57,7 +57,7 @@
                 <th class="r" style="width:50px;">Nov Vol</th><th class="r" style="width:60px;">Nov Jml</th>
                 <th class="r" style="width:50px;">Des Vol</th><th class="r" style="width:60px;">Des Jml</th>
                 <th class="r" style="width:70px;">JUMLAH TAHAP II</th>
-                <th class="r" style="width:75px;">Jumlah</th>
+                <th class="r" style="width:85px;">TOTAL (TAHAP I + TAHAP II)</th>
                 <th class="c" style="width:50px;">Kontrol</th>
                 <th class="c" style="width:55px;">Validasi</th>
             </tr>
@@ -101,7 +101,7 @@
                     </tr>
                     @foreach($rek['items'] as $item)
                     <tr class="item-row">
-                        <td class="c">{{ $item->no_urut }}</td>
+                        <td class="c">{{ $noExcel++ }}</td>
                         <td class="c">{{ $item->barang->id_barang_arkas ?? $item->barang->kode ?? '' }}</td>
                         <td>{{ $item->uraian }}@if($item->keterangan_kustom) ({{ $item->keterangan_kustom }})@endif</td>
                         <td>{{ $item->kodeRekening->kode ?? '' }}</td>

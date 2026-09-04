@@ -60,9 +60,16 @@ class RkasKertasKerjaGroupedExport implements FromView, WithEvents
                 $sheet->getPageMargins()->setLeft(0.2);
                 $sheet->getPageMargins()->setRight(0.2);
 
-                // Freeze panes after Uraian (col C) dan header row 2
-                $sheet->freezePane('D3');
-                $sheet->setAutoFilter("A2:{$highestColumn}2");
+                // Deteksi baris header (cari "No" di kolom A + "Kode Barang" di B) — kop kini 5 baris sebelum header
+                $headerRow = 2;
+                for ($r = 1; $r <= min(10, $highestRow); $r++) {
+                    $a = trim((string) ($sheet->getCell("A{$r}")->getValue() ?? ''));
+                    $b = trim((string) ($sheet->getCell("B{$r}")->getValue() ?? ''));
+                    if ($a === 'No' && $b === 'Kode Barang') { $headerRow = $r; break; }
+                }
+                $freezeRow = $headerRow + 1;
+                $sheet->freezePane("D{$freezeRow}");
+                $sheet->setAutoFilter("A{$headerRow}:{$highestColumn}{$headerRow}");
 
                 // Column widths untuk 36 kolom (A-AJ): No, Kode Barang, Uraian, Kode Rekening, Vol, Satuan, Harga, Jan-Jun+ Tahap I, Jul-Des+ Tahap II, Jumlah, Kontrol, Validasi
                 $widths = [
@@ -91,12 +98,13 @@ class RkasKertasKerjaGroupedExport implements FromView, WithEvents
                     $sheet->getColumnDimension($col)->setWidth($isVol ? 8 : 10);
                 }
                 $sheet->getColumnDimension('AG')->setWidth(13); // JUMLAH TAHAP II
-                $sheet->getColumnDimension('AH')->setWidth(14); // Jumlah (final)
+                $sheet->getColumnDimension('AH')->setWidth(16); // TOTAL (TAHAP I + TAHAP II) - final, menempel langsung setelah JUMLAH TAHAP II
                 $sheet->getColumnDimension('AI')->setWidth(10); // Kontrol
                 $sheet->getColumnDimension('AJ')->setWidth(11); // Validasi
 
-                // Styling & outline untuk flat 3 level: Kegiatan=1, Rekening=2, Item=0 (header di baris 2, data mulai baris 3)
-                for ($row = 3; $row <= $highestRow; $row++) {
+                // Styling & outline untuk flat 3 level: Kegiatan=1, Rekening=2, Item=0 (data mulai setelah header)
+                $firstDataRow = $headerRow + 1;
+                for ($row = $firstDataRow; $row <= $highestRow; $row++) {
                     $valA = $sheet->getCell("A{$row}")->getValue();
                     $valB = $sheet->getCell("B{$row}")->getValue();
                     $valC = $sheet->getCell("C{$row}")->getValue();

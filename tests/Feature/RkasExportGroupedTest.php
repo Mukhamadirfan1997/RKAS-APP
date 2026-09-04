@@ -341,7 +341,16 @@ class RkasExportGroupedTest extends TestCase
         $this->assertEquals(1, $sheet->getPageSetup()->getFitToWidth());
         $this->assertEquals(0, $sheet->getPageSetup()->getFitToHeight());
         $this->assertStringContainsString('AJ', $sheet->getPageSetup()->getPrintArea());
-        $this->assertEquals('D3', $sheet->getFreezePane());
+        // FreezePane dinamis: D{headerRow+1} — header kini di baris kop+judul (mencari "No"/"Kode Barang")
+        $headerRowDetected = null;
+        $hrMax = $sheet->getHighestRow();
+        for ($r = 1; $r <= min(10, $hrMax); $r++) {
+            $a = trim((string) ($sheet->getCell("A{$r}")->getValue() ?? ''));
+            $b = trim((string) ($sheet->getCell("B{$r}")->getValue() ?? ''));
+            if ($a === 'No' && $b === 'Kode Barang') { $headerRowDetected = $r; break; }
+        }
+        $this->assertNotNull($headerRowDetected, 'Header No/Kode Barang harus ditemukan');
+        $this->assertEquals("D".($headerRowDetected+1), $sheet->getFreezePane());
         @unlink($tmp);
     }
 

@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/rkas/{id}/delete', [RkasController::class, 'destroy'])->name('rkas.destroy');
     Route::get('/rkas/pdf', [RkasController::class, 'pdf'])->name('rkas.pdf');
     Route::get('/rkas/pdf-grouped', [RkasController::class, 'pdfGrouped'])->name('rkas.pdf-grouped');
+    Route::get('/rkas/pdf-per-bulan', [RkasController::class, 'pdfPerBulan'])->name('rkas.pdf-per-bulan');
+    Route::get('/rkas/pdf-per-tahap', [RkasController::class, 'pdfPerTahap'])->name('rkas.pdf-per-tahap');
     Route::get('/rkas/export', [RkasController::class, 'export'])->name('rkas.export');
     Route::get('/rkas/export-grouped', [RkasController::class, 'exportGrouped'])->name('rkas.export-grouped');
 
