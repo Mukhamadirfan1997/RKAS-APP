@@ -22,6 +22,21 @@
             </select>
         </div>
     </div>
+    <div class="hidden lg:flex items-center gap-2" x-data="karsaClock" x-init="init()">
+        <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="tabular-nums" x-text="time">--:--:--</span>
+            <span class="w-px h-4 bg-slate-300 dark:bg-slate-600"></span>
+            <span class="font-normal text-slate-500 dark:text-slate-400" x-text="date"></span>
+        </div>
+        <div class="flex lg:hidden items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-bold tabular-nums text-slate-600 dark:text-slate-300">
+            <span x-text="time.slice(0,5)"></span>
+        </div>
+        <div class="hidden xl:flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+            <span class="w-2 h-2 rounded-full" :class="breakColor"></span>
+            <span x-text="breakHint"></span>
+        </div>
+    </div>
     <div class="flex items-center gap-2">
         <button type="button" @click="toggleDark" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-300" title="Ganti tema">
             <svg x-show="!dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>

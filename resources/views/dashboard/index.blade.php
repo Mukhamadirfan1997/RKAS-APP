@@ -61,6 +61,18 @@
         <div class="px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-400">{{ session('success') }}</div>
     @endif
 
+    <!-- Sapaan — kenalkan aplikasi (logo tidak mengganggu) -->
+    <div class="card p-5 flex items-center gap-4" x-data="{ g: '' }" x-init="const h=new Date().getHours(); g=h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam'">
+        <div class="shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-1.5 shadow-sm flex items-center justify-center">
+            <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+        </div>
+        <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-slate-800 dark:text-white"><span x-text="g"></span>, {{ Auth::user()->name ?? 'Operator RKAS' }} 👋</div>
+            <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5"><span class="font-display font-extrabold">KARSA</span> — Kertas Kerja RKAS <span class="font-normal text-slate-500 dark:text-slate-400">• Rencana Kegiatan &amp; Anggaran Sekolah TA {{ $tahunAnggaran->tahun ?? 2026 }} • Aplikasi desktop offline pengganti Excel untuk menyusun RKAS secara mandiri — rujukan sebelum isi ARKAS</span></div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ $sekolah->nama_sekolah }} (NPSN {{ $sekolah->npsn }}) • {{ $tahunAnggaran->sumber_dana }} • <span class="inline-flex items-center gap-1">Status: {{ ucfirst($summary['status_sekolah'] ?? 'negeri') }}</span></div>
+        </div>
+    </div>
+
     <!-- Kepatuhan komponen top -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         @foreach([

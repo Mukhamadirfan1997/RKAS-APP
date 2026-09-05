@@ -179,7 +179,7 @@ pub fn run() {
                 "main",
                 WebviewUrl::External(PHP_URL.parse().expect("URL server PHP tidak valid")),
             )
-            .title("KARSA 2026 — Kertas Anggaran Sekolah")
+            .title("KARSA — Kertas Kerja RKAS")
             .inner_size(1440.0, 900.0)
             .min_inner_size(1024.0, 700.0)
             .center()

@@ -117,10 +117,11 @@
             <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
         </div>
 
-        <!-- Title & Subtitle -->
+        <!-- Title & Subtitle — Opsi A -->
         <div class="text-center mb-5">
             <h1 class="text-white font-display font-extrabold text-2xl sm:text-3xl tracking-wider uppercase">KARSA</h1>
-            <p class="text-blue-100/90 text-xs font-normal mt-0.5">Kertas Anggaran Sekolah &mdash; Rujukan sebelum ARKAS</p>
+            <p class="text-blue-100/90 text-xs font-semibold tracking-[0.14em] uppercase mt-0.5">Kertas Kerja RKAS</p>
+            <p class="text-blue-100/70 text-[11px] font-normal mt-0.5">Rencana Kegiatan &amp; Anggaran Sekolah</p>
         </div>
 
         <!-- Login Card -->
