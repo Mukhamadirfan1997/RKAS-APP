@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.focus')
 
 @section('content')
 @php
@@ -20,7 +20,13 @@
 
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-            <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Lembar Kerja RKAS {{ $tahunAnggaran->tahun }}</h1>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('dashboard.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Kembali
+                </a>
+                <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Lembar Kerja RKAS {{ $tahunAnggaran->tahun }}</h1>
+            </div>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {{ $tahunAnggaran->sumber_dana }} &mdash; {{ $sekolah->nama_sekolah }}
                 (NPSN {{ $sekolah->npsn }})
@@ -32,35 +38,47 @@
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('rkas.export', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat (flat)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Excel Ringkas
-            </a>
-            <a href="{{ route('rkas.export-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-indigo-300 dark:border-indigo-600 text-sm font-semibold text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 hover:border-indigo-400 dark:hover:bg-indigo-500/10 transition-colors" title="Per kegiatan + 12 bulan (untuk paste ke ARKAS)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h13M3 12h13M3 16h13M3 20h13M16 8l3 3-3 3"/></svg>
-                Excel Bulanan
-            </a>
-            <a href="{{ route('rkas.pdf', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Ringkasan cepat">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                PDF Ringkas
-            </a>
-            <a href="{{ route('rkas.pdf-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" title="Per kegiatan + 12 bulan">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                PDF Bulanan
-            </a>
             @php $pdfBulanAktif = $selectedBulan > 0 ? $selectedBulan : (int) date('n'); @endphp
-            <a href="{{ route('rkas.pdf-per-bulan', ['tahun' => $tahunAnggaran->tahun, 'bulan' => $pdfBulanAktif]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-teal-300 dark:border-teal-600 text-sm font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-50 hover:border-teal-400 dark:hover:bg-teal-500/10 transition-colors" title="Unduh rincian hanya untuk bulan yang sedang dipilih di filter ({{ $bulanIndonesia[$pdfBulanAktif] }})">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
-                PDF Per Bulan — {{ $bulanIndonesia[$pdfBulanAktif] }}
-            </a>
-            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 1]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-violet-300 dark:border-violet-600 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-50 hover:border-violet-400 dark:hover:bg-violet-500/10 transition-colors" title="Rincian breakdown Jan–Jun (Tahap I)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                PDF Tahap I
-            </a>
-            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 2]) }}" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-600 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-50 hover:border-amber-400 dark:hover:bg-amber-500/10 transition-colors" title="Rincian breakdown Jul–Des (Tahap II)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                PDF Tahap II
-            </a>
+            <div class="relative" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
+                <button type="button" @click="open=!open" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Cetak/Unduh
+                    <svg class="w-3.5 h-3.5 text-slate-400" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="open" x-cloak x-transition.opacity class="absolute right-0 mt-2 w-72 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-30 overflow-hidden">
+                    <div class="p-2 space-y-3 max-h-[70vh] overflow-auto">
+                        <div>
+                            <div class="px-2 py-1 text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Ringkas</div>
+                            <a href="{{ route('rkas.pdf-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <svg class="w-4 h-4 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                PDF Lengkap (1 Tahun)
+                            </a>
+                            <a href="{{ route('rkas.export-grouped', ['tahun' => $tahunAnggaran->tahun]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10">
+                                <svg class="w-4 h-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                Excel Lengkap (1 Tahun)
+                            </a>
+                        </div>
+                        <div class="border-t border-slate-100 dark:border-slate-700/50 pt-2">
+                            <div class="px-2 py-1 text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Per Tahap</div>
+                            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 1]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-violet-50 dark:hover:bg-violet-500/10">
+                                <svg class="w-4 h-4 shrink-0 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                PDF Tahap I
+                            </a>
+                            <a href="{{ route('rkas.pdf-per-tahap', ['tahun' => $tahunAnggaran->tahun, 'tahap' => 2]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-500/10">
+                                <svg class="w-4 h-4 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                PDF Tahap II
+                            </a>
+                        </div>
+                        <div class="border-t border-slate-100 dark:border-slate-700/50 pt-2">
+                            <div class="px-2 py-1 text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Per Bulan ({{ $bulanIndonesia[$pdfBulanAktif] }})</div>
+                            <a href="{{ route('rkas.pdf-per-bulan', ['tahun' => $tahunAnggaran->tahun, 'bulan' => $pdfBulanAktif]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-teal-50 dark:hover:bg-teal-500/10">
+                                <svg class="w-4 h-4 shrink-0 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
+                                PDF Bulan {{ $bulanIndonesia[$pdfBulanAktif] }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
             <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -144,87 +162,74 @@
             </form>
         </div>
 
+        @php
+            $itemsFlat = $items->sort(function($a, $b){
+                $ka = $a->program->kode ?? '';
+                $kb = $b->program->kode ?? '';
+                $c = strnatcasecmp($ka, $kb);
+                if ($c !== 0) return $c;
+                $ra = $a->kodeRekening->kode ?? '';
+                $rb = $b->kodeRekening->kode ?? '';
+                $c2 = strnatcasecmp($ra, $rb);
+                if ($c2 !== 0) return $c2;
+                return ($a->no_urut ?? 0) <=> ($b->no_urut ?? 0);
+            })->values();
+        @endphp
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
-                        <th class="px-4 py-3 text-center font-semibold w-12">No <span class="normal-case text-[9px] font-normal text-slate-400">per kegiatan / #global</span></th>
-                        <th class="px-4 py-3 text-left font-semibold min-w-[280px]">Uraian &amp; Keterangan Khusus</th>
-                        <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Kode Rekening &amp; Jenis Belanja</th>
-                        <th class="px-4 py-3 text-right font-semibold min-w-[120px]">Volume</th>
-                        <th class="px-4 py-3 text-right font-semibold min-w-[140px]">Harga Satuan</th>
-                        <th class="px-4 py-3 text-right font-semibold min-w-[150px]">Total Anggaran</th>
-                        <th class="px-4 py-3 text-left font-semibold min-w-[150px]">Bulan Pelaksanaan</th>
-                        <th class="px-4 py-3 text-center font-semibold w-24">Aksi</th>
+                        <th class="px-3 py-3 text-center font-semibold w-10">No</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[160px] max-w-[200px]">Program Kegiatan</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[200px] max-w-[260px]">Kegiatan</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[190px]">Rekening Belanja</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[220px]">Uraian</th>
+                        <th class="px-3 py-3 text-right font-semibold min-w-[110px]">Volume</th>
+                        <th class="px-3 py-3 text-right font-semibold min-w-[130px]">Harga Satuan</th>
+                        <th class="px-3 py-3 text-right font-semibold min-w-[140px]">Total</th>
+                        <th class="px-3 py-3 text-center font-semibold w-14">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                    @forelse($kegiatanGroups as $g)
-                        <tr class="bg-slate-100/80 dark:bg-slate-800/80">
-                            <td colspan="8" class="px-4 py-3">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-2 py-1 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 text-[11px] font-bold">{{ $g['kode'] }}</span>
-                                        <div>
-                                            <div class="font-bold text-slate-800 dark:text-white text-sm">{{ $g['nama'] }}</div>
-                                            @if($g['sub_program'])
-                                                <div class="text-[11px] text-slate-400 dark:text-slate-500">Sub Program: {{ $g['sub_program'] }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                                        @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
-                                        <button type="button" data-action="sisip-kegiatan" data-kegiatan-id="{{ $g['id'] }}" data-kegiatan-text="[{{ $g['kode'] }}] {{ $g['nama'] }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-600 border border-blue-200 dark:border-slate-600 shadow-xs transition-colors" title="Sisipkan belanja baru pada kegiatan ini">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                            <span>Sisip Uraian</span>
-                                        </button>
-                                        @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-600 cursor-not-allowed" title="Terkunci — RKAS sudah disahkan"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Terkunci</span>
-                                        @endif
-                                        <span>{{ $g['jumlah_item'] }} item</span>
-                                        @if($selectedBulan > 0)
-                                            <span class="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400">Bulan {{ $bulanIndonesia[$selectedBulan] }}: Rp {{ number_format($g['total_bulan'], 0, ',', '.') }}</span>
-                                            <span class="text-[11px] text-slate-400">1 Thn: Rp {{ number_format($g['total_sudah'], 0, ',', '.') }}</span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400">Sudah Dianggarkan: Rp {{ number_format($g['total_sudah'], 0, ',', '.') }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @foreach($g['items'] as $item)
+                    @forelse($itemsFlat as $item)
                         @php
-                            $aktif = $item->alokasiBulan->where('volume', '>', 0);
-                            $labelBulan = $aktif->map(fn($ab) => $bulanIndonesia[$ab->bulan])->implode(', ');
-                            $manyBulan = $aktif->count();
                             $volRow = $selectedBulan > 0 ? ($item->volume_bulan ?? 0) : $item->volume;
                             $jmlRow = $selectedBulan > 0 ? ($item->jumlah_bulan ?? 0) : $item->jumlah_koreksi;
                         @endphp
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
-                            <td class="px-4 py-4 text-center">
-                                <div class="font-bold text-slate-800 dark:text-slate-100">{{ $loop->iteration }}</div>
+                            <td class="px-3 py-3 text-center">
+                                <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ $loop->iteration }}</div>
                                 <div class="text-[10px] text-slate-400 dark:text-slate-500">#{{ $item->no_urut }}</div>
                             </td>
-                            <td class="px-4 py-4">
-                                <div class="text-slate-800 dark:text-slate-100 font-medium">{{ $item->uraian }}</div>
+                            {{-- Program Kegiatan (Standar) — truncate ellipsis --}}
+                            <td class="px-3 py-3">
+                                <div class="text-xs font-medium text-slate-700 dark:text-slate-200 truncate max-w-[180px]" title="{{ $item->program->program ?? $item->program->nama ?? '-' }}">{{ $item->program->program ?? $item->program->nama ?? '-' }}</div>
+                                <div class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[180px]" title="{{ $item->program->sub_program ?? '' }}">{{ $item->program->sub_program ?? '' }}</div>
+                            </td>
+                            {{-- Kegiatan --}}
+                            <td class="px-3 py-3">
+                                <div class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[240px]" title="[{{ $item->program->kode ?? '' }}] {{ $item->program->nama ?? '' }}">[{{ $item->program->kode ?? '-' }}] {{ $item->program->nama ?? '-' }}</div>
+                            </td>
+                            <td class="px-3 py-3">
+                                <div class="text-xs text-slate-700 dark:text-slate-200 font-medium truncate max-w-[180px]" title="{{ $item->kodeRekening->nama ?? '-' }}">{{ $item->kodeRekening->nama ?? '-' }}</div>
+                                <div class="text-[10px] text-slate-400 dark:text-slate-500" title="{{ $item->kodeRekening->kode ?? '' }}">{{ $item->kodeRekening->kode ?? '' }} <span class="text-slate-300">·</span> {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
+                            </td>
+                            <td class="px-3 py-3">
+                                <div class="text-xs text-slate-800 dark:text-slate-100 font-medium leading-snug">{{ $item->uraian }}</div>
                                 @if($item->keterangan_kustom)
                                     <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20">
                                         📌 {{ $item->keterangan_kustom }}
                                     </div>
                                 @endif
                             </td>
-                            <td class="px-4 py-4">
-                                <div class="text-slate-700 dark:text-slate-200 font-medium">{{ $item->kodeRekening->nama ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-400 dark:text-slate-500">{{ $item->kodeRekening->kode ?? '' }} &middot; {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
-                            </td>
-                            <td class="px-4 py-4 text-right text-slate-700 dark:text-slate-200">
-                                <div class="font-semibold">{{ rtrim(rtrim(number_format($volRow, 2, ',', '.'), '0'), ',') }} <span class="text-xs font-normal text-slate-500">{{ $item->satuan }}</span></div>
+                            <td class="px-3 py-3 text-right text-slate-700 dark:text-slate-200">
+                                <div class="text-xs font-semibold">{{ rtrim(rtrim(number_format($volRow, 2, ',', '.'), '0'), ',') }} <span class="text-[11px] font-normal text-slate-500">{{ $item->satuan }}</span></div>
                                 @if($selectedBulan > 0 && (float)$item->volume !== (float)$volRow)
                                     <div class="text-[10px] text-slate-400 dark:text-slate-500">1 Thn: {{ rtrim(rtrim(number_format($item->volume, 2, ',', '.'), '0'), ',') }} {{ $item->satuan }}</div>
                                 @endif
                             </td>
-                            <td class="px-4 py-4 text-right text-slate-700 dark:text-slate-200">
-                                <div class="font-medium">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
+                            <td class="px-3 py-3 text-right text-slate-700 dark:text-slate-200">
+                                <div class="text-xs font-medium">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
                                 <div class="flex items-center justify-end gap-1.5 mt-0.5">
                                     @if($item->kontrol === 'OK')
                                         <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
@@ -237,8 +242,8 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-right font-bold text-slate-800 dark:text-white">
-                                <div>Rp {{ number_format($jmlRow, 0, ',', '.') }}</div>
+                            <td class="px-3 py-3 text-right font-bold text-slate-800 dark:text-white">
+                                <div class="text-xs">Rp {{ number_format($jmlRow, 0, ',', '.') }}</div>
                                 @if((float)$item->koreksi !== 0.0 && $selectedBulan === 0)
                                     <div class="text-[10px] font-normal text-amber-600 dark:text-amber-400">(Koreksi: {{ $item->koreksi > 0 ? '+' : '' }}Rp {{ number_format($item->koreksi, 0, ',', '.') }})</div>
                                 @endif
@@ -246,39 +251,37 @@
                                     <div class="text-[10px] font-normal text-slate-400 dark:text-slate-500">1 Thn: Rp {{ number_format($item->jumlah_koreksi, 0, ',', '.') }}</div>
                                 @endif
                             </td>
-                            <td class="px-4 py-4 text-slate-500 dark:text-slate-400">
-                                <span class="text-xs font-semibold">{{ $manyBulan }} bulan</span>
-                                <span class="text-[10px] text-slate-400 dark:text-slate-500 block leading-snug">{{ $manyBulan < 12 && $manyBulan > 0 ? $labelBulan : ($manyBulan === 12 ? 'Januari s.d. Desember' : '-') }}</span>
-                            </td>
-                            <td class="px-4 py-4 text-center">
-                                @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
-                                <div class="flex items-center justify-center gap-1">
-                                    <button type="button" data-action="sisip-item"
-                                        data-kegiatan-id="{{ $item->master_program_id }}"
-                                        data-kegiatan-text="[{{ $item->program->kode ?? '' }}] {{ $item->program->nama ?? '' }}"
-                                        data-rekening-id="{{ $item->master_kode_rekening_id }}"
-                                        data-rekening-text="[{{ $item->kodeRekening->kode ?? '' }}] {{ $item->kodeRekening->nama ?? '' }}"
-                                        title="Sisipkan belanja baru pada rekening ini" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/15 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    </button>
-                                    <button type="button" data-action="edit" data-id="{{ $item->id }}" title="Ubah Anggaran" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/15 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                    </button>
-                                    <button type="button" data-action="delete" data-id="{{ $item->id }}" title="Hapus Anggaran" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
+                            <td class="px-3 py-3 text-center">
+                                <div class="relative inline-block" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
+                                    <button type="button" @click="open=!open" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700/50 transition-colors" title="Aksi">⋯</button>
+                                    <div x-show="open" x-cloak x-transition.opacity class="absolute right-0 mt-1 w-44 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-20 overflow-hidden text-left">
+                                        <button type="button" data-action="view" data-id="{{ $item->id }}" @click="open=false" class="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            Lihat Detail
+                                        </button>
+                                        @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
+                                        <button type="button" data-action="sisip-item" data-kegiatan-id="{{ $item->master_program_id }}" data-kegiatan-text="[{{ $item->program->kode ?? '' }}] {{ $item->program->nama ?? '' }}" data-rekening-id="{{ $item->master_kode_rekening_id }}" data-rekening-text="[{{ $item->kodeRekening->kode ?? '' }}] {{ $item->kodeRekening->nama ?? '' }}" @click="open=false" class="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            Sisip Serupa
+                                        </button>
+                                        <button type="button" data-action="edit" data-id="{{ $item->id }}" @click="open=false" class="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-500/10 flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            Edit
+                                        </button>
+                                        <button type="button" data-action="delete" data-id="{{ $item->id }}" @click="open=false" class="w-full text-left px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            Hapus
+                                        </button>
+                                        @endif
+                                    </div>
                                 </div>
-                                @else
-                                <span class="inline-flex items-center justify-center p-1.5 text-slate-300 dark:text-slate-600" title="Terkunci — RKAS sudah disahkan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></span>
-                                @endif
                             </td>
                         </tr>
-                        @endforeach
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
+                            <td colspan="9" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
                                 <div class="text-sm font-semibold">Belum ada rincian anggaran</div>
-                                <div class="text-xs mt-1">Klik tombol &ldquo;Sisip Uraian Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
+                                <div class="text-xs mt-1">Klik tombol &ldquo;Tambah Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
                             </td>
                         </tr>
                     @endforelse
@@ -286,14 +289,22 @@
                 @if($items->isNotEmpty())
                 <tfoot class="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60 text-sm">
                     <tr>
-                        <td colspan="5" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan</td>
-                        <td class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
-                        <td colspan="2" class="px-4 py-4 text-[11px] text-slate-400 dark:text-slate-500">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</td>
+                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan</td>
+                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
                 @endif
             </table>
         </div>
+        @if($items->isNotEmpty())
+        <div class="px-4 lg:px-6 py-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Rincian per Tahap</div>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }}</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</span>
+            </div>
+        </div>
+        @endif
     </div>
 
     <div id="rkas-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" style="background-color: rgba(15,23,42,.6); backdrop-filter: blur(3px);">
@@ -301,8 +312,8 @@
             <div class="bg-white dark:bg-slate-800 w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] ring-1 ring-slate-200 dark:ring-slate-700/60">
                 <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700/60">
                     <div>
-                        <h3 class="text-base font-extrabold text-slate-800 dark:text-white" x-text="mode === 'sisip' ? 'Sisip Uraian — Detail Anggaran' : mode === 'edit' ? 'Ubah Anggaran — Detail Kegiatan' : 'Tambah Anggaran — Detail Kegiatan'"></h3>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500">{{ $tahunAnggaran->sumber_dana }} Tahun {{ $tahunAnggaran->tahun }} <span x-show="mode === 'sisip'" x-cloak class="ml-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 font-semibold">mode sisip — otomatis terisi dari baris sumber</span></p>
+                        <h3 class="text-base font-extrabold text-slate-800 dark:text-white" x-text="mode === 'view' ? 'Detail Anggaran Kegiatan' : mode === 'sisip' ? 'Sisip Uraian — Detail Anggaran' : mode === 'edit' ? 'Ubah Anggaran — Detail Kegiatan' : 'Tambah Anggaran — Detail Kegiatan'"></h3>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500">{{ $tahunAnggaran->sumber_dana }} Tahun {{ $tahunAnggaran->tahun }} <span x-show="mode === 'sisip'" x-cloak class="ml-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 font-semibold">mode sisip — otomatis terisi dari baris sumber</span><span x-show="mode === 'view'" x-cloak class="ml-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 font-semibold">mode lihat — read-only</span></p>
                     </div>
                     <button @click="close()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -316,8 +327,8 @@
                     <button type="button" @click="clearSisip()" class="shrink-0 text-[11px] font-semibold underline hover:no-underline">Kosongkan</button>
                 </div>
 
-                <!-- Step indicator -->
-                <div class="mx-6 mt-4 flex items-center gap-3 text-xs">
+                <!-- Step indicator — hidden in view mode -->
+                <div x-show="mode !== 'view'" class="mx-6 mt-4 flex items-center gap-3 text-xs">
                     <div class="flex items-center gap-2">
                         <span :class="step===1 ? 'bg-blue-600 text-white' : 'bg-emerald-500 text-white'" class="w-7 h-7 rounded-full flex items-center justify-center font-bold">1</span>
                         <span :class="step===1 ? 'text-slate-800 dark:text-white font-bold' : 'text-emerald-600 dark:text-emerald-400 font-semibold'">Pilih Kegiatan & Rekening</span>
@@ -329,7 +340,73 @@
                     </div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+                <!-- VIEW MODE read-only -->
+                <div x-show="mode === 'view'" x-cloak class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 p-4">
+                            <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Kegiatan</div>
+                            <div class="text-sm font-semibold text-slate-800 dark:text-white mt-1" x-text="pickers.kegiatan.label || '-'"></div>
+                            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1" x-text="pickers.kegiatan.kode ? 'Kode: ' + pickers.kegiatan.kode : ''"></div>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 p-4">
+                            <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Kode Rekening Belanja</div>
+                            <div class="text-sm font-semibold text-slate-800 dark:text-white mt-1" x-text="pickers.rekening.label || '-'"></div>
+                            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1" x-text="pickers.rekening.kode ? 'Kode: ' + pickers.rekening.kode : ''"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Uraian</div>
+                            <div class="mt-1 text-sm text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-2.5" x-text="form.uraian || '-'"></div>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Keterangan Khusus / Peruntukan</div>
+                            <div class="mt-1 text-sm text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-2.5" x-text="form.keterangan_kustom || '-'"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 p-4">
+                            <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Harga Satuan</div>
+                            <div class="text-sm font-bold text-slate-800 dark:text-white mt-1" x-text="'Rp ' + form.harga_satuan.toLocaleString('id-ID')"></div>
+                            <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-1">Satuan: <span class="font-semibold" x-text="form.satuan || '-'"></span></div>
+                            <div class="text-[11px] text-slate-400 mt-1" x-show="form.harga_satuan_arkas > 0" x-text="'Acuan ARKAS: Rp ' + form.harga_satuan_arkas.toLocaleString('id-ID')"></div>
+                            <div class="text-[11px] text-slate-400 mt-1" x-show="form.harga_min > 0 || form.harga_max > 0" x-text="'SSH: Rp ' + form.harga_min.toLocaleString('id-ID') + ' — Rp ' + form.harga_max.toLocaleString('id-ID')"></div>
+                            <div x-show="form.koreksi !== 0" class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1" x-text="'Koreksi: Rp ' + form.koreksi.toLocaleString('id-ID') + ' → Total: ' + totalAll()"></div>
+                        </div>
+                        <div class="rounded-xl bg-slate-800 dark:bg-slate-900 border border-slate-900 dark:border-slate-700 p-4 text-center flex flex-col justify-center">
+                            <div class="text-[10px] font-semibold text-slate-300 uppercase">Total Anggaran</div>
+                            <div class="text-lg font-extrabold text-white mt-1" x-text="totalAll()"></div>
+                            <div class="text-[11px] text-slate-200 mt-1">Tahap I: <span x-text="sumTahap(1)"></span> · Tahap II: <span x-text="sumTahap(2)"></span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-700 dark:text-slate-200 mb-2">Alokasi Bulanan (Bulan | Volume | Jumlah)</div>
+                        <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/60">
+                            <table class="min-w-full text-xs">
+                                <thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-semibold">Bulan</th>
+                                        <th class="px-3 py-2 text-right font-semibold">Volume</th>
+                                        <th class="px-3 py-2 text-left font-semibold">Satuan</th>
+                                        <th class="px-3 py-2 text-right font-semibold">Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    <template x-for="b in months" :key="b.no">
+                                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                                            <td class="px-3 py-2 flex items-center gap-2"><span class="font-semibold text-slate-700 dark:text-slate-200" x-text="b.nama"></span><span class="px-1.5 py-0.2 rounded text-[9px] font-bold" :class="b.no <= 6 ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'" x-text="b.no <= 6 ? 'Tahap I' : 'Tahap II'"></span></td>
+                                            <td class="px-3 py-2 text-right font-medium text-slate-700 dark:text-slate-200" x-text="alokasi[b.no].volume || 0"></td>
+                                            <td class="px-3 py-2 text-slate-500" x-text="alokasi[b.no].satuan || '-'"></td>
+                                            <td class="px-3 py-2 text-right font-semibold text-slate-800 dark:text-white" x-text="subtotal(b.no)"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="mode !== 'view'" class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
                     <!-- STEP 1 -->
                     <div x-show="step===1" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,34 +489,41 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="label">Harga Satuan yang Dianggarkan <span class="text-red-500">*</span></label>
-                        <div class="flex items-center gap-1">
-                            <span class="text-sm text-slate-400">Rp</span>
-                            <input type="text" inputmode="numeric" x-bind:value="form.harga_satuan.toLocaleString('id-ID')"
-                                @input="form.harga_satuan = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0"
-                                placeholder="0" class="input !w-auto max-w-xs font-bold text-slate-800 dark:text-white">
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="label">Harga Satuan yang Dianggarkan <span class="text-red-500">*</span></label>
+                            <div class="flex items-center gap-1">
+                                <span class="text-sm text-slate-400">Rp</span>
+                                <input type="text" inputmode="numeric" x-bind:value="form.harga_satuan.toLocaleString('id-ID')"
+                                    @input="form.harga_satuan = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0"
+                                    placeholder="0" class="input !w-auto max-w-xs font-bold text-slate-800 dark:text-white">
+                            </div>
 
-                        {{-- SSH / Batas Harga Info & Warning --}}
-                        <div x-show="form.harga_min > 0 || form.harga_max > 0" class="mt-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs">
-                            <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                                <span class="font-semibold text-slate-700 dark:text-slate-300">Standar Satuan Harga (SSH)</span>
-                                <span>Batas: Rp <span x-text="form.harga_min.toLocaleString('id-ID')"></span> s.d. Rp <span x-text="form.harga_max.toLocaleString('id-ID')"></span></span>
+                            {{-- SSH / Batas Harga Info & Warning --}}
+                            <div x-show="form.harga_min > 0 || form.harga_max > 0" class="mt-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs">
+                                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300">Standar Satuan Harga (SSH)</span>
+                                    <span>Batas: Rp <span x-text="form.harga_min.toLocaleString('id-ID')"></span> s.d. Rp <span x-text="form.harga_max.toLocaleString('id-ID')"></span></span>
+                                </div>
+                                <div x-show="form.harga_max > 0 && form.harga_satuan > form.harga_max" class="mt-1.5 text-[11px] font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                                    ⚠️ Harga melebihi Batas Atas SSH (Maks Rp <span x-text="form.harga_max.toLocaleString('id-ID')"></span>)
+                                </div>
+                                <div x-show="form.harga_min > 0 && form.harga_satuan < form.harga_min && form.harga_satuan > 0" class="mt-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                    ℹ️ Harga di bawah Batas Bawah SSH (Min Rp <span x-text="form.harga_min.toLocaleString('id-ID')"></span>)
+                                </div>
+                                <div x-show="form.harga_min > 0 && form.harga_max > 0 && form.harga_satuan >= form.harga_min && form.harga_satuan <= form.harga_max" class="mt-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    ✓ Sesuai rentang Standar Satuan Harga (SSH)
+                                </div>
                             </div>
-                            <div x-show="form.harga_max > 0 && form.harga_satuan > form.harga_max" class="mt-1.5 text-[11px] font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
-                                ⚠️ Harga melebihi Batas Atas SSH (Maks Rp <span x-text="form.harga_max.toLocaleString('id-ID')"></span>)
-                            </div>
-                            <div x-show="form.harga_min > 0 && form.harga_satuan < form.harga_min && form.harga_satuan > 0" class="mt-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                                ℹ️ Harga di bawah Batas Bawah SSH (Min Rp <span x-text="form.harga_min.toLocaleString('id-ID')"></span>)
-                            </div>
-                            <div x-show="form.harga_min > 0 && form.harga_max > 0 && form.harga_satuan >= form.harga_min && form.harga_satuan <= form.harga_max" class="mt-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                ✓ Sesuai rentang Standar Satuan Harga (SSH)
+
+                            <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0 && form.harga_satuan !== form.harga_satuan_arkas">
+                                Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600 dark:text-amber-400">SELISIH</span> pada kolom KONTROL.
                             </div>
                         </div>
-
-                        <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0 && form.harga_satuan !== form.harga_satuan_arkas">
-                            Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600 dark:text-amber-400">SELISIH</span> pada kolom KONTROL.
+                        <div>
+                            <label class="label">Satuan Barang <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="form.satuan" @input="syncSatuan()" placeholder="paket, buah, rim, unit, dsb" class="input font-medium text-slate-800 dark:text-white" maxlength="50">
+                            <div class="text-[10px] text-slate-400 mt-1">Otomatis terisi dari katalog & menyamakan ke semua 12 bulan. Bisa diubah manual per bulan jika perlu.</div>
                         </div>
                     </div>
 
@@ -500,7 +584,7 @@
                                 <div class="text-sm font-bold text-emerald-700 dark:text-emerald-300" x-text="sumTahap(2)"></div>
                             </div>
                             <div class="rounded-xl bg-slate-800 dark:bg-slate-900 border border-slate-900 dark:border-slate-700 px-3 py-2.5">
-                                <div class="text-[10px] font-semibold text-slate-400 uppercase">Total Anggaran</div>
+                                <div class="text-[10px] font-semibold text-slate-300 uppercase">Total Anggaran</div>
                                 <div class="text-sm font-bold text-white" x-text="totalAll()"></div>
                             </div>
                         </div>
@@ -510,11 +594,11 @@
                     <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700/60 gap-3">
                         <div class="text-[11px]" x-show="error" x-cloak style="color:#dc2626" x-text="error"></div>
                         <div class="flex items-center gap-2 ml-auto">
-                            <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">Tutup</button>
-                            <template x-if="step===1">
+                            <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50" x-text="mode === 'view' ? 'Tutup' : 'Tutup'"></button>
+                            <template x-if="mode !== 'view' && step===1">
                                 <button @click="nextStep()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20">Lanjut ke Detail →</button>
                             </template>
-                            <template x-if="step===2">
+                            <template x-if="mode !== 'view' && step===2">
                                 <div class="flex items-center gap-2">
                                     <button @click="prevStep()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">← Kembali</button>
                                     <button @click="submit()" :disabled="saving" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold inline-flex items-center gap-2 shadow-md shadow-blue-600/20">
@@ -558,7 +642,7 @@ function modalForm() {
         step: 1,
         sisipContext: '',
         months: BULAN_KE.map(m => ({ no: m, nama: NAMA_BULAN[m] })),
-        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null },
+        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, satuan: '' },
         alokasi: makeAlokasi(),
         pickers: { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() },
         _timers: {},
@@ -569,7 +653,7 @@ function modalForm() {
             this.mode = 'new';
             this.step = 1;
             this.sisipContext = '';
-            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null };
+            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, satuan: '' };
             this.alokasi = makeAlokasi();
             this.pickers = { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() };
         },
@@ -598,6 +682,13 @@ function modalForm() {
                 this.alokasi[m].volume = janVol;
                 if (janSat && !this.alokasi[m].satuan) this.alokasi[m].satuan = janSat;
             });
+        },
+
+        syncSatuan() {
+            const s = (this.form.satuan || '').trim();
+            if (s) {
+                BULAN_KE.forEach(m => { this.alokasi[m].satuan = s; });
+            }
         },
 
         async debouncedSearch(key) {
@@ -657,7 +748,7 @@ function modalForm() {
             this.form.harga_min = Number(r.harga_min) || 0;
             this.form.harga_max = Number(r.harga_max) || 0;
             this.form.harga_satuan_arkas = Number(r.harga) || 0;
-            if (r.satuan) BULAN_KE.forEach(m => { if (!this.alokasi[m].satuan) this.alokasi[m].satuan = r.satuan; });
+            if (r.satuan) { this.form.satuan = r.satuan; this.syncSatuan(); }
             if (Number(r.harga) > 0 && this.form.harga_satuan === 0) this.form.harga_satuan = Number(r.harga);
             this.$nextTick(() => { p.results = []; });
         },
@@ -693,7 +784,8 @@ function modalForm() {
                     harga_min: Number(d.harga_min) || 0,
                     harga_max: Number(d.harga_max) || 0,
                     koreksi: Number(d.koreksi) || 0,
-                    kode_barang_id: d.kode_barang_id || null
+                    kode_barang_id: d.kode_barang_id || null,
+                    satuan: d.satuan || ''
                 };
                 if (d.kegiatan_id) { this.pickers.kegiatan.value = d.kegiatan_id; this.pickers.kegiatan.label = d.kegiatan_text; this.pickers.kegiatan.q = d.kegiatan_text; this.pickers.kegiatan.kode = d.kegiatan_kode || (d.kegiatan_text.match(/\[(.*?)\]/)?.[1] || ''); }
                 if (d.rekening_id) { this.pickers.rekening.value = d.rekening_id; this.pickers.rekening.label = d.rekening_text; this.pickers.rekening.q = d.rekening_text; this.pickers.rekening.kode = d.rekening_kode || (d.rekening_text.match(/\[(.*?)\]/)?.[1] || ''); }
@@ -707,12 +799,21 @@ function modalForm() {
             }
         },
 
+        async openView(id) {
+            await this.load(id);
+            this.mode = 'view';
+        },
+
         async submit() {
             this.error = '';
             const keg = this.pickers.kegiatan, rek = this.pickers.rekening;
             if (!keg.value) { this.error = 'Silakan pilih Kegiatan terlebih dahulu.'; return; }
             if (!rek.value) { this.error = 'Silakan pilih Kode Rekening terlebih dahulu.'; return; }
             if (!this.form.uraian.trim()) { this.error = 'Uraian wajib diisi.'; return; }
+            if (!this.form.satuan.trim()) { this.error = 'Satuan wajib diisi.'; return; }
+            // pastikan satuan utama menyebar ke semua bulan sebelum simpan (jika masih ada yang kosong)
+            const _mainSat = (this.form.satuan||'').trim();
+            if (_mainSat) { BULAN_KE.forEach(m=>{ if(!this.alokasi[m].satuan) this.alokasi[m].satuan = _mainSat; }); }
 
             const payload = {
                 _token: CSRF,
@@ -802,6 +903,12 @@ window.__rkasModalHost = {
         document.getElementById('rkas-modal').classList.remove('hidden');
         m.load(id);
     },
+    openView(id) {
+        const m = getModal();
+        if (!m) return;
+        document.getElementById('rkas-modal').classList.remove('hidden');
+        m.openView(id);
+    },
     close() {
         document.getElementById('rkas-modal').classList.add('hidden');
     }
@@ -813,7 +920,9 @@ document.addEventListener('click', function (e) {
     const action = btn.getAttribute('data-action');
     const id = btn.getAttribute('data-id');
 
-    if (action === 'edit') {
+    if (action === 'view') {
+        window.__rkasModalHost.openView(id);
+    } else if (action === 'edit') {
         window.__rkasModalHost.openEdit(id);
     } else if (action === 'delete') {
         if (!confirm('Hapus item anggaran ini?')) return;
@@ -834,7 +943,8 @@ document.addEventListener('click', function (e) {
     }
 });
 
-document.getElementById('btn-open-modal').addEventListener('click', function () {
+const _btnOpen = document.getElementById('btn-open-modal');
+if (_btnOpen) _btnOpen.addEventListener('click', function () {
     window.__rkasModalHost.openNew();
 });
 </script>

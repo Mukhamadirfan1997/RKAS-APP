@@ -74,7 +74,7 @@ class AuthTest extends TestCase
         $this->actingAs($user);
 
         $resp = $this->get(route('login'));
-        $resp->assertRedirect(route('rkas.index'));
+        $resp->assertRedirect('/');
     }
 
     public function test_logout_clears_session_and_protects_routes(): void

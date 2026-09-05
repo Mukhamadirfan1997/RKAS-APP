@@ -24,7 +24,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/', [RkasController::class, 'index'])->name('rkas.index');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/rkas', [RkasController::class, 'index'])->name('rkas.index');
     Route::post('/rkas/store', [RkasController::class, 'store'])->name('rkas.store');
     Route::get('/rkas/{id}/json', [RkasController::class, 'showJson'])->name('rkas.json');
