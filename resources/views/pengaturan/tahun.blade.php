@@ -29,6 +29,7 @@
             <span class="text-xs text-slate-400 dark:text-slate-500">{{ $daftarTahun->count() }} tahun</span>
         </div>
         <div class="p-6 space-y-4">
+            <div class="px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 text-xs text-blue-700 dark:text-blue-300">💡 Buat/aktifkan tahun anggaran di sini dulu, baru isi nominal pagu di tab <a href="{{ route('pengaturan.pagu', ['tahun'=>$tahunAnggaran->tahun]) }}" class="underline font-semibold">Pagu</a>.</div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead>
@@ -56,6 +57,11 @@
                                     <button type="submit" class="px-2 py-1 rounded-lg text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10">Aktifkan</button>
                                 </form>
                                 @endif
+                                <form method="POST" action="{{ route('pengaturan.tahun.destroy', $taRow->id) }}" onsubmit="return confirm('Hapus TA {{ $taRow->tahun }}? Pastikan tidak aktif dan tidak ada item RKAS.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-2 py-1 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">Hapus</button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach

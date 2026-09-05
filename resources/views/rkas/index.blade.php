@@ -826,6 +826,8 @@ function modalForm() {
                 harga_satuan: this.form.harga_satuan || 0,
                 harga_satuan_arkas: this.form.harga_satuan_arkas || 0, // dikirim untuk audit, server tetap ambil dari harga_acuan KodeBarang
                 koreksi: this.form.koreksi || 0,
+                satuan: (this.form.satuan || '').trim(),
+                satuan_barang: (this.form.satuan || '').trim(), // alias untuk validasi server
                 alokasi: {}
             };
             BULAN_KE.forEach(m => {

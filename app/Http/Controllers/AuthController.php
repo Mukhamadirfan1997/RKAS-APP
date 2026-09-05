@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('rkas.index');
+            return redirect()->route('dashboard.index');
         }
 
         return view('auth.login');
@@ -39,7 +39,7 @@ class AuthController extends Controller
                 'ip_address' => $request->ip(),
             ]);
 
-            return redirect()->intended(route('rkas.index'));
+            return redirect()->intended(route('dashboard.index'));
         }
 
         return back()->withErrors([
@@ -60,7 +60,7 @@ class AuthController extends Controller
     public function showForgot()
     {
         if (Auth::check()) {
-            return redirect()->route('rkas.index');
+            return redirect()->route('dashboard.index');
         }
 
         return view('auth.lupa-password');
@@ -118,7 +118,7 @@ class AuthController extends Controller
     public function showReset(Request $request)
     {
         if (Auth::check()) {
-            return redirect()->route('rkas.index');
+            return redirect()->route('dashboard.index');
         }
         if (! $request->session()->get('pw_reset_npsn_verified')) {
             return redirect()->route('auth.forgot')->withErrors(['npsn' => 'Silakan verifikasi NPSN dan email terlebih dahulu.']);
@@ -171,6 +171,6 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('rkas.index')->with('success', 'Password berhasil di-reset. Anda otomatis masuk.');
+        return redirect()->route('dashboard.index')->with('success', 'Password berhasil di-reset. Anda otomatis masuk.');
     }
 }

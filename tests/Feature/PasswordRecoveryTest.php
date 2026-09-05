@@ -67,7 +67,7 @@ class PasswordRecoveryTest extends TestCase
             'password' => 'newpass1234',
             'password_confirmation' => 'newpass1234',
         ]);
-        $resp->assertRedirect(route('rkas.index'));
+        $resp->assertRedirect(route('dashboard.index'));
         $this->assertAuthenticated();
 
         // Logout dan login dengan password baru
@@ -75,7 +75,7 @@ class PasswordRecoveryTest extends TestCase
         $this->post(route('login.attempt'), [
             'email' => $user->email,
             'password' => 'newpass1234',
-        ])->assertRedirect(route('rkas.index'));
+        ])->assertRedirect(route('dashboard.index'));
         $this->assertAuthenticated();
 
         // Password lama tidak bisa

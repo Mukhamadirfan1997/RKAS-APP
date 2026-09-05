@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pengaturan/pengesahan/buka-kembali', [PengaturanController::class, 'bukaKembali'])->name('pengaturan.pengesahan.buka-kembali');
     Route::post('/pengaturan/tahun', [PengaturanController::class, 'storeTahun'])->name('pengaturan.tahun.store');
     Route::post('/pengaturan/tahun/{id}/aktifkan', [PengaturanController::class, 'activateTahun'])->name('pengaturan.tahun.aktifkan');
+    Route::delete('/pengaturan/tahun/{id}', [PengaturanController::class, 'destroyTahun'])->name('pengaturan.tahun.destroy');
     Route::get('/pengaturan/katalog', [KatalogUpdateController::class, 'index'])->name('pengaturan.katalog');
     Route::post('/pengaturan/katalog/update', [KatalogUpdateController::class, 'update'])->name('pengaturan.katalog.update');
 

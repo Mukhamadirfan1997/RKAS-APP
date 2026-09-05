@@ -36,6 +36,7 @@ class KoreksiExportBackupTest extends TestCase
             'master_kode_rekening_id' => $rekening->id,
             'uraian' => 'Item Koreksi',
             'harga_satuan' => 10000,
+            'satuan' => 'dus',
             'koreksi' => 0,
             'alokasi' => [
                 1 => ['volume' => 10, 'satuan' => 'dus'],
@@ -67,6 +68,7 @@ class KoreksiExportBackupTest extends TestCase
             'master_kode_rekening_id' => $rekening->id,
             'uraian' => 'Koreksi Negatif',
             'harga_satuan' => 10000,
+            'satuan' => 'dus',
             'koreksi' => -25000,
             'alokasi' => [
                 3 => ['volume' => 10, 'satuan' => 'dus'],

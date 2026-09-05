@@ -41,6 +41,7 @@ class PengesahanRkasTest extends TestCase
             'master_kode_rekening_id' => $rek->id,
             'uraian' => 'Test Pengesahan Item',
             'harga_satuan' => 10000,
+            'satuan' => 'dus',
             'alokasi' => [1 => ['volume' => 2, 'satuan' => 'dus']],
         ];
     }
@@ -127,6 +128,7 @@ class PengesahanRkasTest extends TestCase
             'master_kode_rekening_id' => $rek->id,
             'uraian' => 'Coba ubah saat disahkan',
             'harga_satuan' => 5000,
+            'satuan' => 'dus',
             'alokasi' => [1 => ['volume' => 1, 'satuan' => 'dus']],
         ]);
         $respUpdate->assertStatus(403);
@@ -171,6 +173,7 @@ class PengesahanRkasTest extends TestCase
                 'master_kode_rekening_id' => $rek->id,
                 'uraian' => 'Item '.$status.' Updated',
                 'harga_satuan' => 12345,
+                'satuan' => 'dus',
                 'alokasi' => [2 => ['volume' => 3, 'satuan' => 'dus']],
             ]);
             $respUp->assertJson(['success' => true]);
@@ -221,6 +224,7 @@ class PengesahanRkasTest extends TestCase
             'master_kode_rekening_id' => $rek->id,
             'uraian' => 'Revisi setelah buka kembali',
             'harga_satuan' => 7777,
+            'satuan' => 'dus',
             'alokasi' => [3 => ['volume' => 5, 'satuan' => 'dus']],
         ]);
         $respUp->assertJson(['success' => true]);

@@ -39,6 +39,7 @@ class RkasFlowTest extends TestCase
             'uraian' => 'Test Belanja Baru',
             'keterangan_kustom' => 'Untuk Ruang Kelas 2',
             'harga_satuan' => 10000,
+            'satuan' => 'dus',
             'alokasi' => [
                 1 => ['volume' => 5, 'satuan' => 'dus'],
                 7 => ['volume' => 3, 'satuan' => 'dus'],
@@ -69,6 +70,7 @@ class RkasFlowTest extends TestCase
             'master_kode_rekening_id' => $rekening->id,
             'uraian' => 'Uraian Diubah',
             'harga_satuan' => 5000,
+            'satuan' => 'dus',
             'alokasi' => [
                 '12' => ['volume' => 10, 'satuan' => 'dus'],
             ],
@@ -240,5 +242,91 @@ class RkasFlowTest extends TestCase
         $this->assertEquals(40, (float) $validatorSwasta->honor()['batas_persen']);
 
         $this->assertSame('swasta', $validatorSwasta->summary()['status_sekolah']);
+    }
+
+    public function test_store_fails_without_satuan_validation()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Tanpa satuan harus gagal',
+            'harga_satuan' => 10000,
+            'alokasi' => [1 => ['volume' => 1, 'satuan' => 'dus']],
+        ]);
+
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['satuan']);
+        $this->assertDatabaseMissing('rkas_item', ['uraian' => 'Tanpa satuan harus gagal']);
+    }
+
+    public function test_store_fails_satuan_too_long()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Satuan terlalu panjang',
+            'harga_satuan' => 10000,
+            'satuan' => str_repeat('a', 51),
+            'alokasi' => [1 => ['volume' => 1, 'satuan' => str_repeat('a', 51)]],
+        ]);
+
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['satuan']);
+    }
+
+    public function test_store_with_satuan_berhasil_tersimpan_ke_kolom_satuan()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Satuan valid test',
+            'harga_satuan' => 5000,
+            'satuan' => 'rim',
+            'alokasi' => [3 => ['volume' => 2, 'satuan' => 'rim']],
+        ]);
+
+        $resp->assertStatus(200)->assertJson(['success' => true]);
+        $item = RkasItem::where('uraian', 'Satuan valid test')->first();
+        $this->assertNotNull($item);
+        $this->assertEquals('rim', $item->satuan);
+        $this->assertEquals('rim', $item->alokasiBulan()->first()->satuan);
+
+        // alias satuan_barang juga diterima
+        $resp2 = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Satuan alias test',
+            'harga_satuan' => 5000,
+            'satuan_barang' => 'paket',
+            'alokasi' => [4 => ['volume' => 1, 'satuan' => 'paket']],
+        ]);
+        $resp2->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertEquals('paket', RkasItem::where('uraian', 'Satuan alias test')->first()->satuan);
+    }
+
+    public function test_update_fails_without_satuan()
+    {
+        $item = RkasItem::first();
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/'.$item->id.'/update', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Update tanpa satuan',
+            'harga_satuan' => 5000,
+            'alokasi' => [1 => ['volume' => 1, 'satuan' => 'dus']],
+        ]);
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['satuan']);
     }
 }

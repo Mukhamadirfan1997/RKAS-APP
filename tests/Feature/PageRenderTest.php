@@ -52,7 +52,7 @@ class PageRenderTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('rkas.index'));
+        $response->assertRedirect(route('dashboard.index'));
         $this->assertAuthenticated();
     }
 

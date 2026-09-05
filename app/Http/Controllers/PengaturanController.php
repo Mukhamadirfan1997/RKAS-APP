@@ -24,8 +24,31 @@ class PengaturanController extends Controller
             }
         }
 
-        return TahunAnggaran::where('is_active', true)->first()
-            ?? TahunAnggaran::where('tahun', 2026)->first()
+        $active = TahunAnggaran::where('is_active', true)->first();
+        if ($active) {
+            return $active;
+        }
+
+        // Self-healing: 0 TA aktif ditemukan tapi ada data — aktifkan TA terbaru (tahun terbesar)
+        $latest = TahunAnggaran::orderBy('tahun', 'desc')->first();
+        if ($latest) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($latest) {
+                TahunAnggaran::where('id', '!=', $latest->id)->update(['is_active' => false]);
+                $latest->update(['is_active' => true]);
+            });
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'tahun.auto-fix',
+                'auditable_type' => TahunAnggaran::class,
+                'auditable_id' => $latest->id,
+                'description' => "Auto-fix: tidak ada TA aktif, aktifkan TA {$latest->tahun} otomatis (tahun terbaru)",
+                'old_values' => ['is_active' => false],
+                'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
+            ]);
+            return $latest->fresh();
+        }
+
+        return TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first();
     }
 
@@ -154,6 +177,9 @@ class PengaturanController extends Controller
             'pagu_total' => 'required|numeric|min:0',
             'pagu_tahap1' => 'required|numeric|min:0',
             'pagu_tahap2' => 'required|numeric|min:0',
+            'target_barjas' => 'nullable|numeric|min:0',
+            'target_modal_mesin' => 'nullable|numeric|min:0',
+            'target_modal_aset' => 'nullable|numeric|min:0',
             'sumber_dana' => 'nullable|string|max:50',
             'status_pengesahan' => 'nullable|string|max:50',
         ]);
@@ -303,8 +329,10 @@ class PengaturanController extends Controller
     public function activateTahun(Request $request, $id)
     {
         $ta = TahunAnggaran::findOrFail($id);
-        TahunAnggaran::query()->update(['is_active' => false]);
-        $ta->update(['is_active' => true]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($ta) {
+            TahunAnggaran::query()->update(['is_active' => false]);
+            $ta->update(['is_active' => true]);
+        });
 
         AuditLog::create([
             'user_id' => auth()->id(),
@@ -316,5 +344,34 @@ class PengaturanController extends Controller
         ]);
 
         return redirect()->route('pengaturan.tahun.index', ['tahun' => $ta->tahun])->with('success', "TA {$ta->tahun} diaktifkan. Lembar kerja sekarang menampilkan TA {$ta->tahun}.");
+    }
+
+    public function destroyTahun(Request $request, $id)
+    {
+        $ta = TahunAnggaran::findOrFail($id);
+
+        if ($ta->is_active) {
+            return redirect()->back()->withErrors(['error' => 'Tidak bisa menghapus tahun yang sedang aktif. Aktifkan tahun lain dulu.']);
+        }
+
+        $count = RkasItem::where('tahun_anggaran_id', $ta->id)->count();
+        if ($count > 0) {
+            return redirect()->back()->withErrors(['error' => "Tidak bisa menghapus tahun yang sudah punya {$count} item RKAS. Hapus item-itemnya dulu, atau gunakan tahun ini sebagai arsip saja."]);
+        }
+
+        $tahun = $ta->tahun;
+        $ta->delete();
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'tahun.hapus',
+            'auditable_type' => TahunAnggaran::class,
+            'auditable_id' => $ta->id,
+            'description' => "Hapus TA {$tahun}",
+            'old_values' => ['tahun' => $tahun],
+            'new_values' => null,
+        ]);
+
+        return redirect()->route('pengaturan.tahun.index')->with('success', "TA {$tahun} berhasil dihapus.");
     }
 }

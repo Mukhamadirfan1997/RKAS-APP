@@ -24,7 +24,7 @@ class AuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $resp->assertRedirect(route('rkas.index'));
+        $resp->assertRedirect(route('dashboard.index'));
         $this->assertAuthenticated();
 
         $this->assertDatabaseHas('audit_logs', [

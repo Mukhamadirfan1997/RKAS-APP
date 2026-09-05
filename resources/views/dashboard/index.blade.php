@@ -10,16 +10,25 @@
     ];
     $statusLabel = ['sesuai' => 'SESUAI', 'melebihi' => 'MELEBIHI', 'kurang' => 'BELUM CUKUP'];
 
-    // Skor Kesiapan RKAS
-    $checks = [
-        ['label' => 'Honor tidak melebihi batas', 'ok' => $summary['honor']['status'] === 'sesuai'],
-        ['label' => 'Anggaran buku memenuhi minimum', 'ok' => $summary['buku']['status'] === 'sesuai'],
-        ['label' => 'Sarpras tidak melebihi batas', 'ok' => $summary['sarpras']['status'] === 'sesuai'],
-        ['label' => 'Alokasi Tahap I ≥ 50%', 'ok' => $summary['tahap1']['status'] === 'sesuai'],
-        ['label' => 'Total anggaran tidak melebihi pagu', 'ok' => $summary['sudah_dianggarkan'] <= $summary['pagu_total']],
-    ];
-    $okCount = collect($checks)->where('ok', true)->count();
-    $score = round($okCount / count($checks) * 100);
+    // Skor Kesiapan RKAS — dihitung di DashboardController (kondisional 5/6 item untuk gelondongan)
+    // Fallback kalau view dirender tanpa controller (misal test lama)
+    if (!isset($checks)) {
+        $checks = [
+            ['label' => 'Honor tidak melebihi batas', 'ok' => $summary['honor']['status'] === 'sesuai'],
+            ['label' => 'Anggaran buku memenuhi minimum', 'ok' => $summary['buku']['status'] === 'sesuai'],
+            ['label' => 'Sarpras tidak melebihi batas', 'ok' => $summary['sarpras']['status'] === 'sesuai'],
+            ['label' => 'Alokasi Tahap I ≥ 50%', 'ok' => $summary['tahap1']['status'] === 'sesuai'],
+            ['label' => 'Total anggaran tidak melebihi pagu', 'ok' => $summary['sudah_dianggarkan'] <= $summary['pagu_total']],
+        ];
+        $okCount = collect($checks)->where('ok', true)->count();
+        $score = round($okCount / count($checks) * 100);
+    }
+    if (!isset($okCount)) $okCount = collect($checks)->where('ok', true)->count();
+    if (!isset($score)) $score = count($checks) > 0 ? round($okCount / count($checks) * 100) : 0;
+    // Gelondongan — fallback jika controller belum passing (old tests)
+    if (!isset($gelondongan)) {
+        $gelondongan = ['rows' => [], 'jumlah_target' => null, 'jumlah' => 0, 'pagu_total' => $summary['pagu_total'] ?? 0];
+    }
 
     $maxBulan = max(array_merge(array_values($bulanData), [1]));
     $maxJenis = max(array_merge(array_values($proporsiJenis), [1]));
@@ -189,7 +198,7 @@
     </div>
 
     <!-- Tabel ringkasan kepatuhan -->
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden" id="ringkasan-juknis">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60">
             <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Ringkasan Kepatuhan JUKNIS</h3>
             <p class="text-[11px] text-slate-400 dark:text-slate-500">Permendikdasmen No. 8/2026 &mdash; referensi pengisian ARKAS.</p>
@@ -224,6 +233,62 @@
                             </td>
                         </tr>
                     @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ringkasan RKA Gelondongan — reuse style & service yang sama dengan Monitoring JUKNIS -->
+    <div class="card overflow-hidden" id="ringkasan-rka-gelondongan">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Ringkasan RKA Gelondongan</h3>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">Rekap 3 kategori sesuai file PAK/RKA Dinas — target diisi di Pengaturan.</p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
+                        <th class="px-6 py-3 text-left font-semibold">Kategori</th>
+                        <th class="px-4 py-3 text-right font-semibold">Target</th>
+                        <th class="px-4 py-3 text-right font-semibold">Realisasi</th>
+                        <th class="px-4 py-3 text-right font-semibold">Selisih</th>
+                        <th class="px-4 py-3 text-center font-semibold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    @forelse($gelondongan['rows'] ?? [] as $row)
+                        <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                            <td class="px-6 py-3.5 font-semibold text-slate-700 dark:text-slate-200">{{ $row['label'] }}</td>
+                            <td class="px-4 py-3.5 text-right">
+                                @if($row['target'] === null)
+                                    <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-500 border border-slate-200 dark:bg-slate-700/40 dark:text-slate-400 dark:border-slate-600">Target belum diisi</span>
+                                @else
+                                    <span class="text-slate-700 dark:text-slate-200">Rp {{ number_format($row['target'], 0, ',', '.') }}</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-200">Rp {{ number_format($row['realisasi'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3.5 text-right text-slate-500 dark:text-slate-400">
+                                @if($row['target'] === null)
+                                    <span class="text-slate-400">—</span>
+                                @else
+                                    Rp {{ number_format(abs($row['selisih']), 0, ',', '.') }}
+                                @endif
+                            </td>
+                            <td class="px-4 py-3.5 text-center">
+                                @if($row['status'] === 'sesuai')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">SESUAI</span>
+                                @elseif($row['status'] === 'kurang')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">KURANG</span>
+                                @elseif($row['status'] === 'lebih')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30">LEBIH</span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-700/40 dark:text-slate-400 dark:border-slate-600">BELUM DIISI</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="px-6 py-8 text-center text-xs text-slate-400">Belum ada data gelondongan.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

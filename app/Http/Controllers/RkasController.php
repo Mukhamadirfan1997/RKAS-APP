@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\RkasKertasKerjaExport;
 use App\Exports\RkasKertasKerjaGroupedExport;
+use App\Models\AuditLog;
 use App\Models\KodeBarang;
 use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
@@ -25,8 +26,30 @@ class RkasController extends Controller
             }
         }
 
-        return TahunAnggaran::where('is_active', true)->first()
-            ?? TahunAnggaran::where('tahun', 2026)->first()
+        $active = TahunAnggaran::where('is_active', true)->first();
+        if ($active) {
+            return $active;
+        }
+
+        $latest = TahunAnggaran::orderBy('tahun', 'desc')->first();
+        if ($latest) {
+            DB::transaction(function () use ($latest) {
+                TahunAnggaran::where('id', '!=', $latest->id)->update(['is_active' => false]);
+                $latest->update(['is_active' => true]);
+            });
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'tahun.auto-fix',
+                'auditable_type' => TahunAnggaran::class,
+                'auditable_id' => $latest->id,
+                'description' => "Auto-fix: tidak ada TA aktif, aktifkan TA {$latest->tahun} otomatis (tahun terbaru)",
+                'old_values' => ['is_active' => false],
+                'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
+            ]);
+            return $latest->fresh();
+        }
+
+        return TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first()
             ?? new TahunAnggaran(['tahun' => 2026, 'pagu_total' => 0]);
     }
@@ -220,21 +243,27 @@ class RkasController extends Controller
             'keterangan_kustom' => 'nullable|string|max:255',
             'harga_satuan' => 'required|numeric|min:0',
             'koreksi' => 'nullable|numeric',
+            'satuan' => 'required_without:satuan_barang|string|max:50',
+            'satuan_barang' => 'required_without:satuan|nullable|string|max:50',
             'alokasi' => 'required|array',
+            'alokasi.*.volume' => 'nullable|numeric|min:0',
+            'alokasi.*.satuan' => 'nullable|string|max:50',
         ]);
 
         DB::beginTransaction();
         try {
             $totalVolume = 0;
             $totalJumlah = 0;
-            $satuanUtama = 'satuan';
+            // Kolom DB `rkas_item.satuan` — terima `satuan` (utama) atau alias `satuan_barang`
+            $satuanUtama = trim((string) ($validated['satuan'] ?? $validated['satuan_barang'] ?? ''));
+            if ($satuanUtama === '') {
+                $satuanUtama = 'satuan';
+            }
 
             foreach ($validated['alokasi'] as $bulan => $data) {
                 $vol = isset($data['volume']) ? (float) $data['volume'] : 0;
-                $sat = ! empty($data['satuan']) ? trim($data['satuan']) : $satuanUtama;
                 if ($vol > 0) {
                     $totalVolume += $vol;
-                    $satuanUtama = $sat;
                 }
             }
 
@@ -319,20 +348,26 @@ class RkasController extends Controller
             'keterangan_kustom' => 'nullable|string|max:255',
             'harga_satuan' => 'required|numeric|min:0',
             'koreksi' => 'nullable|numeric',
+            'satuan' => 'required_without:satuan_barang|string|max:50',
+            'satuan_barang' => 'required_without:satuan|nullable|string|max:50',
             'alokasi' => 'required|array',
+            'alokasi.*.volume' => 'nullable|numeric|min:0',
+            'alokasi.*.satuan' => 'nullable|string|max:50',
         ]);
 
         DB::beginTransaction();
         try {
             $totalVolume = 0;
-            $satuanUtama = $item->satuan ?: 'satuan';
+            // Kolom DB `rkas_item.satuan` — terima `satuan` (utama) atau alias `satuan_barang`
+            $satuanUtama = trim((string) ($validated['satuan'] ?? $validated['satuan_barang'] ?? $item->satuan ?? 'satuan'));
+            if ($satuanUtama === '') {
+                $satuanUtama = $item->satuan ?: 'satuan';
+            }
 
             foreach ($validated['alokasi'] as $bulan => $data) {
                 $vol = isset($data['volume']) ? (float) $data['volume'] : 0;
-                $sat = ! empty($data['satuan']) ? trim($data['satuan']) : $satuanUtama;
                 if ($vol > 0) {
                     $totalVolume += $vol;
-                    $satuanUtama = $sat;
                 }
             }
 

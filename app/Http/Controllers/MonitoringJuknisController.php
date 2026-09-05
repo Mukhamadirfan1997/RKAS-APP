@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\KategoriJuknis;
 use App\Models\KodeRekeningKategoriJuknis;
 use App\Models\MasterKodeRekening;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Services\JuknisValidator;
+use App\Services\RkaGelondonganService;
 use Illuminate\Http\Request;
 
 class MonitoringJuknisController extends Controller
@@ -21,8 +23,30 @@ class MonitoringJuknisController extends Controller
             }
         }
 
-        return TahunAnggaran::where('is_active', true)->first()
-            ?? TahunAnggaran::where('tahun', 2026)->first()
+        $active = TahunAnggaran::where('is_active', true)->first();
+        if ($active) {
+            return $active;
+        }
+
+        $latest = TahunAnggaran::orderBy('tahun', 'desc')->first();
+        if ($latest) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($latest) {
+                TahunAnggaran::where('id', '!=', $latest->id)->update(['is_active' => false]);
+                $latest->update(['is_active' => true]);
+            });
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'tahun.auto-fix',
+                'auditable_type' => TahunAnggaran::class,
+                'auditable_id' => $latest->id,
+                'description' => "Auto-fix: tidak ada TA aktif, aktifkan TA {$latest->tahun} otomatis (tahun terbaru)",
+                'old_values' => ['is_active' => false],
+                'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
+            ]);
+            return $latest->fresh();
+        }
+
+        return TahunAnggaran::where('tahun', 2026)->first()
             ?? TahunAnggaran::first()
             ?? new TahunAnggaran(['tahun' => 2026]);
     }
@@ -53,6 +77,15 @@ class MonitoringJuknisController extends Controller
         $filter = $request->input('filter', 'all');
         $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
 
+        // Cek RKA Gelondongan — 3 kategori Dinas (reuse service)
+        $gelondongan = RkaGelondonganService::calculate($tahunAnggaran);
+        $gelondonganLabels = config('rka_gelondongan.labels', [
+            'barang_jasa' => 'Belanja Barang dan Jasa',
+            'modal_mesin' => 'Modal Mesin',
+            'modal_aset_lainnya' => 'Modal Aset Tetap Lainnya (termasuk modal buku)',
+            'jumlah' => 'Jumlah',
+        ]);
+
         return view('monitoring.index', compact(
             'tahunAnggaran',
             'daftarTahun',
@@ -61,7 +94,9 @@ class MonitoringJuknisController extends Controller
             'allRekenings',
             'rekeningByJenis',
             'unmapped',
-            'filter'
+            'filter',
+            'gelondongan',
+            'gelondonganLabels'
         ));
     }
 

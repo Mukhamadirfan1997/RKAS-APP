@@ -196,5 +196,136 @@
     </div>
 </div>
 
+<!-- Pembatas visual — Cek RKA Gelondongan (terpisah dari section JUKNIS di atas) -->
+<div class="pt-8 mt-10 border-t-2 border-slate-200 dark:border-slate-700"></div>
+
+<div class="space-y-4" id="cek-rka-gelondongan">
+    <div>
+        <h2 class="text-lg font-extrabold text-slate-800 dark:text-white tracking-tight">Cek RKA Gelondongan (3 Kategori Dinas)</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Rekap 3 kolom sesuai file PAK Dinas — mapping via <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700/50 font-mono text-[11px]">config/rka_gelondongan.php</code>.
+            <span class="text-slate-400">· Tahun {{ $tahunAnggaran->tahun }} · Sumber: jumlah_koreksi (jumlah + koreksi)</span>
+        </p>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 text-[11px] uppercase tracking-wide">
+                        <th class="px-4 py-3 text-left font-bold">Kategori</th>
+                        <th class="px-4 py-3 text-right font-bold">Target</th>
+                        <th class="px-4 py-3 text-right font-bold">Realisasi</th>
+                        <th class="px-4 py-3 text-right font-bold">Selisih <span class="normal-case font-normal text-[10px]">(Target − Realisasi)</span></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    @foreach($gelondongan['rows'] ?? [] as $row)
+                        <tr class="bg-white dark:bg-slate-800">
+                            <td class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-200">
+                                {{ $row['label'] }}
+                                @if($row['key'] === 'barang_jasa')
+                                    <div class="text-[10px] font-normal text-slate-400">6 jenis</div>
+                                @elseif($row['key'] === 'modal_aset_lainnya')
+                                    <div class="text-[10px] font-normal text-slate-400">Aset + Buku</div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                @if($row['target'] === null)
+                                    <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-500 border border-slate-200 dark:bg-slate-700/40 dark:text-slate-400 dark:border-slate-600">Target belum diisi</span>
+                                @else
+                                    <span class="font-semibold text-slate-800 dark:text-slate-100">Rp {{ number_format($row['target'], 0, ',', '.') }}</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-right font-semibold text-slate-800 dark:text-slate-100">Rp {{ number_format($row['realisasi'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-right">
+                                @if($row['status'] === 'belum_diisi')
+                                    <span class="text-[11px] text-slate-400">—</span>
+                                @elseif($row['status'] === 'sesuai')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">Sesuai Target</span>
+                                @elseif($row['status'] === 'kurang')
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20">Kurang Rp {{ number_format(abs($row['selisih']), 0, ',', '.') }} dari target</span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30">Lebih Rp {{ number_format(abs($row['selisih']), 0, ',', '.') }} dari target</span>
+                                @endif
+                                @if($row['target'] !== null)
+                                    <div class="text-[10px] font-mono text-slate-400 mt-0.5">{{ $row['target'] > $row['realisasi'] ? '-' : ($row['target'] < $row['realisasi'] ? '+' : '') }}Rp {{ number_format(abs($row['selisih']), 0, ',', '.') }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="bg-slate-50 dark:bg-slate-800/40 border-t-2 border-slate-200 dark:border-slate-700">
+                    <tr class="font-bold">
+                        <td class="px-4 py-3 text-left text-slate-700 dark:text-slate-200">Jumlah</td>
+                        <td class="px-4 py-3 text-right">
+                            @if($gelondongan['jumlah_target'] === null)
+                                <span class="text-[11px] font-medium text-slate-400">—</span>
+                            @else
+                                <span class="text-slate-800 dark:text-white">Rp {{ number_format($gelondongan['jumlah_target'], 0, ',', '.') }}</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-right text-slate-900 dark:text-white">Rp {{ number_format($gelondongan['jumlah'] ?? 0, 0, ',', '.') }}</td>
+                        <td class="px-4 py-3 text-right">
+                            @if($gelondongan['jumlah_target'] !== null)
+                                @php $st = (float)($gelondongan['jumlah_target'] - $gelondongan['jumlah']); @endphp
+                                @if(abs($st) < 1000.5)
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">Sesuai</span>
+                                @elseif($gelondongan['jumlah'] < $gelondongan['jumlah_target'])
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20">Kurang Rp {{ number_format(abs($st), 0, ',', '.') }}</span>
+                                @else
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30">Lebih Rp {{ number_format(abs($st), 0, ',', '.') }}</span>
+                                @endif
+                            @else
+                                <span class="text-[11px] text-slate-400">—</span>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr class="border-t border-slate-200 dark:border-slate-700/60">
+                        <td colspan="2" class="px-4 py-3 text-right text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Pagu Total</td>
+                        <td colspan="2" class="px-4 py-3 text-right font-extrabold text-slate-800 dark:text-white">Rp {{ number_format($gelondongan['pagu_total'] ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr class="border-t border-slate-200 dark:border-slate-700/60">
+                        <td colspan="2" class="px-4 py-3 text-right text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Selisih dari Pagu <span class="font-normal normal-case text-[11px] text-slate-400">(Jumlah − Pagu Total)</span></td>
+                        <td colspan="2" class="px-4 py-3 text-right">
+                            @if($gelondongan['is_sesuai'] ?? false)
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">Sesuai Pagu ✓</span>
+                                <div class="text-[11px] text-slate-400 mt-1">Rp 0</div>
+                            @else
+                                @php $selisih = (float)($gelondongan['selisih'] ?? 0); @endphp
+                                @if($selisih < 0)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600">Rp {{ number_format(abs($selisih), 0, ',', '.') }} belum dianggarkan</span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600">Rp {{ number_format($selisih, 0, ',', '.') }} melebihi pagu</span>
+                                @endif
+                                <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1">({{ $selisih < 0 ? '-' : '+' }}Rp {{ number_format(abs($selisih), 0, ',', '.') }})</div>
+                            @endif
+                        </td>
+                    </tr>
+                    @if($gelondongan['jumlah_target'] !== null)
+                    <tr class="border-t border-slate-200 dark:border-slate-700/60">
+                        <td colspan="2" class="px-4 py-3 text-right text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Selisih Target vs Pagu <span class="font-normal normal-case text-[11px] text-slate-400">(Jumlah Target − Pagu)</span></td>
+                        <td colspan="2" class="px-4 py-3 text-right">
+                            @php $stp = (float)($gelondongan['selisih_target_pagu'] ?? 0); @endphp
+                            @if(abs($stp) < 0.5)
+                                <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">Sesuai Pagu ✓</span>
+                            @elseif($stp < 0)
+                                <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">Target kurang Rp {{ number_format(abs($stp), 0, ',', '.') }}</span>
+                            @else
+                                <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30">Target lebih Rp {{ number_format($stp, 0, ',', '.') }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @endif
+                </tfoot>
+            </table>
+        </div>
+        <div class="px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-700/50 text-[11px] text-slate-400 dark:text-slate-500">
+            Mapping: <span class="font-mono">Barang &amp; Jasa = 6 jenis</span> (Barang, Barang Persediaan, Cetak, Jasa, Jasa Pemeliharaan, Perjalanan Dinas) ·
+            <span class="font-mono">Modal Mesin = Peralatan &amp; Mesin</span> ·
+            <span class="font-mono">Modal Aset Lainnya = Aset Tetap Lainnya + Modal Buku</span> — total 3 kolom = grand jumlah_koreksi. Selisih ≠ 0 saat Draft itu normal. Target dari Pengaturan → Pagu (nullable).
+        </div>
+    </div>
+</div>
 
 @endsection
