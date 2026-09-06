@@ -2,6 +2,13 @@
 
 Semua perubahan penting aplikasi dicatat di sini.
 
+## [0.2.0] - 2026-09-06
+
+### Ditambahkan
+- **Tentang Aplikasi & Panduan** — halaman `/tentang` (versi dinamis dari `tauri.conf.json`, identitas sekolah otomatis, kontak pengembang terpusat, changelog) + `/panduan` (10 section accordion + cetak); grup sidebar "Bantuan".
+- **Tur Interaktif offline** — `driver.js` dibundle lokal (tanpa CDN), 3 tur otomatis sekali (Dashboard 4 langkah, Lembar Kerja 5 langkah, Monitoring 3 langkah, localStorage `karsa_tour_*_seen`), tombol "Mulai Tur Ulang" di Tentang.
+- **Sistem Lisensi & Trial 30 Hari offline** — kecamatan mengandung "rejoso" gratis selamanya (bypass total, tanpa banner); sekolah lain trial 30 hari sejak `lisensi.installed_at` → lewat 30 hari tanpa aktivasi masuk Mode Lihat-Saja (blokir tulis POST/DELETE + ekspor PDF/Excel). Kode aktivasi HMAC-SHA256 per tahun (`config/lisensi.php:checksum_seed`, format `XXXX-XXXX-XXXX-XXXX` tanpa 0/O/1/I, `hash_equals`), `php artisan lisensi:buat-kode {device} {tahun}`, banner kuning ≤7 hari & merah read-only, halaman `/aktivasi` (salin device_code, sisa hari, form aktivasi, kontak terpusat).
+
 ## [0.1.0] - 2026-09-05
 
 Versi awal KARSA 2026 — aplikasi desktop offline pengganti Excel untuk menyusun RKAS.
