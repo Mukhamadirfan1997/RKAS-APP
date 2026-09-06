@@ -149,5 +149,19 @@ html:not(.dark) .text-slate-500 {
     color: rgb(71 85 105); /* slate-600 */
 }
 html:not(.dark) .placeholder\:text-slate-400::placeholder {
-    color: rgb(100 116 139); /* slate-500 untuk placeholder tetap terbaca */
+     color: rgb(100 116 139); /* slate-500 untuk placeholder tetap terbaca */
 }
+
+/* driver.js tour polish — biar selaras KARSA */
+.driver-popover.karsa-tour-popover {
+    border-radius: 16px !important;
+    border: 1px solid rgb(226 232 240) !important;
+}
+.dark .driver-popover.karsa-tour-popover {
+    background: rgb(30 41 59) !important;
+    color: rgb(226 232 240) !important;
+    border-color: rgb(51 65 85) !important;
+}
+.driver-popover-title { font-size: 14px !important; font-weight: 800 !important; }
+.driver-popover-description { font-size: 13px !important; line-height: 1.5 !important; color: rgb(71 85 105) !important; }
+.dark .driver-popover-description { color: rgb(148 163 184) !important; }

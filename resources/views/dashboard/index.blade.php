@@ -46,7 +46,7 @@
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('rkas.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+            <a id="tour-dashboard-lembar" href="{{ route('rkas.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 Lembar Kerja
             </a>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Kepatuhan komponen top -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div id="tour-dashboard-juknis" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         @foreach([
             ['label' => 'Honor Belanja', 'hint' => 'maks {p}% dari pagu', 'key' => 'honor', 'bar' => $summary['honor']['persen'] / max($summary['honor']['batas_persen'],1) * 100, 'color' => 'bg-blue-500'],
             ['label' => 'Anggaran Buku', 'hint' => 'min {p}% dari pagu', 'key' => 'buku', 'bar' => $summary['buku']['persen'] / max($summary['buku']['batas_persen'],1) * 100, 'color' => 'bg-indigo-500'],
@@ -98,7 +98,7 @@
 
     <!-- Statistik utama + Skor kesiapan -->
     @php $sisa = $summary['pagu_total'] - $summary['sudah_dianggarkan']; $sudahPct = $summary['pagu_total'] > 0 ? round($summary['sudah_dianggarkan'] / $summary['pagu_total'] * 100, 1) : 0; @endphp
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div id="tour-dashboard-pagu" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="card p-5 flex flex-col">
                 <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Skor Kesiapan -->
-        <div class="card p-6">
+        <div id="tour-dashboard-kesiapan" class="card p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Kesiapan RKAS</h3>
                 <span class="text-[11px] text-slate-400 dark:text-slate-500">{{ $okCount }}/{{ count($checks) }}</span>

@@ -39,7 +39,7 @@
         </div>
         <div class="flex items-center gap-2 flex-wrap">
             @php $pdfBulanAktif = $selectedBulan > 0 ? $selectedBulan : (int) date('n'); @endphp
-            <div class="relative" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
+            <div id="tour-rkas-cetak" class="relative" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
                 <button type="button" @click="open=!open" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Cetak/Unduh
@@ -80,7 +80,7 @@
                 </div>
             </div>
             @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
-            <button type="button" id="btn-open-modal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
+            <button type="button" id="btn-open-modal" data-tour="tambah-anggaran" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Anggaran
             </button>
@@ -151,7 +151,7 @@
                     @endif
                 </div>
             </div>
-            <form method="GET" action="{{ route('rkas.index') }}" class="mt-4">
+            <form id="tour-rkas-filter" method="GET" action="{{ route('rkas.index') }}" class="mt-4">
                 @if(request('tahun'))<input type="hidden" name="tahun" value="{{ request('tahun') }}">@endif
                 <div class="flex gap-1.5 overflow-x-auto pb-1 items-center">
                     <button type="submit" name="bulan" value="0" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
@@ -175,7 +175,7 @@
                 return ($a->no_urut ?? 0) <=> ($b->no_urut ?? 0);
             })->values();
         @endphp
-        <div class="overflow-x-auto">
+        <div id="tour-rkas-tabel" class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
@@ -252,7 +252,7 @@
                                 @endif
                             </td>
                             <td class="px-3 py-3 text-center">
-                                <div class="relative inline-block" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
+                                <div class="relative inline-block" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false" @if($loop->first) id="tour-rkas-aksi" @endif>
                                     <button type="button" @click="open=!open" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700/50 transition-colors" title="Aksi">⋯</button>
                                     <div x-show="open" x-cloak x-transition.opacity class="absolute right-0 mt-1 w-44 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-20 overflow-hidden text-left">
                                         <button type="button" data-action="view" data-id="{{ $item->id }}" @click="open=false" class="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2">

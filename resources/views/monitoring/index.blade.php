@@ -35,12 +35,12 @@
     <!-- Tabs -->
     <div class="flex gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 w-fit">
         <button @click="tab='ringkasan'" :class="tab==='ringkasan' ? 'bg-white dark:bg-slate-700 shadow text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-colors">Ringkasan Kepatuhan (Otomatis)</button>
-        <button @click="tab='pemetaan'" :class="tab==='pemetaan' ? 'bg-white dark:bg-slate-700 shadow text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-colors">Konfigurasi Pemetaan Manual</button>
+        <button id="tour-monitoring-pemetaan" @click="tab='pemetaan'" :class="tab==='pemetaan' ? 'bg-white dark:bg-slate-700 shadow text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-colors">Konfigurasi Pemetaan Manual</button>
     </div>
 
     <!-- Ringkasan -->
     <div x-show="tab==='ringkasan'" x-cloak class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div id="tour-monitoring-ringkasan" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             @foreach([
                 ['key' => 'honor', 'label' => 'Honor Belanja Pegawai', 'desc' => 'batas maksimal', 'batasLabel' => 'maks'],
                 ['key' => 'buku', 'label' => 'Anggaran Buku', 'desc' => 'batas minimal', 'batasLabel' => 'min'],
@@ -199,7 +199,7 @@
 <!-- Pembatas visual — Cek RKA Gelondongan (terpisah dari section JUKNIS di atas) -->
 <div class="pt-8 mt-10 border-t-2 border-slate-200 dark:border-slate-700"></div>
 
-<div class="space-y-4" id="cek-rka-gelondongan">
+<div class="space-y-4" id="tour-monitoring-gelondongan">
     <div>
         <h2 class="text-lg font-extrabold text-slate-800 dark:text-white tracking-tight">Cek RKA Gelondongan (3 Kategori Dinas)</h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">

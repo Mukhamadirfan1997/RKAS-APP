@@ -1,5 +1,6 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
+import { initTours } from './tours.js';
 
 window.Alpine = Alpine;
 
@@ -154,3 +155,7 @@ Alpine.data('breakReminder', () => ({
 }));
 
 Alpine.start();
+
+document.addEventListener('DOMContentLoaded', () => {
+    try { initTours(); } catch {}
+});
