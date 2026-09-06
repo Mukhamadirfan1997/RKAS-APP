@@ -12,6 +12,7 @@ use App\Models\RkasItemBulan;
 use App\Models\TahunAnggaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -113,27 +114,32 @@ class RkasController extends Controller
             });
         }
 
-        $items = $query->get();
+        // Ambil semua item terfilter untuk sorting natural + totals, lalu paginate manual agar urut program→rekening→no_urut benar lintas halaman
+        $filteredAll = $query->get();
 
-        // Attach monthly volume and amount if specific month is selected
+        // Attach monthly volume and amount if specific month is selected (untuk semua terfilter, sebelum paginate agar badge & sort benar)
         if ($selectedBulan > 0) {
-            $items->each(function ($item) use ($selectedBulan) {
+            $filteredAll->each(function ($item) use ($selectedBulan) {
                 $bulanItem = $item->alokasiBulan->firstWhere('bulan', $selectedBulan);
                 $item->volume_bulan = $bulanItem ? (float) $bulanItem->volume : 0;
                 $item->jumlah_bulan = $bulanItem ? (float) $bulanItem->jumlah : 0;
             });
         }
 
-        // Calculate total summary
+        // Calculate total summary (grand — tidak terpengaruh pagination, dipakai footer & badge Tahap)
         $allItems = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->with('alokasiBulan')->get();
         $totalSudahDianggarkan = $allItems->sum('jumlah');
+        $totalSudahKoreksi = $allItems->sum(fn ($i) => (float) $i->jumlah_koreksi);
         $sisaPagu = ($tahunAnggaran->pagu_total ?? 0) - $totalSudahDianggarkan;
         $totalBulanTerpilih = $selectedBulan > 0
             ? $allItems->sum(fn ($i) => $i->alokasiBulan->where('bulan', $selectedBulan)->sum('jumlah'))
             : $totalSudahDianggarkan;
+        // Grand untuk badge Tahap I/II di lembar kerja (selalu 1 tahun penuh, tidak filter bulan/pagination)
+        $grandTahap1Jumlah = $allItems->sum(fn ($i) => $i->alokasiBulan->whereBetween('bulan', [1, 6])->sum('jumlah'));
+        $grandTahap2Jumlah = $allItems->sum(fn ($i) => $i->alokasiBulan->whereBetween('bulan', [7, 12])->sum('jumlah'));
 
-        // Group items per Kegiatan (ARKAS Kertas Kerja structure) - Urut otomatis berdasarkan kode SNP
-        $kegiatanGroups = $items->groupBy('master_program_id')->map(function ($group) use ($selectedBulan) {
+        // Group items per Kegiatan — dari filteredAll (bukan paginated) agar header kegiatan konsisten
+        $kegiatanGroups = $filteredAll->groupBy('master_program_id')->map(function ($group) use ($selectedBulan) {
             $prog = $group->first()->program;
             $total1Tahun = $group->sum(fn ($i) => $i->jumlah_koreksi);
             $totalBulan = $selectedBulan > 0
@@ -153,6 +159,31 @@ class RkasController extends Controller
             ];
         })->sortBy('kode', SORT_NATURAL)->values();
 
+        // Sorting natural program.kode → rekening.kode → no_urut SEBELUM paginate (jamin urut lintas halaman)
+        $sorted = $filteredAll->sort(function ($a, $b) {
+            $ka = $a->program->kode ?? '';
+            $kb = $b->program->kode ?? '';
+            $c = strnatcasecmp($ka, $kb);
+            if ($c !== 0) return $c;
+            $ra = $a->kodeRekening->kode ?? '';
+            $rb = $b->kodeRekening->kode ?? '';
+            $c2 = strnatcasecmp($ra, $rb);
+            if ($c2 !== 0) return $c2;
+            return ($a->no_urut ?? 0) <=> ($b->no_urut ?? 0);
+        })->values();
+
+        // Paginate manual 50/halaman — export (buildFlatForExport) tetap query full tanpa pagination
+        $perPage = 50;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentItems = $sorted->forPage($currentPage, $perPage)->values();
+        $items = new LengthAwarePaginator(
+            $currentItems,
+            $sorted->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
 
         return view('rkas.index', compact(
@@ -163,8 +194,11 @@ class RkasController extends Controller
             'items',
             'kegiatanGroups',
             'totalSudahDianggarkan',
+            'totalSudahKoreksi',
             'totalBulanTerpilih',
-            'sisaPagu'
+            'sisaPagu',
+            'grandTahap1Jumlah',
+            'grandTahap2Jumlah'
         ));
     }
 

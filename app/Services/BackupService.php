@@ -91,7 +91,7 @@ class BackupService
     /**
      * Pastikan ada 1 backup auto harian (sekali per hari saat app dibuka pertama).
      * Dipanggil dari AppServiceProvider::boot (tiap request) tapi hanya bikin file jika belum ada untuk hari ini.
-     * Prune otomatis simpan 7 hari terakhir (rkas-auto-* saja, manual & pre-* tidak dihapus).
+     * Prune otomatis per kategori: auto 7, backup 10, pre 10, pengesahan 20.
      *
      * @return string|null path file yang baru dibuat, null jika sudah ada atau testing
      */
@@ -110,7 +110,7 @@ class BackupService
             }
             // Hindari bikin barengan jika dua request bersamaan: cek lagi setelah lock sederhana
             static::snapshotDbZip($zipPath);
-            static::pruneOldAutoBackups(7);
+            static::pruneAllSafety();
             // Audit opsional (jangan gagalkan boot kalau audit error)
             try {
                 AuditLog::create([
@@ -137,13 +137,41 @@ class BackupService
      */
     public static function pruneOldAutoBackups(int $keep = 7): void
     {
+        static::pruneByPrefix('rkas-auto-', $keep);
+    }
+
+    /**
+     * Hapus file backup dengan prefix tertentu, sisakan $keep terbaru.
+     */
+    public static function pruneByPrefix(string $prefix, int $keep): void
+    {
+        if (! is_dir(static::dir())) {
+            return;
+        }
         $files = collect(File::files(static::dir()))
-            ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-auto-') && $f->getExtension() === 'zip')
+            ->filter(fn ($f) => str_starts_with($f->getFilename(), $prefix) && $f->getExtension() === 'zip')
             ->sortByDesc(fn ($f) => $f->getMTime())
             ->values();
         if ($files->count() <= $keep) {
             return;
         }
         $files->slice($keep)->each(fn ($f) => @File::delete($f->getPathname()));
+    }
+
+    /**
+     * Prune semua kategori backup per prefix agar tidak membengkak (dipanggil harian + setelah create/restore/katalog).
+     * - rkas-auto-*: 7 hari (harian)
+     * - rkas-backup-*: 10 terbaru (manual "Buat Backup Baru")
+     * - rkas-pre-restore-*: 10 terbaru (safety sebelum restore)
+     * - rkas-pre-katalog-*: 10 terbaru (safety sebelum update katalog)
+     * - rkas-pengesahan-*: 20 terbaru (arsip resmi disahkan)
+     */
+    public static function pruneAllSafety(int $autoKeep = 7, int $backupKeep = 10, int $preKeep = 10, int $pengesahanKeep = 20): void
+    {
+        static::pruneByPrefix('rkas-auto-', $autoKeep);
+        static::pruneByPrefix('rkas-backup-', $backupKeep);
+        static::pruneByPrefix('rkas-pre-restore-', $preKeep);
+        static::pruneByPrefix('rkas-pre-katalog-', $preKeep);
+        static::pruneByPrefix('rkas-pengesahan-', $pengesahanKeep);
     }
 }

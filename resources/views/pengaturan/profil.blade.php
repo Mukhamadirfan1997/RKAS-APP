@@ -92,5 +92,78 @@
             </div>
         </form>
     </div>
+
+    <div class="card overflow-hidden" x-data="breakPrefs()" x-init="init()">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60">
+            <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Preferensi Istirahat</h2>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">Atur seberapa sering pengingat muncul — disimpan di perangkat ini (offline).</p>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="label">Ingatkan setiap</label>
+                    <select x-model="interval" @change="save()" class="input">
+                        <option value="0">Nonaktif — jangan ingatkan</option>
+                        <option value="30">30 menit</option>
+                        <option value="45">45 menit</option>
+                        <option value="60">60 menit (bawaan)</option>
+                        <option value="90">90 menit</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="label">Durasi istirahat</label>
+                    <select x-model="duration" @change="save()" class="input">
+                        <option value="5">5 menit</option>
+                        <option value="10">10 menit</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-4 py-3">
+                <div class="text-xs">
+                    <div class="font-semibold text-slate-700 dark:text-slate-200">Pratinjau: <span x-text="preview"></span></div>
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500">Topbar akan tampil “Fokus • istirahat dalam X menit”.</div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold border" :class="interval==='0' ? 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600' : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30'" x-text="interval==='0' ? 'Nonaktif' : interval + ' / ' + duration + ' menit'"></span>
+            </div>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">Perubahan langsung aktif tanpa reload. Atur ke <b class="text-slate-600 dark:text-slate-300">90/10</b> jika susun RKAS maraton tanpa gangguan sering.</p>
+        </div>
+    </div>
+    <script>
+    function breakPrefs(){
+        return {
+            interval: '60',
+            duration: '5',
+            preview: '',
+            init(){
+                try{
+                    this.interval = localStorage.getItem('karsa_break_interval') || '60';
+                    this.duration = localStorage.getItem('karsa_break_duration') || '5';
+                    // migrasi lama 45 -> 60 untuk pengguna pertama kali setelah update
+                    if(!localStorage.getItem('karsa_break_interval')) { this.interval='60'; }
+                }catch(e){ this.interval='60'; this.duration='5'; }
+                this.updatePreview();
+            },
+            save(){
+                try{
+                    localStorage.setItem('karsa_break_interval', this.interval);
+                    localStorage.setItem('karsa_break_duration', this.duration);
+                    if(this.interval==='0'){
+                        localStorage.setItem('karsa_break_disabled', new Date().toISOString().slice(0,10));
+                    } else {
+                        localStorage.removeItem('karsa_break_disabled');
+                        localStorage.setItem('karsa_break_last', String(Date.now()));
+                    }
+                    // hapus snooze agar hint baru langsung terlihat
+                    localStorage.removeItem('karsa_break_snooze');
+                }catch(e){}
+                this.updatePreview();
+            },
+            updatePreview(){
+                if(this.interval==='0') this.preview='Nonaktif — tidak akan ada pengingat';
+                else this.preview = 'Ingatkan tiap ' + this.interval + ' menit, istirahat ' + this.duration + ' menit';
+            }
+        }
+    }
+    </script>
 </div>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\KatalogMeta;
+use App\Services\BackupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -192,6 +193,7 @@ class KatalogUpdateController extends Controller
             }
 
             File::deleteDirectory($tmpDir);
+            BackupService::pruneAllSafety();
 
             $jumlahAkhir = DB::table('kode_barang')->count();
 

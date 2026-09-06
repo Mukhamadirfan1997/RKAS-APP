@@ -222,6 +222,7 @@ class PengaturanController extends Controller
 
         $oldStatus = $ta->status_pengesahan;
         $ta->update(['status_pengesahan' => 'Disahkan']);
+        BackupService::pruneAllSafety();
 
         AuditLog::create([
             'user_id' => auth()->id(),

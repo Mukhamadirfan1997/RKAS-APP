@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -22,24 +23,44 @@ class BackupController extends Controller
     /**
      * Halaman Backup & Restore.
      */
-    public function index()
+    public function index(Request $request)
     {
         File::ensureDirectoryExists($this->dir);
 
-        $files = collect(File::files($this->dir))
+        $allFiles = collect(File::files($this->dir))
             ->filter(fn ($f) => $f->getExtension() === 'zip')
-            ->map(fn ($f) => [
-                'nama' => $f->getFilename(),
-                'ukuran' => $f->getSize(),
-                'waktu' => $f->getMTime(),
-            ])
+            ->map(function ($f) {
+                $nama = $f->getFilename();
+                if (str_starts_with($nama, 'rkas-backup-')) {
+                    $jenis = 'Manual'; $badge = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30'; $desc = 'Buat Backup Baru — untuk flashdisk';
+                } elseif (str_starts_with($nama, 'rkas-pengesahan-')) {
+                    $jenis = 'Pengesahan'; $badge = 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:border-violet-500/30'; $desc = 'Arsip resmi saat Disahkan';
+                } elseif (str_starts_with($nama, 'rkas-auto-')) {
+                    $jenis = 'Otomatis'; $badge = 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30'; $desc = 'Harian otomatis';
+                } else {
+                    $jenis = 'Safety'; $badge = 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600'; $desc = 'Cadangan safety (pre-restore/katalog)';
+                }
+                return ['nama' => $nama, 'ukuran' => $f->getSize(), 'waktu' => $f->getMTime(), 'jenis' => $jenis, 'badge' => $badge, 'desc' => $desc];
+            })
             ->sortByDesc('waktu')
             ->values();
 
-        $jumlahBackup = $files->count();
-        $totalUkuran = $files->sum('ukuran');
+        $jumlahBackup = $allFiles->count();
+        $totalUkuran = $allFiles->sum('ukuran');
 
-        return view('backup.index', compact('files', 'jumlahBackup', 'totalUkuran'));
+        // Rekomendasi: file terbaru yang harus diambil user (prioritas: Manual > Pengesahan > Otomatis)
+        $rekomendasi = $allFiles->firstWhere(fn ($x) => $x['jenis'] === 'Manual')
+            ?? $allFiles->firstWhere(fn ($x) => $x['jenis'] === 'Pengesahan')
+            ?? $allFiles->firstWhere(fn ($x) => $x['jenis'] === 'Otomatis')
+            ?? $allFiles->first();
+
+        // Pagination 20/halaman agar daftar tidak membebani render
+        $perPage = 20;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentItems = $allFiles->forPage($currentPage, $perPage)->values();
+        $files = new LengthAwarePaginator($currentItems, $allFiles->count(), $perPage, $currentPage, ['path' => $request->url(), 'query' => $request->query()]);
+
+        return view('backup.index', compact('files', 'jumlahBackup', 'totalUkuran', 'rekomendasi'));
     }
 
     /**
@@ -55,6 +76,7 @@ class BackupController extends Controller
             $zipPath = $this->dir.'/rkas-backup-'.$stamp.'.zip';
 
             BackupService::snapshotDbZip($zipPath);
+            BackupService::pruneAllSafety();
 
             $this->catatAudit('backup.create', $zipPath);
 
@@ -158,6 +180,7 @@ class BackupController extends Controller
             }
 
             $this->catatAudit('backup.restore', $safetyZip);
+            BackupService::pruneAllSafety();
 
             return redirect()->route('backup.index')->with('success', 'Restore berhasil. Data telah dikembalikan dari backup.');
         } catch (\Exception $e) {

@@ -37,7 +37,8 @@ Alpine.data('karsaClock', () => ({
                 this.breakColor = 'bg-amber-500';
                 return;
             }
-            const intervalMin = parseInt(localStorage.getItem('karsa_break_interval') || '45', 10);
+            const intervalMin = parseInt(localStorage.getItem('karsa_break_interval') || '60', 10);
+            if (intervalMin <= 0) { this.breakHint = 'Istirahat nonaktif'; this.breakColor = 'bg-slate-400'; return; }
             if (!last) {
                 localStorage.setItem('karsa_break_last', String(now));
                 this.breakHint = `Fokus • istirahat dalam ${intervalMin} menit`;
@@ -65,16 +66,26 @@ Alpine.data('breakReminder', () => ({
     snoozed: false,
     breakCountdown: 0,
     breakInterval: null,
-    workMinutes: 45,
+    workMinutes: 60,
+    breakMinutes: 5,
     pageLoadAt: Date.now(),
     init() {
-        // interval dari localStorage atau 45, untuk demo ?breakTest=1 jadi 1 menit
+        // interval dari localStorage atau 60 (default baru), durasi 5/10; ?breakTest=1 jadi 1 menit demo
         const params = new URLSearchParams(location.search);
         if (params.get('breakTest') === '1') {
             this.workMinutes = 1;
+            this.breakMinutes = 1;
             localStorage.setItem('karsa_break_interval', '1');
+            localStorage.setItem('karsa_break_duration', '1');
         } else {
-            this.workMinutes = parseInt(localStorage.getItem('karsa_break_interval') || '45', 10);
+            this.workMinutes = parseInt(localStorage.getItem('karsa_break_interval') || '60', 10);
+            this.breakMinutes = parseInt(localStorage.getItem('karsa_break_duration') || '5', 10);
+            if (this.breakMinutes <= 0) this.breakMinutes = 5;
+        }
+        // jika interval 0/nonaktif, jangan tampilkan sama sekali
+        if (this.workMinutes <= 0) {
+            this.workMinutes = 0;
+            return;
         }
         if (!localStorage.getItem('karsa_break_last')) {
             localStorage.setItem('karsa_break_last', String(Date.now()));
@@ -100,6 +111,7 @@ Alpine.data('breakReminder', () => ({
     },
     check() {
         try {
+            if (this.workMinutes <= 0) return;
             // Grace 3 menit setelah load — biar tidak kaget langsung setelah login
             if (Date.now() - this.pageLoadAt < 3 * 60 * 1000) return;
             const today = new Date().toISOString().slice(0,10);
@@ -134,7 +146,8 @@ Alpine.data('breakReminder', () => ({
         this.show = false;
     },
     startBreak() {
-        this.breakCountdown = 5 * 60;
+        const dur = Math.max(1, parseInt(this.breakMinutes || 5, 10));
+        this.breakCountdown = dur * 60;
         this.show = false;
         localStorage.setItem('karsa_break_last', String(Date.now()));
         if (this.breakInterval) clearInterval(this.breakInterval);

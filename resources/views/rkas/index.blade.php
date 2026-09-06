@@ -124,7 +124,7 @@
         <div class="card p-5">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Sudah Dianggarkan</div>
             <div class="text-lg md:text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">Rp {{ number_format($totalSudahDianggarkan, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $items->count() }} item belanja</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $items->total() }} item belanja @if($items->hasPages())· hal {{ $items->currentPage() }} / {{ $items->lastPage() }} @endif</div>
         </div>
         <div class="card p-5">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Belum Dianggarkan <span class="normal-case">&middot; Sisa Pagu</span></div>
@@ -163,17 +163,8 @@
         </div>
 
         @php
-            $itemsFlat = $items->sort(function($a, $b){
-                $ka = $a->program->kode ?? '';
-                $kb = $b->program->kode ?? '';
-                $c = strnatcasecmp($ka, $kb);
-                if ($c !== 0) return $c;
-                $ra = $a->kodeRekening->kode ?? '';
-                $rb = $b->kodeRekening->kode ?? '';
-                $c2 = strnatcasecmp($ra, $rb);
-                if ($c2 !== 0) return $c2;
-                return ($a->no_urut ?? 0) <=> ($b->no_urut ?? 0);
-            })->values();
+            // Sudah di-sort natural program→rekening→no_urut di controller sebelum paginate; paginator hanya slice halaman
+            $itemsFlat = $items->getCollection();
         @endphp
         <div id="tour-rkas-tabel" class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -198,7 +189,7 @@
                         @endphp
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
                             <td class="px-3 py-3 text-center">
-                                <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ $loop->iteration }}</div>
+                                <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</div>
                                 <div class="text-[10px] text-slate-400 dark:text-slate-500">#{{ $item->no_urut }}</div>
                             </td>
                             {{-- Program Kegiatan (Standar) — truncate ellipsis --}}
@@ -286,23 +277,28 @@
                         </tr>
                     @endforelse
                 </tbody>
-                @if($items->isNotEmpty())
+                @if($items->total() > 0)
                 <tfoot class="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60 text-sm">
                     <tr>
-                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan</td>
-                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">Rp {{ number_format($items->sum('jumlah_koreksi'), 0, ',', '.') }}</td>
+                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan <span class="font-normal text-[11px] text-slate-400">({{ $items->total() }} item, semua halaman)</span></td>
+                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">Rp {{ number_format($totalSudahKoreksi ?? $totalSudahDianggarkan, 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
                 @endif
             </table>
         </div>
-        @if($items->isNotEmpty())
+        @if($items->total() > 0)
         <div class="px-4 lg:px-6 py-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Rincian per Tahap</div>
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Rincian per Tahap <span class="font-normal">· grand total (semua halaman)</span></div>
             <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">Tahap I: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[1,6])->sum('jumlah')), 0, ',', '.') }}</span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">Tahap II: Rp {{ number_format($items->sum(fn($i) => $i->alokasiBulan->whereBetween('bulan',[7,12])->sum('jumlah')), 0, ',', '.') }}</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">Tahap I: Rp {{ number_format($grandTahap1Jumlah ?? 0, 0, ',', '.') }}</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">Tahap II: Rp {{ number_format($grandTahap2Jumlah ?? 0, 0, ',', '.') }}</span>
             </div>
+        </div>
+        @endif
+        @if($items->hasPages())
+        <div class="px-4 lg:px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60">
+            {{ $items->appends(request()->query())->links() }}
         </div>
         @endif
     </div>

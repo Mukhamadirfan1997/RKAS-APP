@@ -9,15 +9,15 @@
                     <div class="flex-1 min-w-0">
                         <h3 class="text-base font-extrabold text-slate-800 dark:text-white">Waktu istirahat sejenak</h3>
                         <p class="text-sm text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">
-                            Kamu sudah fokus <b x-text="workMinutes + ' menit'"></b>. Beri mata dan pikiran jeda 5 menit — minum air, regangkan badan, lihat yang hijau. RKAS lebih rapi kalau kepala tidak jenuh.
+                            Kamu sudah fokus <b x-text="workMinutes + ' menit'"></b>. Beri mata dan pikiran jeda <b x-text="breakMinutes + ' menit'"></b> — minum air, regangkan badan, lihat yang hijau. RKAS lebih rapi kalau kepala tidak jenuh.
                         </p>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-2">SmartRKAS mengingatkan hal yang sama — istirahat bukan malas, tapi biar fokusnya balik.</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-2">Bisa diatur di Pengaturan → Profil (30/45/60/90 menit). Istirahat bukan malas, tapi biar fokusnya balik.</p>
                     </div>
                 </div>
                 <div class="mt-6 grid grid-cols-1 gap-2">
                     <button @click="startBreak()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Mulai istirahat 5 menit
+                        <span x-text="'Mulai istirahat ' + breakMinutes + ' menit'"></span>
                     </button>
                     <div class="grid grid-cols-2 gap-2">
                         <button @click="snooze(10)" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Tunda 10 menit</button>
@@ -37,7 +37,7 @@
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Tarik napas, lihat jauh 20 detik, minum air.</p>
             <div class="mt-4 text-3xl font-extrabold tabular-nums text-emerald-600 dark:text-emerald-400" x-text="String(Math.floor(breakCountdown/60)).padStart(2,'0') + ':' + String(breakCountdown%60).padStart(2,'0')"></div>
             <div class="mt-3 h-2 rounded-full bg-slate-100 dark:bg-slate-700/60 overflow-hidden">
-                <div class="h-full bg-emerald-500 transition-all" :style="`width: ${(1 - breakCountdown/(5*60))*100}%`"></div>
+                <div class="h-full bg-emerald-500 transition-all" :style="`width: ${(1 - breakCountdown/(breakMinutes*60))*100}%`"></div>
             </div>
             <button @click="skipBreak()" class="mt-5 w-full px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-semibold">Selesai — lanjut kerja</button>
             <p class="text-[11px] text-slate-400 mt-2">Otomatis selesai dalam <span x-text="breakCountdown"></span> detik</p>
