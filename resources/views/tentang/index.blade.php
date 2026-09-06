@@ -34,6 +34,7 @@
         </div>
     </div>
 
+    @php $kontak = config('karsa.kontak'); @endphp
     <!-- Kredit Pengembang -->
     <div class="card p-6">
         <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
@@ -41,15 +42,15 @@
             Pengembang
         </h2>
         <div class="mt-3 space-y-2 text-sm">
-            <p class="font-semibold text-slate-800 dark:text-white">Dikembangkan oleh IrfanDev97 — OPS Rejoso</p>
+            <p class="font-semibold text-slate-800 dark:text-white">Dikembangkan oleh {{ $kontak['pengembang'] ?? 'IrfanDev97 — OPS Rejoso' }}</p>
             <div class="flex flex-wrap gap-3">
-                <a href="https://wa.me/6285156830304" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">
+                <a href="{{ $kontak['whatsapp_link'] ?? 'https://wa.me/6285156830304' }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.1 6.45 2.1 11.94c0 1.75.46 3.45 1.32 4.95L2.04 22l5.25-1.38c1.45.79 3.08 1.2 4.75 1.2 5.46 0 9.94-4.45 9.94-9.94 0-2.66-1.03-5.16-2.9-7.03A9.86 9.86 0 0012.04 2zm5.2 14.3c-.23.64-1.34 1.2-1.87 1.27-.5.07-1 .07-1.62-.07-.44-.1-1-.32-1.72-.64-1.5-.67-2.46-2.23-2.54-2.34-.07-.1-.6-.8-.6-1.52s.38-1.08.52-1.22c.13-.14.29-.18.39-.18h.28c.09 0 .21-.03.33.25.12.28.41.97.45 1.04.04.07.07.15.02.24-.05.09-.08.14-.15.22l-.23.27c-.08.09-.16.19-.07.37.09.18.4.66.86 1.07.59.53 1.09.7 1.25.78.15.08.24.07.33-.04.09-.1.38-.44.48-.59.1-.15.2-.13.33-.08.13.05.84.4.99.47.14.07.24.1.27.16.04.06.04.33-.19.97z"/></svg>
-                    WhatsApp 085156830304
+                    WhatsApp {{ $kontak['whatsapp_display'] ?? '085156830304' }}
                 </a>
-                <a href="https://instagram.com/mukhamadirfan22" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/30 text-pink-700 dark:text-pink-300 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors">
+                <a href="{{ $kontak['instagram_link'] ?? 'https://instagram.com/mukhamadirfan22' }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/30 text-pink-700 dark:text-pink-300 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
-                    @mukhamadirfan22
+                    {{ $kontak['instagram_display'] ?? '@mukhamadirfan22' }}
                 </a>
             </div>
         </div>

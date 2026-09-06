@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectUsersTo('/');
+        $middleware->alias([
+            'cek.lisensi' => \App\Http\Middleware\CekLisensi::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

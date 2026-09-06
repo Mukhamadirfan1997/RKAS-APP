@@ -18,6 +18,7 @@
 <body class="h-full text-slate-800 antialiased bg-slate-50 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
     <div class="flex flex-col h-full">
         @include('layouts.partials.topbar', ['hideSidebarToggle' => true])
+        @include('layouts.partials.lisensi-banner')
         <main class="flex-1 overflow-y-auto px-4 lg:px-10 py-6">
             {{ $slot ?? '' }}
             @yield('content')

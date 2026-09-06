@@ -123,6 +123,7 @@
         <!-- Main -->
         <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
             @include('layouts.partials.topbar')
+            @include('layouts.partials.lisensi-banner')
 
             <!-- Content -->
             <main class="flex-1 overflow-y-auto px-4 lg:px-8 py-6">

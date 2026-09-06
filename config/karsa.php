@@ -15,4 +15,11 @@ try {
 
 return [
     'version' => env('KARSA_VERSION', $version),
+    'kontak' => [
+        'whatsapp_display' => '085156830304',
+        'whatsapp_link' => 'https://wa.me/6285156830304',
+        'instagram_display' => '@mukhamadirfan22',
+        'instagram_link' => 'https://instagram.com/mukhamadirfan22',
+        'pengembang' => 'IrfanDev97 — OPS Rejoso',
+    ],
 ];
