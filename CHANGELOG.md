@@ -2,6 +2,14 @@
 
 Semua perubahan penting aplikasi dicatat di sini.
 
+## [0.2.1] - 2026-09-06
+
+### Diperbaiki & Ditambahkan
+- **Pengingat Istirahat** — reset timer saat log out (`layouts/app.blade.php` & `topbar.blade.php` `onsubmit` set `karsa_break_last`) + grace 3 menit setelah load (`app.js:pageLoadAt`) — tidak lagi muncul detik pertama setelah login.
+- **Dashboard — Tombol Tur Panduan** — `dashboard/index.blade.php` tombol amber `Tur Panduan` yang panggil `window.__karsaStartDashboardTour()` untuk trigger ulang tur Dashboard.
+- **Tentang & Panduan full width** — `tentang/index.blade.php` & `panduan/index.blade.php` pindah ke `layouts/focus` (`w-full max-w-none`) + tombol `Kembali ke Dashboard`, memanfaatkan lebar penuh monitor (sebelumnya `max-w-4xl` sempit).
+- **Tur berantai** — `tours.js` Dashboard `Lanjut ke Lembar Kerja →` → confirm pindah `/rkas` → Lembar Kerja `Lanjut ke Monitoring →` → `/monitoring/juknis` → `Selesai ✓`; done text kontekstual & hint "Tur berikutnya" — user tidak kira tur selesai di Dashboard.
+
 ## [0.2.0] - 2026-09-06
 
 ### Ditambahkan
