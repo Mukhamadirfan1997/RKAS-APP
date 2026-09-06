@@ -4,8 +4,23 @@ import "driver.js/dist/driver.css";
 function shouldAutoStart(key) {
     try { return localStorage.getItem(key) !== '1'; } catch { return false; }
 }
+function isSeen(key) {
+    try { return localStorage.getItem(key) === '1'; } catch { return false; }
+}
 function markSeen(key) {
     try { localStorage.setItem(key, '1'); } catch {}
+}
+function maybeChain(nextKey, nextPath, label) {
+    try {
+        if (!isSeen(nextKey)) {
+            setTimeout(() => {
+                // use native confirm for simplicity, offline safe
+                if (confirm('Tur bagian ini selesai. Lanjutkan tur ke ' + label + '?')) {
+                    window.location.href = nextPath;
+                }
+            }, 350);
+        }
+    } catch {}
 }
 
 function baseDriverOpts() {
@@ -24,6 +39,8 @@ function baseDriverOpts() {
 // Dashboard tour — 4 langkah
 function initDashboardTour() {
     const key = 'karsa_tour_dashboard_seen';
+    const nextKey = 'karsa_tour_rkas_seen';
+    const chainDoneText = !isSeen(nextKey) ? 'Lanjut ke Lembar Kerja →' : 'Selesai';
     const steps = [
         {
             element: '#tour-dashboard-juknis',
@@ -55,8 +72,8 @@ function initDashboardTour() {
         {
             element: '#tour-dashboard-lembar',
             popover: {
-                title: 'Buka Lembar Kerja',
-                description: 'Klik di sini untuk mulai menyusun atau mengedit rincian anggaran.',
+                title: 'Buka Lembar Kerja (4/4)',
+                description: 'Klik di sini untuk mulai menyusun atau mengedit rincian anggaran. Tur berikutnya: Lembar Kerja.',
                 side: 'left',
                 align: 'center',
             },
@@ -64,16 +81,20 @@ function initDashboardTour() {
     ];
     const hasElements = steps.every(s => document.querySelector(s.element));
     if (!hasElements) return;
+    const opts = { ...baseDriverOpts(), doneBtnText: chainDoneText };
     const d = driver({
-        ...baseDriverOpts(),
+        ...opts,
         steps,
-        onDestroyStarted: () => { markSeen(key); d.destroy(); },
+        onDestroyStarted: () => { markSeen(key); d.destroy(); maybeChain(nextKey, '/rkas', 'Lembar Kerja'); },
     });
     if (shouldAutoStart(key)) {
         setTimeout(() => d.drive(), 800);
     }
     // expose manual trigger
-    window.__karsaStartDashboardTour = () => { const dd = driver({ ...baseDriverOpts(), steps, onDestroyStarted: () => { markSeen(key); dd.destroy(); } }); dd.drive(); };
+    window.__karsaStartDashboardTour = () => {
+        const dd = driver({ ...opts, steps, onDestroyStarted: () => { markSeen(key); dd.destroy(); maybeChain(nextKey, '/rkas', 'Lembar Kerja'); } });
+        dd.drive();
+    };
 }
 
 // Lembar Kerja tour — 5 langkah
@@ -129,15 +150,26 @@ function initRkasTour() {
     // filter out missing elements (aksi may not exist if empty table)
     const available = steps.filter(s => document.querySelector(s.element));
     if (available.length < 2) return;
+    const nextKey = 'karsa_tour_monitoring_seen';
+    const chainDoneText = !isSeen(nextKey) ? 'Lanjut ke Monitoring →' : 'Selesai';
+    // update last step description to hint chaining
+    if (!isSeen(nextKey) && available.length > 0) {
+        const last = available[available.length - 1];
+        if (last.popover) last.popover.description = 'Unduh PDF Lengkap, Per Tahap, Per Bulan, atau Excel Lengkap dari sini. Tur berikutnya: Monitoring.';
+    }
+    const opts = { ...baseDriverOpts(), doneBtnText: chainDoneText };
     const d = driver({
-        ...baseDriverOpts(),
+        ...opts,
         steps: available,
-        onDestroyStarted: () => { markSeen(key); d.destroy(); },
+        onDestroyStarted: () => { markSeen(key); d.destroy(); maybeChain(nextKey, '/monitoring/juknis', 'Monitoring'); },
     });
     if (shouldAutoStart(key)) {
         setTimeout(() => d.drive(), 900);
     }
-    window.__karsaStartRkasTour = () => { const dd = driver({ ...baseDriverOpts(), steps: available, onDestroyStarted: () => { markSeen(key); dd.destroy(); } }); dd.drive(); };
+    window.__karsaStartRkasTour = () => {
+        const dd = driver({ ...opts, steps: available, onDestroyStarted: () => { markSeen(key); dd.destroy(); maybeChain(nextKey, '/monitoring/juknis', 'Monitoring'); } });
+        dd.drive();
+    };
 }
 
 // Monitoring tour — 3 langkah
@@ -174,15 +206,23 @@ function initMonitoringTour() {
     ];
     const hasElements = steps.every(s => document.querySelector(s.element));
     if (!hasElements) return;
+    // last step hint that this is the end
+    if (steps.length > 0 && steps[steps.length-1].popover) {
+        steps[steps.length-1].popover.description = 'Kalau perlu, atur sendiri kode rekening mana yang masuk kategori mana. Centang lalu Simpan. — Tur selesai! Ulangi kapan saja dari Tentang → Tur Ulang.';
+    }
     const d = driver({
         ...baseDriverOpts(),
+        doneBtnText: 'Selesai ✓',
         steps,
         onDestroyStarted: () => { markSeen(key); d.destroy(); },
     });
     if (shouldAutoStart(key)) {
         setTimeout(() => d.drive(), 800);
     }
-    window.__karsaStartMonitoringTour = () => { const dd = driver({ ...baseDriverOpts(), steps, onDestroyStarted: () => { markSeen(key); dd.destroy(); } }); dd.drive(); };
+    window.__karsaStartMonitoringTour = () => {
+        const dd = driver({ ...baseDriverOpts(), doneBtnText: 'Selesai ✓', steps, onDestroyStarted: () => { markSeen(key); dd.destroy(); } });
+        dd.drive();
+    };
 }
 
 export function initTours() {
