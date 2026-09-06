@@ -66,6 +66,7 @@ Alpine.data('breakReminder', () => ({
     breakCountdown: 0,
     breakInterval: null,
     workMinutes: 45,
+    pageLoadAt: Date.now(),
     init() {
         // interval dari localStorage atau 45, untuk demo ?breakTest=1 jadi 1 menit
         const params = new URLSearchParams(location.search);
@@ -99,6 +100,8 @@ Alpine.data('breakReminder', () => ({
     },
     check() {
         try {
+            // Grace 3 menit setelah load — biar tidak kaget langsung setelah login
+            if (Date.now() - this.pageLoadAt < 3 * 60 * 1000) return;
             const today = new Date().toISOString().slice(0,10);
             if (localStorage.getItem('karsa_break_disabled') === today) return;
             const snooze = parseInt(localStorage.getItem('karsa_break_snooze') || '0', 10);

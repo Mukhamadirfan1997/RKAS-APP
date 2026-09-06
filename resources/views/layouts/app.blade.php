@@ -110,7 +110,7 @@
                         </div>
                         <div x-show="!collapsed" x-cloak class="min-w-0 flex-1">
                             <div class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{{ Auth::user()->name }}</div>
-                            <form method="POST" action="{{ route('logout') }}" class="mt-0.5">
+                            <form method="POST" action="{{ route('logout') }}" class="mt-0.5" onsubmit="try{localStorage.setItem('karsa_break_last', String(Date.now())); localStorage.removeItem('karsa_break_snooze');}catch(e){}">
                                 @csrf
                                 <button type="submit" class="text-[11px] font-semibold text-slate-400 hover:text-red-600 dark:hover:text-red-400">Keluar</button>
                             </form>
