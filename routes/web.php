@@ -7,9 +7,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KatalogUpdateController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
+use App\Http\Controllers\PanduanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\RkasController;
 use App\Http\Controllers\RkasSearchController;
+use App\Http\Controllers\TentangController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -87,6 +89,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/master/barang/{id}/update', [MasterDataController::class, 'updateBarang'])->name('master.barang.update');
     Route::delete('/master/barang/{id}/delete', [MasterDataController::class, 'destroyBarang'])->name('master.barang.destroy');
     Route::post('/master/import', [MasterDataController::class, 'import'])->name('master.import');
+
+    // Tentang & Panduan
+    Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');
+    Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan.index');
 
     // Live Search Endpoints (SmartRKAS style autocomplete)
     Route::get('/api/search/kegiatan', [RkasSearchController::class, 'searchKegiatan'])->name('api.search.kegiatan');
