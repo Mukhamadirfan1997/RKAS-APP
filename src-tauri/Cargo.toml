@@ -1,8 +1,8 @@
 [package]
 name = "app"
-version = "1.0.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "1.0.1"
+description = "KARSA — Kertas Anggaran Sekolah (RKAS) Desktop"
+authors = ["KARSA"]
 license = ""
 repository = ""
 edition = "2021"

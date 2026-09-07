@@ -29,6 +29,12 @@ class PengesahanRkasTest extends TestCase
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
         // Pastikan mulai dari Draft
         $this->ta->update(['status_pengesahan' => 'Draft']);
+
+        // Hapus backup pengesahan basi dari run/instalasi dev sebelumnya agar
+        // penghitungan file & prune (maks 20) deterministik.
+        collect(File::files(storage_path('app/backups')))
+            ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'))
+            ->each(fn ($f) => File::delete($f->getPathname()));
     }
 
     private function payloadStore(): array

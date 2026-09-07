@@ -20,6 +20,11 @@
 /storage/pail
 /vendor
 
+# Bundle Tauri: PHP portabel & env produksi rahasia
+/src-tauri/php
+/src-tauri/bundle-env/.env
+/src-tauri/target
+
 # Dokumen rahasia/privasi proyek — tidak di-commit
 AGENTS.md
 PLAN-DESKTOP-RKAS.md

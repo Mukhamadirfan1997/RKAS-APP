@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "KARSA",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identifier": "id.karsa.rkas2026",
   "build": {
     "frontendDist": "../public",
@@ -25,7 +25,24 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["../resources/database-seed.sqlite"],
+    "resources": {
+      "../app": "./app/",
+      "../bootstrap": "./bootstrap/",
+      "../config": "./config/",
+      "../database/migrations": "./database/migrations/",
+      "../database/factories": "./database/factories/",
+      "../database/seeders": "./database/seeders/",
+      "../database/.gitignore": "./database/.gitignore",
+      "../public": "./public/",
+      "../resources": "./resources/",
+      "../routes": "./routes/",
+      "../vendor": "./vendor/",
+      "../artisan": "./artisan",
+      "../composer.json": "./composer.json",
+      "../composer.lock": "./composer.lock",
+      "bundle-env/.env": "./.env",
+      "php": "./php/"
+    },
     "android": {
       "debugApplicationIdSuffix": ".debug"
     }
