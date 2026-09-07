@@ -61,7 +61,7 @@
     </div>
 
     <!-- Cara Update -->
-    <div class="card p-6">
+    <div class="card p-6" id="card-update">
         <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Cara Update Aplikasi</h2>
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             Untuk memperbarui KARSA ke versi terbaru, unduh installer baru dari pengembang, lalu jalankan seperti biasa.
@@ -71,6 +71,24 @@
             <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>Jika ragu, lakukan <a href="{{ route('backup.index') }}" class="text-blue-600 dark:text-blue-400 underline">Backup</a> dulu sebelum update — satu klik, file .zip tersimpan.</span>
         </div>
+        <div class="mt-4 flex flex-wrap gap-2 items-center">
+            <button id="btn-cek-update" type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Cek Update Sekarang
+            </button>
+            <span id="txt-update-status" class="text-xs text-slate-500 dark:text-slate-400"></span>
+        </div>
+        <div id="area-update-hasil" class="hidden mt-4 rounded-xl border-2 border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-4">
+            <div class="text-sm font-extrabold text-amber-800 dark:text-amber-300">Versi <span id="tentang-versi-baru">-</span> tersedia</div>
+            <div class="text-xs text-amber-700 dark:text-amber-300/80">Anda pakai v<span id="tentang-versi-sekarang">-</span> — ukuran <span id="tentang-ukuran">-</span> MB</div>
+            <div class="mt-3 flex gap-2">
+                <button id="btn-tentang-unduh" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold">Unduh Sekarang (~<span id="tentang-ukuran2">-</span> MB)</button>
+                <a id="btn-tentang-buka" href="#" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">Buka File Installer</a>
+            </div>
+            <div id="tentang-progress" class="hidden mt-3 text-sm text-blue-600 dark:text-blue-400 flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> Sedang mengunduh...</div>
+            <div id="tentang-done" class="hidden mt-3 text-sm font-bold text-emerald-600 dark:text-emerald-400">✓ Unduhan selesai — file di <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-800 font-mono text-xs">storage/app/updates/</code> — buka file installer di atas untuk instal.</div>
+        </div>
+        <p class="mt-3 text-[11px] text-slate-400 dark:text-slate-500">Jika tidak ada update, akan tampil “Sudah versi terbaru”.</p>
     </div>
 
     <!-- Tur Ulang -->
@@ -109,5 +127,68 @@ document.getElementById('btn-restart-tour')?.addEventListener('click', function(
     } catch {}
     window.location.href = "{{ route('dashboard.index') }}";
 });
+// Update checker untuk Tentang
+(function(){
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  let info = null;
+  const btnCek = document.getElementById('btn-cek-update');
+  const txtStatus = document.getElementById('txt-update-status');
+  const area = document.getElementById('area-update-hasil');
+  const prog = document.getElementById('tentang-progress');
+  const done = document.getElementById('tentang-done');
+  const btnUnduh = document.getElementById('btn-tentang-unduh');
+  const btnBuka = document.getElementById('btn-tentang-buka');
+  async function cek(){
+    btnCek.disabled = true; txtStatus.textContent = 'Mengecek...';
+    try{
+      const r = await fetch('/update/cek', {headers:{'Accept':'application/json'}});
+      const j = await r.json();
+      if(!j.ada_update){
+        txtStatus.textContent = j.checked ? 'Sudah versi terbaru ✓' : 'Tidak ada update / offline';
+        area.classList.add('hidden');
+        return;
+      }
+      info = j;
+      document.getElementById('tentang-versi-baru').textContent = j.versi_baru;
+      document.getElementById('tentang-versi-sekarang').textContent = j.versi_sekarang;
+      document.getElementById('tentang-ukuran').textContent = j.ukuran_mb;
+      document.getElementById('tentang-ukuran2').textContent = j.ukuran_mb;
+      area.classList.remove('hidden');
+      txtStatus.textContent = 'Update tersedia';
+      // cek apakah sudah terunduh
+      try{
+        const s = await fetch('/update/status-unduhan?file=' + encodeURIComponent(j.nama_file), {headers:{'Accept':'application/json'}});
+        const sj = await s.json();
+        if(sj.exists){
+          btnBuka.href = '/update/download-file/' + encodeURIComponent(sj.file);
+          btnBuka.classList.remove('hidden');
+          done.classList.remove('hidden');
+        }
+      }catch(e){}
+    }catch(e){ txtStatus.textContent = 'Gagal cek (offline?)'; }
+    finally{ btnCek.disabled = false; }
+  }
+  async function unduh(){
+    if(!info) return;
+    btnUnduh.disabled = true; prog.classList.remove('hidden'); done.classList.add('hidden');
+    try{
+      const r = await fetch('/update/unduh', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':csrf}, body: JSON.stringify({url_unduh: info.url_unduh})});
+      const j = await r.json();
+      prog.classList.add('hidden');
+      if(j.success){
+        btnBuka.href = '/update/download-file/' + encodeURIComponent(j.file);
+        btnBuka.classList.remove('hidden');
+        done.classList.remove('hidden');
+        txtStatus.textContent = 'Unduhan selesai';
+      } else {
+        alert(j.message || 'Gagal');
+        txtStatus.textContent = j.message || 'Gagal';
+      }
+    }catch(e){ prog.classList.add('hidden'); alert('Gagal: '+e.message); }
+    finally{ btnUnduh.disabled = false; }
+  }
+  btnCek?.addEventListener('click', cek);
+  btnUnduh?.addEventListener('click', unduh);
+})();
 </script>
 @endsection

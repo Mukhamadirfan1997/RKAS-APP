@@ -36,6 +36,29 @@
 @endphp
 
 <div class="space-y-6">
+    <!-- Banner Update Aplikasi (auto cek, non-blocking) -->
+    <div id="banner-update" class="hidden rounded-xl border-2 border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-start gap-3">
+            <span class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">⬆</span>
+            <div>
+                <div class="text-sm font-extrabold text-amber-800 dark:text-amber-300">Versi <span id="upd-versi-baru">-</span> tersedia</div>
+                <div class="text-xs text-amber-700 dark:text-amber-300/80">Anda pakai v<span id="upd-versi-sekarang">-</span> — ukuran <span id="upd-ukuran">-</span> MB</div>
+                <div class="text-[11px] text-amber-600 dark:text-amber-400 mt-1">Unduh sekali (±35–45 MB), lalu instal manual — data RKAS tetap aman.</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <button id="btn-unduh-update" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold shadow">Unduh Sekarang</button>
+            <button onclick="document.getElementById('banner-update').classList.add('hidden')" class="px-3 py-2 text-xs text-amber-700 hover:underline">Nanti</button>
+        </div>
+    </div>
+    <div id="banner-update-progress" class="hidden rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-700 dark:text-blue-300">
+        <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> Sedang mengunduh installer... mohon tunggu (jangan tutup aplikasi)</span>
+    </div>
+    <div id="banner-update-done" class="hidden rounded-xl border-2 border-emerald-300 dark:border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">✓ Unduhan selesai — file tersimpan di <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-800 font-mono text-xs">storage/app/updates/</code></div>
+        <a id="btn-buka-installer" href="#" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow">Buka File Installer</a>
+    </div>
+
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -310,4 +333,54 @@
         </div>
     </div>
 </div>
+
+<script>
+(function(){
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  let updInfo = null;
+  async function cekUpdate(){
+    try{
+      const r = await fetch('/update/cek', {headers:{'Accept':'application/json'}});
+      if(!r.ok) return;
+      const j = await r.json();
+      if(!j.ada_update) return;
+      updInfo = j;
+      document.getElementById('upd-versi-baru').textContent = j.versi_baru;
+      document.getElementById('upd-versi-sekarang').textContent = j.versi_sekarang;
+      document.getElementById('upd-ukuran').textContent = j.ukuran_mb;
+      document.getElementById('banner-update').classList.remove('hidden');
+      document.getElementById('banner-update').classList.add('flex');
+    }catch(e){}
+  }
+  async function unduh(){
+    if(!updInfo) return;
+    document.getElementById('banner-update').classList.add('hidden');
+    document.getElementById('banner-update-progress').classList.remove('hidden');
+    try{
+      const r = await fetch('/update/unduh', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':csrf},
+        body: JSON.stringify({url_unduh: updInfo.url_unduh})
+      });
+      const j = await r.json();
+      document.getElementById('banner-update-progress').classList.add('hidden');
+      if(j.success){
+        document.getElementById('btn-buka-installer').href = '/update/download-file/' + encodeURIComponent(j.file);
+        document.getElementById('banner-update-done').classList.remove('hidden');
+        document.getElementById('banner-update-done').classList.add('flex');
+      } else {
+        alert(j.message || 'Gagal mengunduh');
+        document.getElementById('banner-update').classList.remove('hidden');
+        document.getElementById('banner-update').classList.add('flex');
+      }
+    }catch(e){
+      document.getElementById('banner-update-progress').classList.add('hidden');
+      alert('Gagal mengunduh: '+e.message);
+    }
+  }
+  document.getElementById('btn-unduh-update')?.addEventListener('click', unduh);
+  if(document.readyState==='complete') setTimeout(cekUpdate,800);
+  else window.addEventListener('load',()=> setTimeout(cekUpdate,800));
+})();
+</script>
 @endsection

@@ -13,6 +13,7 @@ use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\RkasController;
 use App\Http\Controllers\RkasSearchController;
 use App\Http\Controllers\TentangController;
+use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -98,6 +99,12 @@ Route::middleware('auth')->group(function () {
     // Aktivasi Lisensi (harus bisa diakses bahkan saat read-only, jadi tanpa cek.lisensi)
     Route::get('/aktivasi', [AktivasiController::class, 'index'])->name('aktivasi.index');
     Route::post('/aktivasi', [AktivasiController::class, 'activate'])->name('aktivasi.activate');
+
+    // Cek & Unduh Update Aplikasi (SmartRKAS pola, Laravel-only tanpa Rust)
+    Route::get('/update/cek', [UpdateController::class, 'cek'])->name('update.cek');
+    Route::post('/update/unduh', [UpdateController::class, 'unduh'])->name('update.unduh');
+    Route::get('/update/status-unduhan', [UpdateController::class, 'status'])->name('update.status');
+    Route::get('/update/download-file/{nama}', [UpdateController::class, 'downloadFile'])->name('update.download');
 
     // Live Search Endpoints (SmartRKAS style autocomplete)
     Route::get('/api/search/kegiatan', [RkasSearchController::class, 'searchKegiatan'])->name('api.search.kegiatan');

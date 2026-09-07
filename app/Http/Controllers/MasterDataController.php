@@ -228,24 +228,45 @@ class MasterDataController extends Controller
 
             $imported = 0;
             $skipped = 0;
-            $header = array_map('strtolower', $data[0]);
+            $errors = [];
+            // Normalisasi header: BOM, trim, spasi->underscore, lowercase
+            $header = array_map(function ($h) {
+                $h = preg_replace('/^\xEF\xBB\xBF/', '', (string) $h);
+                $h = strtolower(trim((string) $h));
+                $h = preg_replace('/\s+/', '_', $h);
+                $h = preg_replace('/[^a-z0-9_]/', '', $h);
+                return $h;
+            }, $data[0]);
+
+            // Helper ambil nilai via alias
+            $get = function (array $map, array $keys, $default = null) {
+                foreach ($keys as $k) {
+                    if (isset($map[$k]) && trim((string) $map[$k]) !== '') {
+                        return $map[$k];
+                    }
+                }
+                return $default;
+            };
 
             DB::beginTransaction();
 
+            $rowNum = 1; // header = 1
             foreach (array_slice($data, 1) as $row) {
+                $rowNum++;
                 $row = array_pad($row, count($header), null);
                 $rowMap = array_combine($header, $row);
 
-                if (empty(array_filter($rowMap))) {
+                if (empty(array_filter($rowMap, fn ($v) => trim((string) $v) !== ''))) {
                     continue;
                 }
 
                 switch ($request->target) {
                     case 'program':
-                        $kode = trim((string) ($rowMap['kode_kegiatan'] ?? $rowMap['kode'] ?? ''));
-                        $nama = trim((string) ($rowMap['uraian'] ?? $rowMap['nama'] ?? ''));
+                        $kode = trim((string) ($get($rowMap, ['kode_kegiatan', 'kode', 'kode_program'], '')));
+                        $nama = trim((string) ($get($rowMap, ['uraian', 'nama', 'nama_kegiatan', 'nama_program'], '')));
                         if ($kode === '' || $nama === '') {
                             $skipped++;
+                            $errors[] = "Baris {$rowNum}: kode/nama kosong — dilewati";
 
                             continue 2;
                         }
@@ -253,17 +274,18 @@ class MasterDataController extends Controller
                             ['kode' => rtrim($kode, '.')],
                             [
                                 'nama' => $nama,
-                                'program' => $rowMap['program'] ?? $rowMap['standar_snp'] ?? $rowMap['standarsnp'] ?? null,
-                                'sub_program' => $rowMap['sub_program'] ?? null,
+                                'program' => $get($rowMap, ['program', 'standar_snp', 'standarsnp', 'standar', 'snp'], null),
+                                'sub_program' => $get($rowMap, ['sub_program', 'subprogram', 'sub'], null),
                             ]
                         );
                         break;
 
                     case 'rekening':
-                        $kode = trim((string) ($rowMap['kode_barang'] ?? $rowMap['kode'] ?? ''));
-                        $nama = trim((string) ($rowMap['rincian_objek'] ?? $rowMap['nama'] ?? ''));
+                        $kode = trim((string) ($get($rowMap, ['kode_barang', 'kode', 'kode_rekening', 'kode_rek'], '')));
+                        $nama = trim((string) ($get($rowMap, ['rincian_objek', 'nama', 'uraian', 'nama_rekening'], '')));
                         if ($kode === '' || $nama === '') {
                             $skipped++;
+                            $errors[] = "Baris {$rowNum}: kode/nama rekening kosong — dilewati";
 
                             continue 2;
                         }
@@ -280,19 +302,84 @@ class MasterDataController extends Controller
                         break;
 
                     case 'barang':
-                        if (empty($rowMap['nama'] ?? null)) {
+                        $nama = trim((string) ($get($rowMap, ['nama', 'nama_barang', 'uraian', 'nama_barang_jasa'], '')));
+                        if ($nama === '') {
                             $skipped++;
+                            $errors[] = "Baris {$rowNum}: nama barang kosong — dilewati";
 
                             continue 2;
                         }
-                        $created = KodeBarang::firstOrCreate(
-                            ['nama' => trim($rowMap['nama'])],
-                            [
-                                'kode' => $rowMap['kode'] ?? null,
-                                'satuan_default' => $rowMap['satuan'] ?? $rowMap['satuan_default'] ?? null,
-                                'harga_acuan' => (float) ($rowMap['harga'] ?? $rowMap['harga_acuan'] ?? 0),
-                            ]
-                        );
+                        // Ambil semua varian ARKAS full
+                        $kode = trim((string) ($get($rowMap, ['kode', 'kode_barang', 'kode_arkas'], '')));
+                        $idBarang = trim((string) ($get($rowMap, ['id_barang_arkas', 'id_barang', 'id_arkas', 'kode_arkas'], '')));
+                        $kodeRek = trim((string) ($get($rowMap, ['kode_rekening', 'kode_rek', 'rekening'], '')));
+                        $satuan = trim((string) ($get($rowMap, ['satuan', 'satuan_default', 'satuan_barang'], '')));
+                        $hargaAcuanRaw = $get($rowMap, ['harga', 'harga_acuan', 'harga_acuan_arkas', 'harga_satuan'], 0);
+                        $hargaMinRaw = $get($rowMap, ['harga_min', 'hargamin', 'batas_bawah', 'harga_minimal'], 0);
+                        $hargaMaxRaw = $get($rowMap, ['harga_max', 'hargamax', 'batas_atas', 'harga_maksimal'], 0);
+                        // Validasi numeric
+                        $hargaAcuanStr = trim((string) $hargaAcuanRaw);
+                        $hargaMinStr = trim((string) $hargaMinRaw);
+                        $hargaMaxStr = trim((string) $hargaMaxRaw);
+                        if ($hargaAcuanStr !== '' && ! is_numeric(str_replace([',', '.'], '', $hargaAcuanStr)) && ! is_numeric($hargaAcuanStr)) {
+                            // izinkan angka excel numeric, tapi jika string non-numeric beri warning
+                            if (! is_numeric($hargaAcuanRaw)) {
+                                $errors[] = "Baris {$rowNum}: harga_acuan bukan angka ({$hargaAcuanRaw}) — diisi 0";
+                            }
+                        }
+                        $hargaAcuan = is_numeric($hargaAcuanRaw) ? (float) $hargaAcuanRaw : (float) str_replace(',', '.', preg_replace('/[^0-9,.\-]/', '', $hargaAcuanStr));
+                        $hargaMin = is_numeric($hargaMinRaw) ? (float) $hargaMinRaw : (float) str_replace(',', '.', preg_replace('/[^0-9,.\-]/', '', $hargaMinStr));
+                        $hargaMax = is_numeric($hargaMaxRaw) ? (float) $hargaMaxRaw : (float) str_replace(',', '.', preg_replace('/[^0-9,.\-]/', '', $hargaMaxStr));
+                        $kodeBelanja = trim((string) ($get($rowMap, ['kode_belanja', 'kodebelanja'], '')));
+                        $kategori = trim((string) ($get($rowMap, ['kategori', 'kategori_barang'], '')));
+
+                        // Unik: prioritas id_barang_arkas > kode > nama
+                        if ($idBarang !== '') {
+                            $created = KodeBarang::firstOrCreate(
+                                ['id_barang_arkas' => $idBarang],
+                                [
+                                    'kode' => $kode !== '' ? $kode : $idBarang,
+                                    'nama' => $nama,
+                                    'kode_rekening' => $kodeRek ?: null,
+                                    'satuan_default' => $satuan ?: null,
+                                    'harga_acuan' => $hargaAcuan,
+                                    'harga_min' => $hargaMin,
+                                    'harga_max' => $hargaMax,
+                                    'kode_belanja' => $kodeBelanja ?: null,
+                                    'kategori' => $kategori ?: null,
+                                ]
+                            );
+                        } elseif ($kode !== '') {
+                            $created = KodeBarang::firstOrCreate(
+                                ['kode' => $kode],
+                                [
+                                    'id_barang_arkas' => $idBarang ?: $kode,
+                                    'nama' => $nama,
+                                    'kode_rekening' => $kodeRek ?: null,
+                                    'satuan_default' => $satuan ?: null,
+                                    'harga_acuan' => $hargaAcuan,
+                                    'harga_min' => $hargaMin,
+                                    'harga_max' => $hargaMax,
+                                    'kode_belanja' => $kodeBelanja ?: null,
+                                    'kategori' => $kategori ?: null,
+                                ]
+                            );
+                        } else {
+                            $created = KodeBarang::firstOrCreate(
+                                ['nama' => $nama],
+                                [
+                                    'kode' => null,
+                                    'id_barang_arkas' => null,
+                                    'kode_rekening' => $kodeRek ?: null,
+                                    'satuan_default' => $satuan ?: null,
+                                    'harga_acuan' => $hargaAcuan,
+                                    'harga_min' => $hargaMin,
+                                    'harga_max' => $hargaMax,
+                                    'kode_belanja' => $kodeBelanja ?: null,
+                                    'kategori' => $kategori ?: null,
+                                ]
+                            );
+                        }
                         break;
                 }
 
@@ -301,10 +388,12 @@ class MasterDataController extends Controller
 
             DB::commit();
 
-            return redirect()->route('master.'.$request->target)->with(
-                'success',
-                "Import selesai: {$imported} baris diimpor, {$skipped} baris dilewati."
-            );
+            $msg = "Import selesai: {$imported} baris diimpor, {$skipped} baris dilewati.";
+            if (! empty($errors)) {
+                $msg .= ' Rincian: '.implode('; ', array_slice($errors, 0, 5)).(count($errors) > 5 ? ' ... (+'.(count($errors)-5).' lagi)' : '');
+            }
+
+            return redirect()->route('master.'.$request->target)->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
 
