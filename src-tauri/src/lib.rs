@@ -132,12 +132,16 @@ fn db_path_for(app: &tauri::AppHandle) -> PathBuf {
 }
 
 /// Pastikan struktur storage (log, compiled views, backup, update) ada di
-/// app_data_dir agar Laravel bisa menulis.
-fn ensure_storage_ready(_app: &tauri::AppHandle, root: &std::path::Path) {
+/// app_data_dir agar Laravel bisa menulis (path tersinkron dengan
+/// `useStoragePath()` di bootstrap/app.php — BUKAN resource_dir/install dir).
+fn ensure_storage_ready(app: &tauri::AppHandle) {
     if cfg!(debug_assertions) {
         return;
     }
-    let data_dir = root.join("storage");
+    let Ok(data_dir) = app.path().app_data_dir() else {
+        return;
+    };
+    let storage_root = data_dir.join("storage");
     let dirs = [
         "logs",
         "framework/cache/data",
@@ -147,7 +151,7 @@ fn ensure_storage_ready(_app: &tauri::AppHandle, root: &std::path::Path) {
         "app/updates",
     ];
     for d in dirs {
-        let _ = std::fs::create_dir_all(data_dir.join(d));
+        let _ = std::fs::create_dir_all(storage_root.join(d));
     }
 }
 
@@ -303,7 +307,7 @@ pub fn run() {
 
             let root = app_root(&handle);
             ensure_db_ready(&handle, &root);
-            ensure_storage_ready(&handle, &root);
+            ensure_storage_ready(&handle);
 
             let port = if cfg!(debug_assertions) {
                 // Dev: sebelumDevCommand sudah menjalankan artisan serve di 9200
