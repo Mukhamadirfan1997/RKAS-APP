@@ -347,10 +347,13 @@ class RkasExportGroupedTest extends TestCase
         for ($r = 1; $r <= min(10, $hrMax); $r++) {
             $a = trim((string) ($sheet->getCell("A{$r}")->getValue() ?? ''));
             $b = trim((string) ($sheet->getCell("B{$r}")->getValue() ?? ''));
-            if ($a === 'No' && $b === 'Kode Barang') { $headerRowDetected = $r; break; }
+            if ($a === 'No' && $b === 'Kode Barang') {
+                $headerRowDetected = $r;
+                break;
+            }
         }
         $this->assertNotNull($headerRowDetected, 'Header No/Kode Barang harus ditemukan');
-        $this->assertEquals("D".($headerRowDetected+1), $sheet->getFreezePane());
+        $this->assertEquals('D'.($headerRowDetected + 1), $sheet->getFreezePane());
         @unlink($tmp);
     }
 

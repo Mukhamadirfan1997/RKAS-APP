@@ -11,6 +11,7 @@ use App\Models\TahunAnggaran;
 use App\Services\JuknisValidator;
 use App\Services\RkaGelondonganService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringJuknisController extends Controller
 {
@@ -30,7 +31,7 @@ class MonitoringJuknisController extends Controller
 
         $latest = TahunAnggaran::orderBy('tahun', 'desc')->first();
         if ($latest) {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($latest) {
+            DB::transaction(function () use ($latest) {
                 TahunAnggaran::where('id', '!=', $latest->id)->update(['is_active' => false]);
                 $latest->update(['is_active' => true]);
             });
@@ -43,6 +44,7 @@ class MonitoringJuknisController extends Controller
                 'old_values' => ['is_active' => false],
                 'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
             ]);
+
             return $latest->fresh();
         }
 

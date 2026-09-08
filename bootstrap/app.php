@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CekLisensi;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +14,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectUsersTo('/');
         $middleware->alias([
-            'cek.lisensi' => \App\Http\Middleware\CekLisensi::class,
+            'cek.lisensi' => CekLisensi::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

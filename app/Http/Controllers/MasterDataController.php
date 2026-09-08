@@ -235,6 +235,7 @@ class MasterDataController extends Controller
                 $h = strtolower(trim((string) $h));
                 $h = preg_replace('/\s+/', '_', $h);
                 $h = preg_replace('/[^a-z0-9_]/', '', $h);
+
                 return $h;
             }, $data[0]);
 
@@ -245,6 +246,7 @@ class MasterDataController extends Controller
                         return $map[$k];
                     }
                 }
+
                 return $default;
             };
 
@@ -390,7 +392,7 @@ class MasterDataController extends Controller
 
             $msg = "Import selesai: {$imported} baris diimpor, {$skipped} baris dilewati.";
             if (! empty($errors)) {
-                $msg .= ' Rincian: '.implode('; ', array_slice($errors, 0, 5)).(count($errors) > 5 ? ' ... (+'.(count($errors)-5).' lagi)' : '');
+                $msg .= ' Rincian: '.implode('; ', array_slice($errors, 0, 5)).(count($errors) > 5 ? ' ... (+'.(count($errors) - 5).' lagi)' : '');
             }
 
             return redirect()->route('master.'.$request->target)->with('success', $msg);

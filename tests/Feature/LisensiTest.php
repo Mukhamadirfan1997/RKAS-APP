@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Lisensi;
+use App\Models\LisensiAktivasi;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\PengaturanSekolah;
+use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\LisensiService;
@@ -45,7 +47,7 @@ class LisensiTest extends TestCase
             $this->setInstalledAtDaysAgo(40);
             Lisensi::first()->fresh();
             // ensure no aktivasi
-            \App\Models\LisensiAktivasi::truncate();
+            LisensiAktivasi::truncate();
             $this->assertFalse(LisensiService::isReadOnlyMode(), "Failed for kecamatan variation: {$v}");
             $this->assertTrue(LisensiService::isRejosoExempt());
         }
@@ -55,7 +57,7 @@ class LisensiTest extends TestCase
     {
         $this->setKecamatan('Kraksaan');
         $this->setInstalledAtDaysAgo(5);
-        \App\Models\LisensiAktivasi::truncate();
+        LisensiAktivasi::truncate();
         $this->assertFalse(LisensiService::isRejosoExempt());
         $this->assertTrue(LisensiService::isTrialActive());
         $this->assertFalse(LisensiService::isReadOnlyMode());
@@ -65,7 +67,7 @@ class LisensiTest extends TestCase
     {
         $this->setKecamatan('Kraksaan');
         $this->setInstalledAtDaysAgo(31);
-        \App\Models\LisensiAktivasi::truncate();
+        LisensiAktivasi::truncate();
         $this->assertFalse(LisensiService::isTrialActive());
         $this->assertTrue(LisensiService::isReadOnlyMode());
 
@@ -84,7 +86,7 @@ class LisensiTest extends TestCase
         $resp->assertRedirect(route('aktivasi.index'));
 
         // also block update/delete and export
-        $item = \App\Models\RkasItem::first();
+        $item = RkasItem::first();
         $this->post('/rkas/'.$item->id.'/update', [
             'master_program_id' => $program->id,
             'master_kode_rekening_id' => $rekening->id,
@@ -156,7 +158,7 @@ class LisensiTest extends TestCase
     public function test_generate_dan_validate_konsisten()
     {
         $device = LisensiService::getOrCreateDeviceCode();
-        foreach ([2026,2027,2028,2030] as $t) {
+        foreach ([2026, 2027, 2028, 2030] as $t) {
             $kode = LisensiService::generateActivationCode($device, $t);
             $this->assertMatchesRegularExpression('/^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/', $kode);
             // ensure no ambiguous chars

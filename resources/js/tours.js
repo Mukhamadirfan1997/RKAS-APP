@@ -1,14 +1,58 @@
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
+const KEY_TO_NAMA = {
+    'karsa_tour_dashboard_seen': 'dashboard',
+    'karsa_tour_rkas_seen': 'rkas',
+    'karsa_tour_monitoring_seen': 'monitoring',
+};
+
+function getSeenMap() {
+    try {
+        return window.karsaToursSeen || {};
+    } catch {
+        return {};
+    }
+}
+
 function shouldAutoStart(key) {
-    try { return localStorage.getItem(key) !== '1'; } catch { return false; }
+    const nama = KEY_TO_NAMA[key] || key;
+    try {
+        const map = getSeenMap();
+        // false / undefined = belum dilihat → auto start
+        return map[nama] !== true;
+    } catch {
+        return false;
+    }
 }
 function isSeen(key) {
-    try { return localStorage.getItem(key) === '1'; } catch { return false; }
+    const nama = KEY_TO_NAMA[key] || key;
+    try {
+        const map = getSeenMap();
+        return map[nama] === true;
+    } catch {
+        return false;
+    }
 }
 function markSeen(key) {
-    try { localStorage.setItem(key, '1'); } catch {}
+    const nama = KEY_TO_NAMA[key] || key;
+    // Update local map langsung agar maybeChain / shouldAutoStart dalam sesi yang sama langsung true
+    try {
+        if (window.karsaToursSeen) window.karsaToursSeen[nama] = true;
+    } catch {}
+    // Fire-and-forget POST ke server, sertakan CSRF
+    try {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        fetch(`/tur/tandai-selesai/${encodeURIComponent(nama)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+            },
+            credentials: 'same-origin',
+        }).catch(() => {});
+    } catch {}
 }
 function maybeChain(nextKey, nextPath, label) {
     try {

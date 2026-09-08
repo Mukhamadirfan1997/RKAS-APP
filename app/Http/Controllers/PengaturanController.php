@@ -9,6 +9,7 @@ use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,7 @@ class PengaturanController extends Controller
         // Self-healing: 0 TA aktif ditemukan tapi ada data — aktifkan TA terbaru (tahun terbesar)
         $latest = TahunAnggaran::orderBy('tahun', 'desc')->first();
         if ($latest) {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($latest) {
+            DB::transaction(function () use ($latest) {
                 TahunAnggaran::where('id', '!=', $latest->id)->update(['is_active' => false]);
                 $latest->update(['is_active' => true]);
             });
@@ -45,6 +46,7 @@ class PengaturanController extends Controller
                 'old_values' => ['is_active' => false],
                 'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
             ]);
+
             return $latest->fresh();
         }
 
@@ -330,7 +332,7 @@ class PengaturanController extends Controller
     public function activateTahun(Request $request, $id)
     {
         $ta = TahunAnggaran::findOrFail($id);
-        \Illuminate\Support\Facades\DB::transaction(function () use ($ta) {
+        DB::transaction(function () use ($ta) {
             TahunAnggaran::query()->update(['is_active' => false]);
             $ta->update(['is_active' => true]);
         });

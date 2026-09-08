@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\AuditLog;
+use App\Models\MasterKodeRekening;
+use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
@@ -55,7 +57,7 @@ class TahunAnggaranTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'tahun.aktifkan', 'auditable_id' => $ta2027->id]);
     }
 
-    public function test_resolveTahun_self_heal_ketika_0_aktif(): void
+    public function test_resolve_tahun_self_heal_ketika_0_aktif(): void
     {
         // Set semua jadi tidak aktif
         TahunAnggaran::query()->update(['is_active' => false]);
@@ -111,8 +113,8 @@ class TahunAnggaranTest extends TestCase
             'status_pengesahan' => 'Draft',
         ]);
         // Buat 1 item untuk 2027
-        $prog = \App\Models\MasterProgram::first();
-        $rek = \App\Models\MasterKodeRekening::first();
+        $prog = MasterProgram::first();
+        $rek = MasterKodeRekening::first();
         RkasItem::create([
             'tahun_anggaran_id' => $ta2027->id,
             'master_program_id' => $prog->id,

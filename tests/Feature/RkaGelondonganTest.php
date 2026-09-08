@@ -37,18 +37,20 @@ class RkaGelondonganTest extends TestCase
         if ($existing) {
             return $existing;
         }
+
         return MasterKodeRekening::create([
-            'kode' => '9.9.'.rand(10,99).'.'.$jb->id,
+            'kode' => '9.9.'.rand(10, 99).'.'.$jb->id,
             'nama' => 'Rekening Test '.$jenisNama,
             'kategori_belanja' => 'BARJAS',
             'jenis_belanja_id' => $jb->id,
         ]);
     }
 
-    private function buatItem(string $jenisNama, int $jumlah, int $koreksi = 0, string $uraian = null): RkasItem
+    private function buatItem(string $jenisNama, int $jumlah, int $koreksi = 0, ?string $uraian = null): RkasItem
     {
         $rek = $this->rekeningFor($jenisNama);
         $prog = MasterProgram::first();
+
         return RkasItem::create([
             'tahun_anggaran_id' => $this->ta->id,
             'master_program_id' => $prog->id,
@@ -103,7 +105,7 @@ class RkaGelondonganTest extends TestCase
         $this->assertEquals($grand, (float) $result['jumlah']);
         $this->assertEquals(100000 + 200000 + 300000 + 50000, (float) $result['jumlah']);
         // juga total via accessor
-        $viaGet = RkasItem::where('tahun_anggaran_id', $this->ta->id)->get()->sum(fn($it)=>(float)$it->jumlah_koreksi);
+        $viaGet = RkasItem::where('tahun_anggaran_id', $this->ta->id)->get()->sum(fn ($it) => (float) $it->jumlah_koreksi);
         $this->assertEquals($viaGet, (float) $result['jumlah']);
     }
 
@@ -161,7 +163,7 @@ class RkaGelondonganTest extends TestCase
         $response->assertSee('Selisih dari Pagu', false);
     }
 
-    public function test_target_tersimpan_via_updatePagu(): void
+    public function test_target_tersimpan_via_update_pagu(): void
     {
         $user = User::first();
         $this->actingAs($user);

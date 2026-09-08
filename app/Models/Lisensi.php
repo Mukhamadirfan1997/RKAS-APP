@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Lisensi extends Model
 {
     protected $table = 'lisensi';
+
     protected $guarded = [];
+
     protected $casts = [
         'installed_at' => 'datetime',
     ];

@@ -16,6 +16,7 @@ class UpdateController extends Controller
         if ($info === null) {
             return response()->json(['ada_update' => false, 'checked' => true]);
         }
+
         return response()->json($info);
     }
 
@@ -57,7 +58,9 @@ class UpdateController extends Controller
         }
 
         try {
-            if (function_exists('set_time_limit')) @set_time_limit(300);
+            if (function_exists('set_time_limit')) {
+                @set_time_limit(300);
+            }
 
             // Streaming download via sink (tidak load ke memory)
             $resp = Http::timeout(300)->withHeaders([
@@ -67,18 +70,21 @@ class UpdateController extends Controller
 
             if (! $resp->successful()) {
                 @File::delete($dest);
+
                 return response()->json(['success' => false, 'message' => 'Gagal mengunduh installer (HTTP '.$resp->status().').'], 500);
             }
 
             if (! is_file($dest) || filesize($dest) < 1024) {
                 @File::delete($dest);
+
                 return response()->json(['success' => false, 'message' => 'File unduhan tidak valid.'], 500);
             }
 
-            return response()->json(['success' => true, 'message' => 'Unduhan selesai.', 'file' => $namaFile, 'size_mb' => round(filesize($dest)/1048576, 1)]);
+            return response()->json(['success' => true, 'message' => 'Unduhan selesai.', 'file' => $namaFile, 'size_mb' => round(filesize($dest) / 1048576, 1)]);
         } catch (\Throwable $e) {
             @File::delete($dest);
             Log::error('Unduh update gagal: '.$e->getMessage());
+
             return response()->json(['success' => false, 'message' => 'Gagal mengunduh: '.$e->getMessage()], 500);
         }
     }
@@ -96,16 +102,19 @@ class UpdateController extends Controller
         } else {
             $path = UpdateService::downloadedFilePath();
             // downloadedFilePath sudah return path aman dari glob, tapi tetap validasi ekstensi
-            if ($path && ! $this->isAllowedExtension($path)) $path = null;
+            if ($path && ! $this->isAllowedExtension($path)) {
+                $path = null;
+            }
         }
         if (! $path || ! is_file($path)) {
             return response()->json(['exists' => false]);
         }
+
         return response()->json([
             'exists' => true,
             'file' => basename($path),
             'size_bytes' => filesize($path),
-            'size_mb' => round(filesize($path)/1048576, 1),
+            'size_mb' => round(filesize($path) / 1048576, 1),
             'modified' => date('c', filemtime($path)),
         ]);
     }
@@ -113,7 +122,10 @@ class UpdateController extends Controller
     public function downloadFile($nama)
     {
         $path = $this->pathZonaAman($nama);
-        if (! $path) abort(404);
+        if (! $path) {
+            abort(404);
+        }
+
         return response()->download($path);
     }
 
@@ -123,17 +135,25 @@ class UpdateController extends Controller
      */
     private function pathZonaAman(string $nama): ?string
     {
-        if (basename($nama) !== $nama) return null;
+        if (basename($nama) !== $nama) {
+            return null;
+        }
         $lower = strtolower($nama);
-        if (! str_ends_with($lower, '.exe') && ! str_ends_with($lower, '.msi')) return null;
+        if (! str_ends_with($lower, '.exe') && ! str_ends_with($lower, '.msi')) {
+            return null;
+        }
         $path = UpdateService::updatesDir().'/'.$nama;
-        if (! is_file($path)) return null;
+        if (! is_file($path)) {
+            return null;
+        }
+
         return $path;
     }
 
     private function isAllowedExtension(string $path): bool
     {
         $lower = strtolower($path);
+
         return str_ends_with($lower, '.exe') || str_ends_with($lower, '.msi');
     }
 }

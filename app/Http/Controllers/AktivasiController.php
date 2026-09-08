@@ -16,7 +16,7 @@ class AktivasiController extends Controller
         $trialEnd = LisensiService::getTrialEndDate();
         $isReadOnly = LisensiService::isReadOnlyMode();
         $tahunAktif = LisensiService::getActiveTahun();
-        $tahunAktifLicensed = $tahunAktif ? LisensiService::isYearLicensed((int)$tahunAktif->tahun) : false;
+        $tahunAktifLicensed = $tahunAktif ? LisensiService::isYearLicensed((int) $tahunAktif->tahun) : false;
         $kontak = config('karsa.kontak');
 
         return view('aktivasi.index', compact(
@@ -33,7 +33,7 @@ class AktivasiController extends Controller
 
         $deviceCode = LisensiService::getOrCreateDeviceCode();
         $tahunAktif = LisensiService::getActiveTahun();
-        if (!$tahunAktif) {
+        if (! $tahunAktif) {
             return redirect()->back()->withErrors(['error' => 'Tahun anggaran aktif tidak ditemukan.']);
         }
         $tahun = (int) $tahunAktif->tahun;

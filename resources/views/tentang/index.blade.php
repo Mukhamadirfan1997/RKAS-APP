@@ -15,7 +15,7 @@
             <div class="min-w-0 flex-1">
                 <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight font-display">KARSA — Kertas Anggaran Sekolah</h1>
                 <p class="mt-1 inline-flex items-center gap-2">
-                    <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 text-xs font-bold text-blue-700 dark:text-blue-300">Versi {{ $version }}</span>
+                    <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 text-xs font-bold text-blue-700 dark:text-blue-300">Versi {{ $version ?? '—' }}</span>
                     <span class="text-xs text-slate-400 dark:text-slate-500">Desktop Offline • TA 2026</span>
                 </p>
                 <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
@@ -119,11 +119,14 @@
 </div>
 
 <script>
-document.getElementById('btn-restart-tour')?.addEventListener('click', function() {
+document.getElementById('btn-restart-tour')?.addEventListener('click', async function() {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
     try {
-        localStorage.removeItem('karsa_tour_dashboard_seen');
-        localStorage.removeItem('karsa_tour_rkas_seen');
-        localStorage.removeItem('karsa_tour_monitoring_seen');
+        await fetch("{{ route('tur.reset') }}", {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+            credentials: 'same-origin',
+        });
     } catch {}
     window.location.href = "{{ route('dashboard.index') }}";
 });

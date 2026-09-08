@@ -13,6 +13,7 @@ use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\RkasController;
 use App\Http\Controllers\RkasSearchController;
 use App\Http\Controllers\TentangController;
+use App\Http\Controllers\TurController;
 use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 
@@ -91,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/master/barang/{id}/update', [MasterDataController::class, 'updateBarang'])->middleware('cek.lisensi')->name('master.barang.update');
     Route::delete('/master/barang/{id}/delete', [MasterDataController::class, 'destroyBarang'])->middleware('cek.lisensi')->name('master.barang.destroy');
     Route::post('/master/import', [MasterDataController::class, 'import'])->middleware('cek.lisensi')->name('master.import');
+
+    // Tur — status sudah lihat disimpan di DB users (bukan localStorage, agar persisten walau port Tauri acak)
+    Route::post('/tur/tandai-selesai/{nama}', [TurController::class, 'tandaiSelesai'])->name('tur.tandai');
+    Route::post('/tur/reset-semua', [TurController::class, 'resetSemua'])->name('tur.reset');
 
     // Tentang & Panduan
     Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');

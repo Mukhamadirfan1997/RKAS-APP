@@ -9,6 +9,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    @auth
+    <script>
+        window.karsaToursSeen = {
+            dashboard: {{ Auth::user()->tour_dashboard_seen ? 'true' : 'false' }},
+            rkas: {{ Auth::user()->tour_rkas_seen ? 'true' : 'false' }},
+            monitoring: {{ Auth::user()->tour_monitoring_seen ? 'true' : 'false' }}
+        };
+    </script>
+    @endauth
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }

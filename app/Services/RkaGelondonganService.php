@@ -40,6 +40,7 @@ class RkaGelondonganService
             if ($ids->isEmpty()) {
                 return 0.0;
             }
+
             return (float) RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)
                 ->whereHas('kodeRekening', function ($q) use ($ids) {
                     $q->whereIn('jenis_belanja_id', $ids);

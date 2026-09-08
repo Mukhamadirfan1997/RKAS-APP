@@ -20,8 +20,10 @@ class CekLisensi
                     'redirect' => route('aktivasi.index'),
                 ], 403);
             }
+
             return redirect()->route('aktivasi.index')->withErrors(['error' => 'Masa percobaan sudah berakhir. Masukkan Kode Aktivasi untuk melanjutkan.']);
         }
+
         return $next($request);
     }
 }

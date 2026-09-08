@@ -69,7 +69,7 @@
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="try{if(window.__karsaStartDashboardTour) window.__karsaStartDashboardTour(); else {localStorage.removeItem('karsa_tour_dashboard_seen'); location.reload();}}catch(e){}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
+            <button type="button" onclick="try{if(window.__karsaStartDashboardTour) window.__karsaStartDashboardTour(); else { const t=document.querySelector('meta[name=&quot;csrf-token&quot;]')?.content||''; fetch('/tur/reset-semua',{method:'POST',headers:{'X-CSRF-TOKEN':t,'Accept':'application/json'},credentials:'same-origin'}).finally(()=>location.reload()); }}catch(e){}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Tur Panduan
             </button>

@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'tour_dashboard_seen',
+        'tour_rkas_seen',
+        'tour_monitoring_seen',
     ];
 
     /**
@@ -44,6 +47,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'tour_dashboard_seen' => 'boolean',
+            'tour_rkas_seen' => 'boolean',
+            'tour_monitoring_seen' => 'boolean',
         ];
     }
 }

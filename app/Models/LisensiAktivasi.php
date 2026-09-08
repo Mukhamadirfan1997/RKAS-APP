@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LisensiAktivasi extends Model
 {
     protected $table = 'lisensi_aktivasi';
+
     protected $guarded = [];
+
     protected $casts = [
         'activated_at' => 'datetime',
     ];

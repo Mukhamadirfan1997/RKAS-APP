@@ -65,7 +65,10 @@ class RkasKertasKerjaGroupedExport implements FromView, WithEvents
                 for ($r = 1; $r <= min(10, $highestRow); $r++) {
                     $a = trim((string) ($sheet->getCell("A{$r}")->getValue() ?? ''));
                     $b = trim((string) ($sheet->getCell("B{$r}")->getValue() ?? ''));
-                    if ($a === 'No' && $b === 'Kode Barang') { $headerRow = $r; break; }
+                    if ($a === 'No' && $b === 'Kode Barang') {
+                        $headerRow = $r;
+                        break;
+                    }
                 }
                 $freezeRow = $headerRow + 1;
                 $sheet->freezePane("D{$freezeRow}");

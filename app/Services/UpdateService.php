@@ -18,18 +18,18 @@ class UpdateService
     public static function checkLatestVersion(): ?array
     {
         try {
-            $versiSekarang = config('karsa.version', '0.1.0');
-            // fallback baca langsung jika config 0.0.0
-            if ($versiSekarang === '0.0.0' || empty($versiSekarang)) {
-                try {
-                    $conf = base_path('src-tauri/tauri.conf.json');
-                    if (is_file($conf)) {
-                        $j = json_decode((string) file_get_contents($conf), true);
-                        if (! empty($j['version'])) $versiSekarang = $j['version'];
-                    }
-                } catch (\Throwable $e) {}
+            // Single source of truth: config/karsa.php (APP_VERSION env > tauri.conf.json file)
+            $versiSekarang = config('karsa.version');
+
+            // Jika versi lokal tidak diketahui (null/empty), jangan tampilkan banner palsu.
+            // Kembalikan null agar frontend menganggap "tidak ada update / tidak diketahui".
+            if ($versiSekarang === null || trim((string) $versiSekarang) === '') {
+                return null;
             }
             $versiSekarang = ltrim(trim((string) $versiSekarang), 'v');
+            if ($versiSekarang === '') {
+                return null;
+            }
 
             $resp = Http::timeout(5)->withHeaders([
                 'Accept' => 'application/vnd.github.v3+json',
@@ -42,10 +42,14 @@ class UpdateService
 
             $data = $resp->json();
             $tag = $data['tag_name'] ?? null;
-            if (empty($tag)) return null;
+            if (empty($tag)) {
+                return null;
+            }
 
             $versiBaru = ltrim(trim((string) $tag), 'v');
-            if ($versiBaru === '') return null;
+            if ($versiBaru === '') {
+                return null;
+            }
 
             // Cari asset .exe / .msi
             $assets = $data['assets'] ?? [];
@@ -55,7 +59,9 @@ class UpdateService
             foreach ($assets as $a) {
                 $name = $a['name'] ?? '';
                 $url = $a['browser_download_url'] ?? null;
-                if (empty($url)) continue;
+                if (empty($url)) {
+                    continue;
+                }
                 $lower = strtolower($name);
                 if (str_ends_with($lower, '.exe') || str_ends_with($lower, '.msi')) {
                     $downloadUrl = $url;
@@ -64,7 +70,9 @@ class UpdateService
                     break;
                 }
             }
-            if (empty($downloadUrl)) return null;
+            if (empty($downloadUrl)) {
+                return null;
+            }
 
             $adaUpdate = version_compare($versiBaru, $versiSekarang, '>');
             $ukuranMb = $size > 0 ? round($size / 1048576, 1) : 0;
@@ -80,6 +88,7 @@ class UpdateService
             ];
         } catch (\Throwable $e) {
             Log::info('Cek update gagal (offline): '.$e->getMessage());
+
             return null;
         }
     }
@@ -92,15 +101,21 @@ class UpdateService
     public static function downloadedFilePath(?string $namaFile = null): ?string
     {
         $dir = static::updatesDir();
-        if (! is_dir($dir)) return null;
+        if (! is_dir($dir)) {
+            return null;
+        }
         if ($namaFile) {
             $p = $dir.'/'.$namaFile;
+
             return is_file($p) ? $p : null;
         }
         // cari file terbaru .exe/.msi di folder updates
         $files = glob($dir.'/*.{exe,msi,EXE,MSI}', GLOB_BRACE);
-        if (empty($files)) return null;
-        usort($files, fn($a,$b) => filemtime($b) <=> filemtime($a));
+        if (empty($files)) {
+            return null;
+        }
+        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+
         return $files[0];
     }
 }

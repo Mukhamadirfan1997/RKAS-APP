@@ -32,14 +32,23 @@ class BackupController extends Controller
             ->map(function ($f) {
                 $nama = $f->getFilename();
                 if (str_starts_with($nama, 'rkas-backup-')) {
-                    $jenis = 'Manual'; $badge = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30'; $desc = 'Buat Backup Baru — untuk flashdisk';
+                    $jenis = 'Manual';
+                    $badge = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30';
+                    $desc = 'Buat Backup Baru — untuk flashdisk';
                 } elseif (str_starts_with($nama, 'rkas-pengesahan-')) {
-                    $jenis = 'Pengesahan'; $badge = 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:border-violet-500/30'; $desc = 'Arsip resmi saat Disahkan';
+                    $jenis = 'Pengesahan';
+                    $badge = 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:border-violet-500/30';
+                    $desc = 'Arsip resmi saat Disahkan';
                 } elseif (str_starts_with($nama, 'rkas-auto-')) {
-                    $jenis = 'Otomatis'; $badge = 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30'; $desc = 'Harian otomatis';
+                    $jenis = 'Otomatis';
+                    $badge = 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30';
+                    $desc = 'Harian otomatis';
                 } else {
-                    $jenis = 'Safety'; $badge = 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600'; $desc = 'Cadangan safety (pre-restore/katalog)';
+                    $jenis = 'Safety';
+                    $badge = 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600';
+                    $desc = 'Cadangan safety (pre-restore/katalog)';
                 }
+
                 return ['nama' => $nama, 'ukuran' => $f->getSize(), 'waktu' => $f->getMTime(), 'jenis' => $jenis, 'badge' => $badge, 'desc' => $desc];
             })
             ->sortByDesc('waktu')

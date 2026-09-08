@@ -47,6 +47,7 @@ class RkasController extends Controller
                 'old_values' => ['is_active' => false],
                 'new_values' => ['tahun' => $latest->tahun, 'is_active' => true],
             ]);
+
             return $latest->fresh();
         }
 
@@ -72,7 +73,9 @@ class RkasController extends Controller
         // Pakai apa adanya jika sudah Draft/Disahkan/Pergeseran, fallback kapitalisasi sederhana
         if (! in_array($status, ['Draft', 'Disahkan', 'Pergeseran'], true)) {
             $status = ucfirst(strtolower($status));
-            if ($status === '') $status = 'Draft';
+            if ($status === '') {
+                $status = 'Draft';
+            }
         }
         $namaSekolah = trim((string) ($sekolah->nama_sekolah ?? ''));
         if ($namaSekolah === '') {
@@ -82,11 +85,15 @@ class RkasController extends Controller
             $slug = preg_replace('/[^A-Za-z0-9\-]/', '', $slug);
             $slug = preg_replace('/-+/', '-', $slug);
             $slug = trim($slug, '-');
-            if ($slug === '') $slug = 'Sekolah';
+            if ($slug === '') {
+                $slug = 'Sekolah';
+            }
         }
         $varian = trim($varian) !== '' ? trim($varian) : 'Dokumen';
         $ext = ltrim(strtolower($ext), '.');
-        if ($ext === '') $ext = 'pdf';
+        if ($ext === '') {
+            $ext = 'pdf';
+        }
 
         return "{$tahun}-RKAS-{$varian}-{$status}-{$slug}.{$ext}";
     }
@@ -164,11 +171,16 @@ class RkasController extends Controller
             $ka = $a->program->kode ?? '';
             $kb = $b->program->kode ?? '';
             $c = strnatcasecmp($ka, $kb);
-            if ($c !== 0) return $c;
+            if ($c !== 0) {
+                return $c;
+            }
             $ra = $a->kodeRekening->kode ?? '';
             $rb = $b->kodeRekening->kode ?? '';
             $c2 = strnatcasecmp($ra, $rb);
-            if ($c2 !== 0) return $c2;
+            if ($c2 !== 0) {
+                return $c2;
+            }
+
             return ($a->no_urut ?? 0) <=> ($b->no_urut ?? 0);
         })->values();
 
@@ -492,9 +504,9 @@ class RkasController extends Controller
      * Tiap item dilengkapi Volume+Jumlah per bulan terpisah (24 kolom),
      * Validasi Bulanan (BENAR/SALAH), dan Kontrol (OK/SELISIH).
      *
-     * @param string $mode  'tahunan'|'per_tahap'|'per_bulan' — menentukan filter & agregasi
-     * @param int|null $bulan 1..12 hanya untuk mode per_bulan
-     * @param int|null $tahap 1|2 hanya untuk mode per_tahap
+     * @param  string  $mode  'tahunan'|'per_tahap'|'per_bulan' — menentukan filter & agregasi
+     * @param  int|null  $bulan  1..12 hanya untuk mode per_bulan
+     * @param  int|null  $tahap  1|2 hanya untuk mode per_tahap
      */
     private function buildFlatForExport(TahunAnggaran $tahunAnggaran, string $mode = 'tahunan', ?int $bulan = null, ?int $tahap = null): array
     {
@@ -552,8 +564,12 @@ class RkasController extends Controller
             }
             // Alias per-tahap spesifik (volume/jumlah hanya 6 bulan tahap) — dipakai pdf-per-tahap
             if ($mode === 'per_tahap' && $tahapBulans !== null) {
-                $volTahap = 0; $jmlTahap = 0;
-                foreach ($tahapBulans as $tb) { $volTahap += $mapVol[$tb] ?? 0; $jmlTahap += $mapJml[$tb] ?? 0; }
+                $volTahap = 0;
+                $jmlTahap = 0;
+                foreach ($tahapBulans as $tb) {
+                    $volTahap += $mapVol[$tb] ?? 0;
+                    $jmlTahap += $mapJml[$tb] ?? 0;
+                }
                 $item->volumeTahap = $volTahap;
                 $item->jumlahTahap = $jmlTahap;
             }
@@ -574,11 +590,11 @@ class RkasController extends Controller
         }
 
         // Group flat: Kegiatan -> Rekening -> Item (memakai filter mode yang sudah diterapkan di query)
-        $flatGroups = $items->groupBy('master_program_id')->map(function ($group) use ($mode, $bulan, $tahap, $tahapBulans) {
+        $flatGroups = $items->groupBy('master_program_id')->map(function ($group) use ($mode, $bulan, $tahapBulans) {
             $prog = $group->first()->program;
             // Rekening dalam kegiatan, urut natural kode
             $byRek = $group->groupBy('master_kode_rekening_id');
-            $rekenings = $byRek->map(function ($rekItems) use ($mode, $bulan, $tahap, $tahapBulans) {
+            $rekenings = $byRek->map(function ($rekItems) use ($mode, $bulan, $tahapBulans) {
                 $rek = $rekItems->first()->kodeRekening;
                 $perBulanVol = [];
                 $perBulanJml = [];
@@ -588,9 +604,13 @@ class RkasController extends Controller
                 }
                 $subBulanVol = ($mode === 'per_bulan' && $bulan !== null) ? ($perBulanVol[$bulan] ?? 0) : 0;
                 $subBulanJml = ($mode === 'per_bulan' && $bulan !== null) ? ($perBulanJml[$bulan] ?? 0) : 0;
-                $subTahapJml = 0; $subTahapVol = 0;
+                $subTahapJml = 0;
+                $subTahapVol = 0;
                 if ($mode === 'per_tahap' && $tahapBulans !== null) {
-                    foreach ($tahapBulans as $tb) { $subTahapVol += $perBulanVol[$tb] ?? 0; $subTahapJml += $perBulanJml[$tb] ?? 0; }
+                    foreach ($tahapBulans as $tb) {
+                        $subTahapVol += $perBulanVol[$tb] ?? 0;
+                        $subTahapJml += $perBulanJml[$tb] ?? 0;
+                    }
                 }
 
                 return [
@@ -628,9 +648,13 @@ class RkasController extends Controller
             }
             $subBulanVol = ($mode === 'per_bulan' && $bulan !== null) ? ($perBulanVol[$bulan] ?? 0) : 0;
             $subBulanJml = ($mode === 'per_bulan' && $bulan !== null) ? ($perBulanJml[$bulan] ?? 0) : 0;
-            $subTahapVol = 0; $subTahapJml = 0;
+            $subTahapVol = 0;
+            $subTahapJml = 0;
             if ($mode === 'per_tahap' && $tahapBulans !== null) {
-                foreach ($tahapBulans as $tb) { $subTahapVol += $perBulanVol[$tb] ?? 0; $subTahapJml += $perBulanJml[$tb] ?? 0; }
+                foreach ($tahapBulans as $tb) {
+                    $subTahapVol += $perBulanVol[$tb] ?? 0;
+                    $subTahapJml += $perBulanJml[$tb] ?? 0;
+                }
             }
 
             return [
@@ -693,9 +717,16 @@ class RkasController extends Controller
         $bulanNamaList = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulanNama = ($mode === 'per_bulan' && $bulan !== null) ? ($bulanNamaList[$bulan] ?? '') : '';
         // Per-tahap agregasi khusus (hanya relevan untuk mode per_tahap)
-        $grandTahapVol = 0; $grandTahapJml = 0; $grandTahapTotal = 0; $persenTahap = 0; $paguTahap = 0;
+        $grandTahapVol = 0;
+        $grandTahapJml = 0;
+        $grandTahapTotal = 0;
+        $persenTahap = 0;
+        $paguTahap = 0;
         if ($mode === 'per_tahap' && $tahapBulans !== null) {
-            foreach ($tahapBulans as $tb) { $grandTahapVol += $grandPerBulanVol[$tb] ?? 0; $grandTahapJml += $grandPerBulanJml[$tb] ?? 0; }
+            foreach ($tahapBulans as $tb) {
+                $grandTahapVol += $grandPerBulanVol[$tb] ?? 0;
+                $grandTahapJml += $grandPerBulanJml[$tb] ?? 0;
+            }
             $grandTahapTotal = $grandTahapJml;
             $paguTahap = $tahap === 1 ? (float) ($tahunAnggaran->pagu_tahap1 ?? 0) : (float) ($tahunAnggaran->pagu_tahap2 ?? 0);
             $persenTahap = $paguTahap > 0 ? round($grandTahapTotal / $paguTahap * 100, 1) : 0;
