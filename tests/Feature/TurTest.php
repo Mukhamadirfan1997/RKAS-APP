@@ -119,4 +119,35 @@ class TurTest extends TestCase
         $this->post(route('tur.tandai', ['nama' => 'dashboard']))->assertRedirect('/login');
         $this->post(route('tur.reset'))->assertRedirect('/login');
     }
+
+    public function test_tandai_selesai_idempoten_dan_cepat(): void
+    {
+        $user = User::first();
+        $this->actingAs($user);
+
+        // Panggilan pertama — ukur waktu
+        $start = microtime(true);
+        $this->post(route('tur.tandai', ['nama' => 'dashboard']))->assertOk()->assertJson(['ok' => true]);
+        $elapsed1 = microtime(true) - $start;
+
+        $user->refresh();
+        $this->assertTrue((bool) $user->tour_dashboard_seen);
+
+        // Panggilan kedua idempoten — tetap 200, tidak error, tetap true
+        $start2 = microtime(true);
+        $this->post(route('tur.tandai', ['nama' => 'dashboard']))->assertOk()->assertJson(['ok' => true]);
+        $elapsed2 = microtime(true) - $start2;
+
+        $user->refresh();
+        $this->assertTrue((bool) $user->tour_dashboard_seen);
+
+        // Endpoint harus cepat (< 1 detik) — tidak ada operasi berat, penting untuk keepalive race
+        $this->assertLessThan(1.0, $elapsed1, 'POST /tur/tandai selesai harus <1s (aktual: '.$elapsed1.'s)');
+        $this->assertLessThan(1.0, $elapsed2, 'POST idempoten kedua harus <1s (aktual: '.$elapsed2.'s)');
+
+        // Simulasi navigasi cepat setelah Selesai: GET dashboard lalu /rkas lalu balik dashboard — tur tidak muncul lagi
+        $this->get(route('rkas.index'))->assertOk();
+        $resp = $this->get(route('dashboard.index'));
+        $resp->assertSee('dashboard: true', false);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TurController extends Controller
 {
@@ -21,6 +22,7 @@ class TurController extends Controller
 
         $user = Auth::user();
         $col = self::MAP[$nama];
+        Log::info('Tur tandaiSelesai', ['nama' => $nama, 'col' => $col, 'user_id' => $user->id]);
         $user->forceFill([$col => true])->save();
 
         return response()->json(['ok' => true, 'nama' => $nama, $col => true]);

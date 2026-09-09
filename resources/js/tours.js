@@ -40,7 +40,7 @@ function markSeen(key) {
     try {
         if (window.karsaToursSeen) window.karsaToursSeen[nama] = true;
     } catch {}
-    // Fire-and-forget POST ke server, sertakan CSRF
+    // Fire-and-forget POST ke server, sertakan CSRF — keepalive:true agar tidak abort saat halaman langsung pindah (race unload)
     try {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
         fetch(`/tur/tandai-selesai/${encodeURIComponent(nama)}`, {
@@ -51,6 +51,8 @@ function markSeen(key) {
                 'X-CSRF-TOKEN': csrf,
             },
             credentials: 'same-origin',
+            keepalive: true,
+            body: JSON.stringify({}),
         }).catch(() => {});
     } catch {}
 }
