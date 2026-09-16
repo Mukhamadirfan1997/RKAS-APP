@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\AuditLogArchiveService;
 use App\Services\BackupService;
 use App\Services\DatabaseHealthService;
 use Illuminate\Support\Carbon;
@@ -71,6 +72,17 @@ class AppServiceProvider extends ServiceProvider
             }
         } catch (\Throwable $e) {
             Log::warning('Database health check boot gagal: '.$e->getMessage());
+        }
+
+        // Arsip audit log berkala — maksimal 1x per 30 hari, arsipkan log >90 hari ke tabel archive
+        try {
+            if (! app()->runningInConsole()) {
+                if (AuditLogArchiveService::shouldRunArchive()) {
+                    AuditLogArchiveService::runArchive();
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('AuditLog archive boot gagal: '.$e->getMessage());
         }
     }
 }

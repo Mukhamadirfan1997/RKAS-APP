@@ -85,8 +85,21 @@ class DatabaseHealthService
             try {
                 $pengaturan = PengaturanSekolah::first();
                 if (! $pengaturan) {
-                    // firstOrCreate tidak pakai where unik spesifik karena single-row; create minimal
-                    $pengaturan = PengaturanSekolah::create([]);
+                    // Buat tanpa trigger LogsActivity
+                    try {
+                        $pengaturan = PengaturanSekolah::withoutEvents(fn () => PengaturanSekolah::create([]));
+                    } catch (\Throwable $e) {
+                        $id = DB::table('pengaturan_sekolah')->insertGetId([
+                            'nama_sekolah' => 'SD NEGERI TOYANING 1',
+                            'status_sekolah' => 'negeri',
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ]);
+                        $pengaturan = PengaturanSekolah::find($id);
+                    }
+                    if (! $pengaturan) {
+                        $pengaturan = PengaturanSekolah::first();
+                    }
                 }
             } catch (\Throwable $e) {
                 // Fallback aman: jangan gagalkan integrity_check hanya karena create gagal
@@ -104,12 +117,16 @@ class DatabaseHealthService
             if ($isOk) {
                 if ($pengaturan) {
                     try {
-                        $pengaturan->forceFill([
+                        $payload = [
                             'db_last_integrity_check_at' => $now,
-                            // Bersihkan flag korup bila sebelumnya korup dan sekarang sehat
                             'db_corrupt_detected_at' => null,
                             'db_corrupt_message' => null,
-                        ])->save();
+                        ];
+                        if (method_exists($pengaturan, 'saveQuietly')) {
+                            $pengaturan->forceFill($payload)->saveQuietly();
+                        } else {
+                            DB::table('pengaturan_sekolah')->where('id', $pengaturan->id)->update(array_merge($payload, ['updated_at' => $now]));
+                        }
                     } catch (\Throwable $e) {
                         Log::warning('DatabaseHealth simpan sehat gagal: '.$e->getMessage());
                     }
@@ -122,11 +139,16 @@ class DatabaseHealthService
             $rawMessage = $message ?? 'unknown integrity error';
             if ($pengaturan) {
                 try {
-                    $pengaturan->forceFill([
+                    $payload = [
                         'db_last_integrity_check_at' => $now,
                         'db_corrupt_detected_at' => $now,
                         'db_corrupt_message' => $rawMessage,
-                    ])->save();
+                    ];
+                    if (method_exists($pengaturan, 'saveQuietly')) {
+                        $pengaturan->forceFill($payload)->saveQuietly();
+                    } else {
+                        DB::table('pengaturan_sekolah')->where('id', $pengaturan->id)->update(array_merge($payload, ['updated_at' => $now]));
+                    }
                 } catch (\Throwable $e) {
                     Log::warning('DatabaseHealth simpan korup gagal: '.$e->getMessage());
                 }
