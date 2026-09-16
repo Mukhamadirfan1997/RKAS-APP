@@ -28,6 +28,7 @@
     <div class="flex flex-col h-full">
         @include('layouts.partials.topbar', ['hideSidebarToggle' => true])
         @include('layouts.partials.lisensi-banner')
+        @include('layouts.partials.database-health-banner')
         <main class="flex-1 overflow-y-auto px-4 lg:px-10 py-6">
             {{ $slot ?? '' }}
             @yield('content')
