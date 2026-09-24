@@ -75,6 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pengaturan/tahun/{id}', [PengaturanController::class, 'destroyTahun'])->middleware('cek.lisensi')->name('pengaturan.tahun.destroy');
     Route::get('/pengaturan/katalog', [KatalogUpdateController::class, 'index'])->name('pengaturan.katalog');
     Route::post('/pengaturan/katalog/update', [KatalogUpdateController::class, 'update'])->middleware('cek.lisensi')->name('pengaturan.katalog.update');
+    Route::get('/pengaturan/katalog/cek-terbaru', [KatalogUpdateController::class, 'cekTerbaru'])->name('pengaturan.katalog.cek');
+    Route::post('/pengaturan/katalog/unduh-terbaru', [KatalogUpdateController::class, 'unduhTerbaru'])->middleware('cek.lisensi')->name('pengaturan.katalog.unduh');
 
     // Master Data
     Route::get('/master/program', [MasterDataController::class, 'program'])->name('master.program');

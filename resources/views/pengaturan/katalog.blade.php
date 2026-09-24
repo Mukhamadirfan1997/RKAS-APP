@@ -11,15 +11,84 @@
         </div>
     @endif
 
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Update Katalog</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Perbarui data master kode barang (81rb baris) via paket .zip offline — tanpa install ulang.</p>
-        </div>
-        <a href="{{ route('pengaturan.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-            ← Kembali ke Pengaturan
-        </a>
-    </div>
+     <div class="flex items-center justify-between">
+         <div>
+             <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Update Katalog</h1>
+             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Perbarui data master kode barang (81rb baris) — cek online kalau ada WiFi, atau upload file .zip offline via USB/WA.</p>
+         </div>
+         <a href="{{ route('pengaturan.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+             ← Kembali ke Pengaturan
+         </a>
+     </div>
+
+     <!-- Panel Cek Terbaru Online (konsep: foto terbaru) -->
+     <div class="card overflow-hidden" id="katalog-online-panel" x-data="katalogOnline()">
+         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+             <div>
+                 <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Cek Katalog Terbaru (Online)</h2>
+                 <p class="text-[11px] text-slate-400 dark:text-slate-500">Kalau sekolah ada internet, biar KARSA ambil foto terbaru langsung — tanpa nunggu file WA.</p>
+             </div>
+             <span class="text-[11px] px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">Versi terpasang: <b class="text-slate-700 dark:text-slate-200">{{ $meta->versi ?? '-' }}</b></span>
+         </div>
+         <div class="p-6 space-y-4">
+             <div class="flex flex-wrap items-center gap-3">
+                 <button type="button" @click="cek()" :disabled="loading" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow disabled:opacity-50">
+                     <svg x-show="!loading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                     <svg x-show="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                     <span x-text="loading ? 'Mengecek...' : 'Cek Terbaru'"></span>
+                 </button>
+                 <span class="text-xs text-slate-400 dark:text-slate-500">Butuh internet • Timeout 5 detik • Kalau offline tetap bisa upload manual di bawah</span>
+             </div>
+
+             <!-- status -->
+             <div x-show="pesan" x-cloak class="rounded-xl border p-3 text-sm" :class="pesanClass" x-text="pesan"></div>
+
+             <!-- info update tersedia -->
+             <div x-show="info && info.ada_katalog_online" x-cloak class="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 p-4 space-y-3">
+                 <div class="flex items-start justify-between gap-4">
+                     <div>
+                         <div class="text-sm font-bold text-emerald-800 dark:text-emerald-300" x-text="info.ada_update ? 'Ada versi baru!' : 'Sudah versi terbaru'"></div>
+                         <div class="text-xs text-emerald-700 dark:text-emerald-400 mt-1">
+                             Terpasang: <b x-text="info.versi_sekarang"></b> → Terbaru: <b x-text="info.versi_baru"></b>
+                             <span x-show="info.ukuran_mb"> • <span x-text="info.ukuran_mb"></span> MB • <span x-text="info.nama_file"></span></span>
+                         </div>
+                     </div>
+                     <span class="shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold" :class="info && info.ada_update ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'" x-text="info && info.ada_update ? 'Update tersedia' : 'Up to date'"></span>
+                 </div>
+                 <form x-show="info && info.ada_update" method="POST" action="{{ route('pengaturan.katalog.unduh') }}" @submit="unduhLoading=true">
+                     @csrf
+                     <input type="hidden" name="url_unduh" :value="info.url_unduh">
+                     <button type="submit" :disabled="unduhLoading" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow disabled:opacity-50">
+                         <svg x-show="!unduhLoading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                         <svg x-show="unduhLoading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                         <span x-text="unduhLoading ? 'Mengunduh & memasang...' : 'Unduh & Pasang Sekarang'"></span>
+                     </button>
+                     <span class="text-[11px] text-emerald-600 dark:text-emerald-400 ml-2">± <span x-text="info.ukuran_mb"></span> MB • Backup otomatis dulu • Jangan tutup halaman</span>
+                 </form>
+                 <div x-show="unduhLoading" class="text-xs text-amber-700 dark:text-amber-300">Mengunduh 81rb baris + verifikasi checksum + backup — jangan tutup halaman.</div>
+             </div>
+         </div>
+     </div>
+
+     <script>
+     function katalogOnline(){
+         return {
+             loading:false, unduhLoading:false, info:null, pesan:'', pesanClass:'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300',
+             async cek(){
+                 this.loading=true; this.pesan='Mengecek ke GitHub...'; this.pesanClass='bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30 text-blue-700 dark:text-blue-300';
+                 this.info=null;
+                 try{
+                     const r = await fetch('{{ route('pengaturan.katalog.cek') }}', {headers:{'Accept':'application/json'}});
+                     const j = await r.json();
+                     if(j.offline){ this.pesan=j.message||'Offline — tetap bisa upload manual di bawah.'; this.pesanClass='bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300'; }
+                     else if(j.ada_katalog_online===false){ this.pesan=j.message||'Belum ada paket katalog online.'; this.pesanClass='bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'; }
+                     else { this.info=j; this.pesan=j.ada_update ? 'Versi baru ditemukan — klik Unduh & Pasang di bawah.' : 'Sudah pakai versi terbaru — tidak perlu update.'; this.pesanClass=j.ada_update ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'; }
+                 }catch(e){ this.pesan='Gagal cek (offline?) — tetap bisa upload file .zip manual di bawah.'; this.pesanClass='bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300'; }
+                 finally{ this.loading=false; }
+             }
+         }
+     }
+     </script>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Info katalog terpasang -->

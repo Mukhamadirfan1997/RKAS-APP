@@ -1,0 +1,72 @@
+name: Build Katalog
+
+on:
+  push:
+    paths:
+      - "RKAS - KERTAS KERJA 2026 master V.2.TOYANING revisi harga edit.xlsm"
+      - "app/Console/Commands/BuildKatalogUpdate.php"
+      - ".github/workflows/build-katalog.yml"
+  workflow_dispatch:
+    inputs:
+      katalog_version:
+        description: "Versi katalog (mis. 2026.10)"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: zip
+          coverage: none
+
+      - name: Install deps
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Build katalog zip
+        run: |
+          VER="${{ inputs.katalog_version }}"
+          if [ -z "$VER" ]; then
+            VER=$(date +"%Y.%m")
+          fi
+          echo "Versi: $VER"
+          php artisan katalog:build-update --katalog-version="$VER" --output="katalog-update-${VER}.zip"
+          ls -lh katalog-update-*.zip
+          unzip -l katalog-update-${VER}.zip
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          ### Katalog built
+          - Versi: $VER
+          - File: katalog-update-${VER}.zip
+          EOF
+          echo "katalog_version=$VER" >> $GITHUB_ENV
+          echo "katalog_file=katalog-update-${VER}.zip" >> $GITHUB_ENV
+
+      - name: Upload artifact (always)
+        uses: actions/upload-artifact@v4
+        with:
+          name: katalog-${{ env.katalog_version }}
+          path: katalog-update-*.zip
+          retention-days: 30
+
+      - name: Attach to latest Release (if exists)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILE="${{ env.katalog_file }}"
+          # cari release latest, kalau tidak ada buat draft tidak - cukup upload artifact
+          TAG=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "")
+          if [ -z "$TAG" ]; then
+            echo "No release yet - only artifact uploaded. Buat Release dulu untuk auto-attach."
+            exit 0
+          fi
+          echo "Latest tag: $TAG - uploading $FILE"
+          gh release upload "$TAG" "$FILE" --clobber
+          echo "Uploaded $FILE to $TAG"
