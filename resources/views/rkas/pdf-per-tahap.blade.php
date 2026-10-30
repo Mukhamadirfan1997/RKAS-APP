@@ -65,7 +65,7 @@
                     <th class="r">{{ $bulanShort[$mb] }} Vol</th><th class="r">{{ $bulanShort[$mb] }} Jml</th>
                     @endforeach
                     <th class="r">Subtotal {{ $tahapVal===1 ? 'Tahap I' : 'Tahap II' }}</th>
-                    <th class="c col-kontrol">Kontrol<small>Harga vs Katalog</small></th>
+                    <th class="c col-kontrol">Kontrol<small>Batas Atas SSH</small></th>
                 </tr>
             </thead>
             <tbody>

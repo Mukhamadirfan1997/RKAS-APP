@@ -176,7 +176,7 @@
                         <th class="px-3 py-3 text-left font-semibold min-w-[190px]">Rekening Belanja</th>
                         <th class="px-3 py-3 text-left font-semibold min-w-[220px]">Uraian</th>
                         <th class="px-3 py-3 text-right font-semibold min-w-[110px]">Volume</th>
-                        <th class="px-3 py-3 text-right font-semibold min-w-[130px]">Harga Satuan</th>
+                        <th class="px-3 py-3 text-right font-semibold min-w-[130px]" title="Kontrol: harga tidak boleh melebihi batas atas SSH. Lebih murah dari acuan tetap OK.">Harga Satuan</th>
                         <th class="px-3 py-3 text-right font-semibold min-w-[140px]">Total</th>
                         <th class="px-3 py-3 text-center font-semibold w-14">Aksi</th>
                     </tr>
@@ -223,12 +223,12 @@
                                 <div class="text-xs font-medium">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
                                 <div class="flex items-center justify-end gap-1.5 mt-0.5">
                                     @if($item->kontrol === 'OK')
-                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                        <span title="{{ $item->batas_ssh > 0 ? 'Harga tidak melebihi batas atas SSH (Rp '.number_format($item->batas_ssh, 0, ',', '.').')' : 'Tanpa data SSH katalog — tidak ada batas yang dilanggar' }}" class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
                                             <span class="w-1 h-1 rounded-full bg-emerald-500"></span>OK
                                         </span>
                                     @else
-                                        <span title="Harga berbeda dari acuan ARKAS: Rp {{ number_format($item->harga_satuan_arkas, 0, ',', '.') }}" class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
-                                            <span class="w-1 h-1 rounded-full bg-amber-500"></span>SELISIH
+                                        <span title="Harga melebihi batas atas SSH katalog: Rp {{ number_format($item->batas_ssh, 0, ',', '.') }}" class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400">
+                                            <span class="w-1 h-1 rounded-full bg-red-500"></span>DI ATAS SSH
                                         </span>
                                     @endif
                                 </div>
@@ -512,8 +512,8 @@
                                 </div>
                             </div>
 
-                            <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0 && form.harga_satuan !== form.harga_satuan_arkas">
-                                Harga acuan ARKAS: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; akan ditandai <span class="font-bold text-amber-600 dark:text-amber-400">SELISIH</span> pada kolom KONTROL.
+                            <div class="mt-1 text-[10px] text-slate-400" x-show="form.harga_satuan_arkas > 0">
+                                Harga acuan katalog: Rp <span x-text="form.harga_satuan_arkas.toLocaleString('id-ID')"></span> &mdash; hanya referensi. Yang dinilai kolom KONTROL adalah <span class="font-bold text-slate-500 dark:text-slate-300">batas atas SSH</span>: harga boleh lebih murah, asal tidak melebihi batas atas.
                             </div>
                         </div>
                         <div>

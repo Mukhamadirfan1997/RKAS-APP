@@ -57,7 +57,9 @@ class RkasItem extends Model
     }
 
     /**
-     * Selisih harga yang dianggarkan terhadap harga acuan ARKAS.
+     * Selisih harga yang dianggarkan terhadap harga acuan katalog.
+     * Bersifat informasi saja — bukan dasar badge KONTROL (KONTROL berbasis
+     * batas atas SSH, lihat getKontrolAttribute()).
      */
     public function getSelisihHargaAttribute()
     {
@@ -65,15 +67,30 @@ class RkasItem extends Model
     }
 
     /**
-     * Status KONTROL per baris: OK bila harga sesuai acuan, SELISIH bila berbeda.
-     * Jika harga_satuan_arkas 0 (tanpa katalog), KONTROL tidak berlaku -> OK.
+     * Batas atas SSH (harga_max) dari katalog barang. 0 bila item tanpa katalog/SSH.
      */
-    public function getKontrolAttribute()
+    public function getBatasSshAttribute(): float
     {
-        if ((float) $this->harga_satuan_arkas == 0.0) {
+        return (float) ($this->barang->harga_max ?? 0);
+    }
+
+    /**
+     * Status KONTROL per baris berbasis Standar Satuan Harga (SSH).
+     *
+     * Aturan JUKNIS: harga satuan yang dianggarkan TIDAK BOLEH MELEBIHI batas
+     * atas SSH. Tidak harus sama persis dengan harga acuan katalog — sekolah
+     * boleh menawar lebih murah. Jadi:
+     * - 'OK'       : harga <= batas atas SSH, atau item tidak punya data SSH.
+     * - 'MELEBIHI' : harga > batas atas SSH.
+     */
+    public function getKontrolAttribute(): string
+    {
+        $batas = $this->batas_ssh;
+
+        if ($batas <= 0.0) {
             return 'OK';
         }
 
-        return abs($this->selisih_harga) > 0.009 ? 'SELISIH' : 'OK';
+        return (float) $this->harga_satuan > ($batas + 0.009) ? 'MELEBIHI' : 'OK';
     }
 }

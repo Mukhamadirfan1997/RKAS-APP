@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 use ZipArchive;
 
@@ -183,6 +184,31 @@ class KatalogUpdateTest extends TestCase
             $this->assertEquals($metaLatestBefore->id, KatalogMeta::latest('id')->first()->id);
         }
         $this->assertDatabaseMissing('kode_barang', ['kode' => 'KB-NEW-TEST-001']);
+    }
+
+    public function test_unduh_online_mode_ajax_mengembalikan_json_bukan_redirect(): void
+    {
+        $rows = $this->seedRowsForSuccess();
+        // Tambah baris agar ukuran zip > 1 KB (validasi minimal file di controller).
+        // Teks acak agar tidak terlalu terkompresi.
+        $rows[] = ['KB-PAD', 'KB-PAD', bin2hex(random_bytes(2000)), '5.1.02.01.01.0001', 'buah', '1', '1', '1', 'TEST', 'TestKat'];
+        for ($i = 1; $i <= 6; $i++) {
+            $rows[] = ['KB-ONLINE-'.$i, 'KB-ONLINE-'.$i, 'Barang Online Uji '.$i.' dengan nama panjang untuk ukuran file', '5.1.02.01.01.0001', 'buah', '1500', '1000', '2000', 'TEST', 'TestKat'];
+        }
+        $zipPath = $this->buildZip($rows, '2026.55');
+
+        Http::fake([
+            'https://github.com/*' => Http::response(file_get_contents($zipPath), 200, ['Content-Type' => 'application/zip']),
+        ]);
+
+        $response = $this->postJson(route('pengaturan.katalog.unduh'), [
+            'url_unduh' => 'https://github.com/test/releases/download/v1/katalog-update-2026.55.zip',
+        ]);
+
+        // Mode AJAX harus JSON (bukan redirect) supaya notifikasi bisa tampil tanpa navigasi.
+        $response->assertOk()->assertJson(['success' => true]);
+        $this->assertStringContainsString('2026.55', (string) $response->json('message'));
+        $this->assertDatabaseHas('kode_barang', ['kode' => 'KB-NEW-TEST-001']);
     }
 
     public function test_rollback_total_jika_error_di_tengah_upsert(): void

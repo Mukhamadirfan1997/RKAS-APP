@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\RkasItem;
@@ -80,16 +81,31 @@ class KoreksiExportBackupTest extends TestCase
         $this->assertEquals(75000, (float) $item->jumlah_koreksi);
     }
 
-    public function test_kontrol_badge_selisih_when_harga_berbeda_acuan_arkas()
+    public function test_kontrol_berbasis_batas_atas_ssh_bukan_sama_persis_acuan()
     {
-        $item = $this->storeItem(['uraian' => 'Cek Kontrol']);
-        $item->forceFill(['harga_satuan_arkas' => 9000])->save();
+        $item = $this->storeItem(['uraian' => 'Cek Kontrol SSH']);
 
-        $this->assertEquals(1000, (float) $item->selisih_harga);
-        $this->assertEquals('SELISIH', $item->kontrol);
-
-        $item->forceFill(['harga_satuan_arkas' => 10000])->save();
+        // Tanpa katalog/SSH -> tidak ada batas yang dilanggar
         $this->assertEquals('OK', $item->kontrol);
+        $this->assertSame(0.0, $item->batas_ssh);
+
+        $barang = KodeBarang::create([
+            'kode' => 'TEST-SSH-1',
+            'nama' => 'Barang Uji SSH',
+            'satuan_default' => 'dus',
+            'harga_acuan' => 10000,
+            'harga_min' => 8000,
+            'harga_max' => 12000,
+        ]);
+
+        $item->forceFill(['kode_barang_id' => $barang->id, 'harga_satuan' => 9000])->save();
+        $this->assertEquals('OK', $item->fresh()->kontrol, 'Lebih murah dari acuan tetap OK (tidak wajib sama dengan SSH)');
+
+        $item->forceFill(['harga_satuan' => 12000])->save();
+        $this->assertEquals('OK', $item->fresh()->kontrol, 'Tepat di batas atas SSH masih OK');
+
+        $item->forceFill(['harga_satuan' => 12001])->save();
+        $this->assertEquals('MELEBIHI', $item->fresh()->kontrol, 'Di atas batas atas SSH -> MELEBIHI');
     }
 
     public function test_export_excel_downloads()

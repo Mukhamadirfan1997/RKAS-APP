@@ -85,7 +85,12 @@
                 <button id="btn-tentang-unduh" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold">Unduh Sekarang (~<span id="tentang-ukuran2">-</span> MB)</button>
                 <a id="btn-tentang-buka" href="#" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">Buka File Installer</a>
             </div>
-            <div id="tentang-progress" class="hidden mt-3 text-sm text-blue-600 dark:text-blue-400 flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> Sedang mengunduh...</div>
+            <div id="tentang-progress" class="hidden mt-3 text-sm text-blue-600 dark:text-blue-400">
+                <div class="flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> <span id="tentang-progress-text">Sedang mengunduh...</span></div>
+                <div class="mt-2 h-2 rounded-full bg-blue-200/70 dark:bg-blue-500/20 overflow-hidden">
+                    <div id="tentang-progress-bar" class="h-full bg-blue-600 dark:bg-blue-400 transition-[width] duration-300" style="width:0%"></div>
+                </div>
+            </div>
             <div id="tentang-done" class="hidden mt-3 text-sm font-bold text-emerald-600 dark:text-emerald-400">✓ Unduhan selesai — file di <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-800 font-mono text-xs">storage/app/updates/</code> — buka file installer di atas untuk instal.</div>
         </div>
         <p class="mt-3 text-[11px] text-slate-400 dark:text-slate-500">Jika tidak ada update, akan tampil “Sudah versi terbaru”.</p>
@@ -171,23 +176,54 @@ document.getElementById('btn-restart-tour')?.addEventListener('click', async fun
     }catch(e){ txtStatus.textContent = 'Gagal cek (offline?)'; }
     finally{ btnCek.disabled = false; }
   }
+  const fmtUnduh = (b) => (b/1048576).toFixed(1) + ' MB';
+  function progresUnduh(text, persen){
+    const txt = document.getElementById('tentang-progress-text');
+    const bar = document.getElementById('tentang-progress-bar');
+    if(txt) txt.textContent = text;
+    if(bar) bar.style.width = Math.max(0, Math.min(100, persen||0)) + '%';
+  }
   async function unduh(){
     if(!info) return;
     btnUnduh.disabled = true; prog.classList.remove('hidden'); done.classList.add('hidden');
+    progresUnduh('Menyiapkan unduhan…', 0);
     try{
-      const r = await fetch('/update/unduh', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':csrf}, body: JSON.stringify({url_unduh: info.url_unduh})});
-      const j = await r.json();
+      if(typeof window.karsaUnduhUpdate !== 'function') throw new Error('Fungsi unduh belum siap — muat ulang halaman.');
+      await window.karsaUnduhUpdate(info.url_unduh, {
+        onProgress(msg){
+          if(msg.phase === 'start'){
+            progresUnduh(msg.already ? 'File installer sudah ada — memeriksa…' : 'Menghubungi server unduhan…', 0);
+            return;
+          }
+          const total = msg.total || info.size_bytes || 0;
+          const now = msg.downloaded || 0;
+          const persen = total > 0 ? (now / total * 100) : 0;
+          progresUnduh(
+            total > 0
+              ? 'Mengunduh ' + fmtUnduh(now) + ' / ' + fmtUnduh(total) + ' (' + Math.round(persen) + '%)'
+              : 'Mengunduh ' + fmtUnduh(now),
+            persen
+          );
+        },
+        onDone(j){
+          prog.classList.add('hidden');
+          btnBuka.href = '/update/download-file/' + encodeURIComponent(j.file);
+          btnBuka.classList.remove('hidden');
+          done.classList.remove('hidden');
+          txtStatus.textContent = j.already ? 'File installer sudah terunduh' : 'Unduhan selesai';
+          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Buka File Installer".' : 'Unduhan selesai — installer siap dipasang.', 'success', 10000);
+        },
+        onError(j){
+          prog.classList.add('hidden');
+          txtStatus.textContent = j.message || 'Gagal';
+          if(window.karsaToast) window.karsaToast(j.message || 'Gagal mengunduh installer.', 'error', 12000);
+        }
+      });
+    }catch(e){
       prog.classList.add('hidden');
-      if(j.success){
-        btnBuka.href = '/update/download-file/' + encodeURIComponent(j.file);
-        btnBuka.classList.remove('hidden');
-        done.classList.remove('hidden');
-        txtStatus.textContent = 'Unduhan selesai';
-      } else {
-        alert(j.message || 'Gagal');
-        txtStatus.textContent = j.message || 'Gagal';
-      }
-    }catch(e){ prog.classList.add('hidden'); alert('Gagal: '+e.message); }
+      txtStatus.textContent = 'Gagal: ' + e.message;
+      if(window.karsaToast) window.karsaToast('Gagal mengunduh: '+e.message, 'error', 12000);
+    }
     finally{ btnUnduh.disabled = false; }
   }
   btnCek?.addEventListener('click', cek);

@@ -52,9 +52,76 @@ class UpdateController extends Controller
         File::ensureDirectoryExists($dir);
         $dest = $dir.'/'.$namaFile;
 
+        // Browser minta progres nyata (NDJSON) supaya tidak "diam lalu file tiba-tiba ada".
+        $stream = $request->header('X-Progress-Stream') === '1';
+
         // Jika sudah ada dan ukuran cocok, skip download
         if (is_file($dest) && ! empty($info['size_bytes']) && filesize($dest) === (int) $info['size_bytes']) {
+            if ($stream) {
+                return $this->streamUnduh(function (callable $emit) use ($namaFile, $dest) {
+                    $ukuran = filesize($dest);
+                    $emit(['phase' => 'start', 'total_bytes' => $ukuran, 'file' => $namaFile, 'already' => true]);
+                    $emit([
+                        'phase' => 'done',
+                        'success' => true,
+                        'already' => true,
+                        'message' => 'File sudah terunduh sebelumnya.',
+                        'file' => $namaFile,
+                        'size_mb' => round($ukuran / 1048576, 1),
+                    ]);
+                });
+            }
+
             return response()->json(['success' => true, 'message' => 'File sudah terunduh.', 'file' => $namaFile, 'path' => $dest]);
+        }
+
+        if ($stream) {
+            return $this->streamUnduh(function (callable $emit) use ($url, $dest, $namaFile, $info) {
+                $total = (int) ($info['size_bytes'] ?? 0);
+                $emit(['phase' => 'start', 'total_bytes' => $total, 'file' => $namaFile]);
+
+                $terakhirEmit = 0.0;
+
+                $resp = Http::timeout(300)->withHeaders([
+                    'User-Agent' => 'KARSA-Updater',
+                    'Accept' => 'application/octet-stream',
+                ])->withOptions([
+                    'progress' => function ($dlTotal, $dlNow) use ($emit, &$terakhirEmit, $total) {
+                        $sekarang = microtime(true);
+                        if (($sekarang - $terakhirEmit) < 0.35) {
+                            return;
+                        }
+                        $terakhirEmit = $sekarang;
+                        $emit([
+                            'phase' => 'progress',
+                            'downloaded' => (int) $dlNow,
+                            'total' => (int) ($dlTotal > 0 ? $dlTotal : $total),
+                        ]);
+                    },
+                ])->sink($dest)->get($url);
+
+                if (! $resp->successful()) {
+                    @File::delete($dest);
+                    $emit(['phase' => 'error', 'success' => false, 'message' => 'Gagal mengunduh installer (HTTP '.$resp->status().').']);
+
+                    return;
+                }
+
+                if (! is_file($dest) || filesize($dest) < 1024) {
+                    @File::delete($dest);
+                    $emit(['phase' => 'error', 'success' => false, 'message' => 'File unduhan tidak valid.']);
+
+                    return;
+                }
+
+                $emit([
+                    'phase' => 'done',
+                    'success' => true,
+                    'message' => 'Unduhan selesai.',
+                    'file' => $namaFile,
+                    'size_mb' => round(filesize($dest) / 1048576, 1),
+                ]);
+            });
         }
 
         try {
@@ -87,6 +154,35 @@ class UpdateController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Gagal mengunduh: '.$e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Bungkus proses unduh jadi respons NDJSON (satu JSON per baris) supaya
+     * browser bisa menampilkan progres unduhan secara nyata.
+     */
+    private function streamUnduh(callable $proses)
+    {
+        return response()->stream(function () use ($proses) {
+            if (function_exists('set_time_limit')) {
+                @set_time_limit(300);
+            }
+
+            $emit = function (array $payload) {
+                echo json_encode($payload, JSON_UNESCAPED_UNICODE)."\n";
+                @flush();
+            };
+
+            try {
+                $proses($emit);
+            } catch (\Throwable $e) {
+                Log::error('Unduh update gagal (stream): '.$e->getMessage());
+                $emit(['phase' => 'error', 'success' => false, 'message' => 'Gagal mengunduh: '.$e->getMessage()]);
+            }
+        }, 200, [
+            'Content-Type' => 'application/x-ndjson; charset=utf-8',
+            'Cache-Control' => 'no-cache, no-store',
+            'X-Accel-Buffering' => 'no',
+        ]);
     }
 
     public function status(Request $request)

@@ -52,7 +52,10 @@
         </div>
     </div>
     <div id="banner-update-progress" class="hidden rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-700 dark:text-blue-300">
-        <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> Sedang mengunduh installer... mohon tunggu (jangan tutup aplikasi)</span>
+        <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> <span id="upd-progress-text">Sedang mengunduh installer... mohon tunggu (jangan tutup aplikasi)</span></span>
+        <div class="mt-2 h-2 rounded-full bg-blue-200/70 dark:bg-blue-500/20 overflow-hidden">
+            <div id="upd-progress-bar" class="h-full bg-blue-600 dark:bg-blue-400 transition-[width] duration-300" style="width:0%"></div>
+        </div>
     </div>
     <div id="banner-update-done" class="hidden rounded-xl border-2 border-emerald-300 dark:border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">✓ Unduhan selesai — file tersimpan di <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-800 font-mono text-xs">storage/app/updates/</code></div>
@@ -352,30 +355,55 @@
       document.getElementById('banner-update').classList.add('flex');
     }catch(e){}
   }
+  const fmtUnduh = (b) => (b/1048576).toFixed(1) + ' MB';
+  function tampilkanProgresUnduh(text, persen){
+    const txt = document.getElementById('upd-progress-text');
+    const bar = document.getElementById('upd-progress-bar');
+    if(txt) txt.textContent = text;
+    if(bar) bar.style.width = Math.max(0, Math.min(100, persen||0)) + '%';
+  }
   async function unduh(){
     if(!updInfo) return;
     document.getElementById('banner-update').classList.add('hidden');
     document.getElementById('banner-update-progress').classList.remove('hidden');
+    tampilkanProgresUnduh('Menyiapkan unduhan…', 0);
     try{
-      const r = await fetch('/update/unduh', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':csrf},
-        body: JSON.stringify({url_unduh: updInfo.url_unduh})
+      if(typeof window.karsaUnduhUpdate !== 'function') throw new Error('Fungsi unduh belum siap — muat ulang halaman.');
+      await window.karsaUnduhUpdate(updInfo.url_unduh, {
+        onProgress(msg){
+          if(msg.phase === 'start'){
+            tampilkanProgresUnduh(msg.already ? 'File installer sudah ada — memeriksa…' : 'Menghubungi server unduhan…', 0);
+            return;
+          }
+          const total = msg.total || updInfo.size_bytes || 0;
+          const now = msg.downloaded || 0;
+          const persen = total > 0 ? (now / total * 100) : 0;
+          tampilkanProgresUnduh(
+            total > 0
+              ? 'Mengunduh ' + fmtUnduh(now) + ' / ' + fmtUnduh(total) + ' (' + Math.round(persen) + '%)'
+              : 'Mengunduh ' + fmtUnduh(now),
+            persen
+          );
+        },
+        onDone(j){
+          document.getElementById('banner-update-progress').classList.add('hidden');
+          document.getElementById('btn-buka-installer').href = '/update/download-file/' + encodeURIComponent(j.file);
+          document.getElementById('banner-update-done').classList.remove('hidden');
+          document.getElementById('banner-update-done').classList.add('flex');
+          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Buka File Installer".' : 'Unduhan selesai — installer siap dipasang.', 'success', 10000);
+        },
+        onError(j){
+          document.getElementById('banner-update-progress').classList.add('hidden');
+          document.getElementById('banner-update').classList.remove('hidden');
+          document.getElementById('banner-update').classList.add('flex');
+          if(window.karsaToast) window.karsaToast(j.message || 'Gagal mengunduh installer.', 'error', 12000);
+        }
       });
-      const j = await r.json();
-      document.getElementById('banner-update-progress').classList.add('hidden');
-      if(j.success){
-        document.getElementById('btn-buka-installer').href = '/update/download-file/' + encodeURIComponent(j.file);
-        document.getElementById('banner-update-done').classList.remove('hidden');
-        document.getElementById('banner-update-done').classList.add('flex');
-      } else {
-        alert(j.message || 'Gagal mengunduh');
-        document.getElementById('banner-update').classList.remove('hidden');
-        document.getElementById('banner-update').classList.add('flex');
-      }
     }catch(e){
       document.getElementById('banner-update-progress').classList.add('hidden');
-      alert('Gagal mengunduh: '+e.message);
+      document.getElementById('banner-update').classList.remove('hidden');
+      document.getElementById('banner-update').classList.add('flex');
+      if(window.karsaToast) window.karsaToast('Gagal mengunduh: '+e.message, 'error', 12000);
     }
   }
   document.getElementById('btn-unduh-update')?.addEventListener('click', unduh);

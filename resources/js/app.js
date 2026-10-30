@@ -63,6 +63,7 @@ Alpine.data('karsaClock', () => ({
 
 Alpine.data('breakReminder', () => ({
     show: false,
+    showDone: false,
     snoozed: false,
     breakCountdown: 0,
     breakInterval: null,
@@ -175,3 +176,99 @@ Alpine.start();
 document.addEventListener('DOMContentLoaded', () => {
     try { initTours(); } catch {}
 });
+
+/*
+ * Notifikasi semua tombol unduh.
+ * WebView/Tauri menyimpan berkas langsung ke folder Downloads tanpa dialog,
+ * sehingga pengguna tidak tahu apa yang terjadi. Listener ini menampilkan
+ * toast segera saat tombol unduh diklik.
+ */
+(function () {
+    const POLA_UNDUH = [
+        /\/backup\/[^/]+\/download(\?|$)/,
+        /\/rkas\/pdf/,
+        /\/rkas\/export/,
+        /\/update\/download-file\//,
+    ];
+
+    document.addEventListener('click', (event) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+        const anchor = event.target.closest('a[href]');
+        if (!anchor) return;
+
+        const href = anchor.getAttribute('href') || '';
+        const cocok = anchor.hasAttribute('download') || POLA_UNDUH.some((pola) => pola.test(href));
+        if (!cocok) return;
+
+        const label = (anchor.dataset.downloadLabel || anchor.textContent || 'berkas')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 60) || 'berkas';
+
+        if (window.karsaToast) {
+            window.karsaToast('Mengunduh ' + label + '… Berkas akan tersimpan di folder Downloads.', 'info', 9000);
+        }
+    }, true);
+})();
+
+/*
+ * Unduh installer update dengan progres nyata (NDJSON stream dari server).
+ * handlers: { onProgress(msg), onDone(msg), onError(msg) }
+ */
+window.karsaUnduhUpdate = async function (urlUnduh, handlers = {}) {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const resp = await fetch('/update/unduh', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/x-ndjson',
+            'X-Progress-Stream': '1',
+            'X-CSRF-TOKEN': csrf,
+        },
+        body: JSON.stringify({ url_unduh: urlUnduh }),
+    });
+
+    if (!resp.ok) {
+        const teks = await resp.text();
+        const err = { success: false, message: 'Gagal mengunduh (HTTP ' + resp.status + '). ' + teks.slice(0, 140) };
+        handlers.onError?.(err);
+        return err;
+    }
+
+    // Server lama/tanpa stream: balasan JSON biasa.
+    if (!(resp.headers.get('content-type') || '').includes('ndjson') || !resp.body) {
+        const data = await resp.json().catch(() => ({ success: false, message: 'Respons unduhan tidak valid.' }));
+        if (data.success) handlers.onDone?.(data);
+        else handlers.onError?.(data);
+        return data;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let terakhir = null;
+
+    const proses = (line) => {
+        if (!line) return;
+        let msg;
+        try { msg = JSON.parse(line); } catch { return; }
+        terakhir = msg;
+        if (msg.phase === 'start' || msg.phase === 'progress') handlers.onProgress?.(msg);
+        else if (msg.phase === 'done') handlers.onDone?.(msg);
+        else if (msg.phase === 'error') handlers.onError?.(msg);
+    };
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf('\n')) >= 0) {
+            proses(buffer.slice(0, idx).trim());
+            buffer = buffer.slice(idx + 1);
+        }
+    }
+    proses(buffer.trim());
+
+    return terakhir;
+};

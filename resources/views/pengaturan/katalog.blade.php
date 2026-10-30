@@ -47,25 +47,31 @@
              <div x-show="info && info.ada_katalog_online" x-cloak class="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 p-4 space-y-3">
                  <div class="flex items-start justify-between gap-4">
                      <div>
-                         <div class="text-sm font-bold text-emerald-800 dark:text-emerald-300" x-text="info.ada_update ? 'Ada versi baru!' : 'Sudah versi terbaru'"></div>
+                         <div class="text-sm font-bold text-emerald-800 dark:text-emerald-300" x-text="info?.ada_update ? 'Ada versi baru!' : 'Sudah versi terbaru'"></div>
                          <div class="text-xs text-emerald-700 dark:text-emerald-400 mt-1">
-                             Terpasang: <b x-text="info.versi_sekarang"></b> → Terbaru: <b x-text="info.versi_baru"></b>
-                             <span x-show="info.ukuran_mb"> • <span x-text="info.ukuran_mb"></span> MB • <span x-text="info.nama_file"></span></span>
+                             Terpasang: <b x-text="info?.versi_sekarang"></b> → Terbaru: <b x-text="info?.versi_baru"></b>
+                             <span x-show="info?.ukuran_mb"> • <span x-text="info?.ukuran_mb"></span> MB • <span x-text="info?.nama_file"></span></span>
                          </div>
                      </div>
                      <span class="shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold" :class="info && info.ada_update ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'" x-text="info && info.ada_update ? 'Update tersedia' : 'Up to date'"></span>
                  </div>
-                 <form x-show="info && info.ada_update" method="POST" action="{{ route('pengaturan.katalog.unduh') }}" @submit="unduhLoading=true">
+                 <form x-show="info && info.ada_update" method="POST" action="{{ route('pengaturan.katalog.unduh') }}" x-ref="formUnduh" @submit.prevent="unduh()">
                      @csrf
-                     <input type="hidden" name="url_unduh" :value="info.url_unduh">
+                     <input type="hidden" name="url_unduh" :value="info?.url_unduh">
                      <button type="submit" :disabled="unduhLoading" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow disabled:opacity-50">
                          <svg x-show="!unduhLoading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                          <svg x-show="unduhLoading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-                         <span x-text="unduhLoading ? 'Mengunduh & memasang...' : 'Unduh & Pasang Sekarang'"></span>
+                         <span x-text="unduhLoading ? 'Memproses...' : 'Unduh & Pasang Sekarang'"></span>
                      </button>
-                     <span class="text-[11px] text-emerald-600 dark:text-emerald-400 ml-2">± <span x-text="info.ukuran_mb"></span> MB • Backup otomatis dulu • Jangan tutup halaman</span>
+                     <span class="text-[11px] text-emerald-600 dark:text-emerald-400 ml-2">± <span x-text="info?.ukuran_mb"></span> MB • Backup otomatis dulu • Jangan tutup halaman</span>
                  </form>
-                 <div x-show="unduhLoading" class="text-xs text-amber-700 dark:text-amber-300">Mengunduh 81rb baris + verifikasi checksum + backup — jangan tutup halaman.</div>
+                 <!-- Notifikasi unduh: tampil segera, tidak menunggu halaman pindah -->
+                 <div x-show="unduhLoading || unduhPesan" x-cloak class="rounded-xl border p-3 text-sm" :class="unduhClass">
+                     <div class="flex items-start gap-2">
+                         <svg x-show="unduhLoading" class="w-4 h-4 animate-spin shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                         <span x-text="unduhLoading ? unduhStatus : unduhPesan"></span>
+                     </div>
+                 </div>
              </div>
          </div>
      </div>
@@ -74,6 +80,41 @@
      function katalogOnline(){
          return {
              loading:false, unduhLoading:false, info:null, pesan:'', pesanClass:'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300',
+             unduhPesan:'', unduhStatus:'Mengunduh & menerapkan paket katalog…', unduhClass:'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300',
+             async unduh(){
+                 if(!this.info || !this.info.url_unduh){ this.pesan='URL unduhan tidak tersedia — coba Cek Terbaru lagi.'; return; }
+                 this.unduhLoading=true;
+                 this.unduhPesan='';
+                 this.unduhStatus='Mengunduh & menerapkan paket katalog… (± beberapa menit, jangan tutup halaman)';
+                 this.unduhClass='bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300';
+                 try{
+                     const r = await fetch(this.$refs.formUnduh.action, {
+                         method:'POST',
+                         headers:{'Accept':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''},
+                         body: new FormData(this.$refs.formUnduh),
+                     });
+                     const j = await r.json().catch(()=>({success:false, message:'Respons server tidak valid.'}));
+                     if(r.ok && j.success){
+                         this.unduhPesan = j.message || 'Katalog berhasil diperbarui.';
+                         this.unduhStatus = '';
+                         this.unduhClass = 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300';
+                         if(window.karsaToast) window.karsaToast(this.unduhPesan, 'success', 9000);
+                         setTimeout(()=>location.reload(), 1800);
+                     } else {
+                         this.unduhPesan = j.message || 'Gagal menerapkan paket katalog.';
+                         this.unduhStatus = '';
+                         this.unduhClass = 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-300';
+                         if(window.karsaToast) window.karsaToast(this.unduhPesan, 'error', 12000);
+                     }
+                 }catch(e){
+                     this.unduhPesan = 'Gagal: ' + e.message;
+                     this.unduhStatus = '';
+                     this.unduhClass = 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-300';
+                     if(window.karsaToast) window.karsaToast(this.unduhPesan, 'error', 12000);
+                 }finally{
+                     this.unduhLoading=false;
+                 }
+             },
              async cek(){
                  this.loading=true; this.pesan='Mengecek ke GitHub...'; this.pesanClass='bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30 text-blue-700 dark:text-blue-300';
                  this.info=null;

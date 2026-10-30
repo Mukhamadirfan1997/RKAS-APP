@@ -45,7 +45,7 @@
                     <th>Satuan</th>
                     <th class="r">Harga Satuan</th>
                     <th class="r">Jumlah</th>
-                    <th class="c col-kontrol">Kontrol<small>Harga vs Katalog</small></th>
+                    <th class="c col-kontrol">Kontrol<small>Batas Atas SSH</small></th>
                 </tr>
             </thead>
             <tbody>

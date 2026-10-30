@@ -35,6 +35,7 @@
         </main>
     </div>
     @include('layouts.partials.break-reminder')
+    @include('layouts.partials.toast')
     <script>
         function appLayout() {
             return {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\KatalogMeta;
 use App\Services\BackupService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -138,6 +139,7 @@ class KatalogUpdateController extends Controller
 
         $tmpZip = storage_path('app/katalog-online-'.uniqid().'.zip');
         File::ensureDirectoryExists(dirname($tmpZip));
+        $json = $request->expectsJson();
 
         try {
             $resp = Http::timeout(120)->withHeaders([
@@ -148,11 +150,19 @@ class KatalogUpdateController extends Controller
             if (! $resp->successful()) {
                 @File::delete($tmpZip);
 
+                if ($json) {
+                    return response()->json(['success' => false, 'message' => 'Gagal mengunduh katalog online (HTTP '.$resp->status().'). Periksa koneksi atau coba update via USB/WA.'], 500);
+                }
+
                 return redirect()->route('pengaturan.katalog')->withErrors(['error' => 'Gagal mengunduh katalog online (HTTP '.$resp->status().'). Periksa koneksi atau coba update via USB/WA.']);
             }
 
             if (! is_file($tmpZip) || filesize($tmpZip) < 1024) {
                 @File::delete($tmpZip);
+
+                if ($json) {
+                    return response()->json(['success' => false, 'message' => 'File katalog online tidak valid (terlalu kecil). Coba lagi.'], 500);
+                }
 
                 return redirect()->route('pengaturan.katalog')->withErrors(['error' => 'File katalog online tidak valid (terlalu kecil). Coba lagi.']);
             }
@@ -161,10 +171,27 @@ class KatalogUpdateController extends Controller
             $result = $this->terapkanPaketZip($tmpZip, basename(parse_url($url, PHP_URL_PATH)) ?: 'katalog-online.zip');
             @File::delete($tmpZip);
 
+            // Mode AJAX: ubah redirect+flash menjadi JSON agar notifikasi bisa
+            // ditampilkan di halaman tanpa navigasi (penyebab "notifikasi hilang").
+            if ($json && $result instanceof RedirectResponse) {
+                $pesanSukses = session('success');
+                if ($pesanSukses) {
+                    return response()->json(['success' => true, 'message' => $pesanSukses]);
+                }
+
+                $pesanError = session('errors')?->first() ?: 'Gagal menerapkan paket katalog.';
+
+                return response()->json(['success' => false, 'message' => $pesanError], 422);
+            }
+
             return $result;
         } catch (\Throwable $e) {
             @File::delete($tmpZip);
             Log::error('Unduh katalog online gagal: '.$e->getMessage());
+
+            if ($json) {
+                return response()->json(['success' => false, 'message' => 'Gagal mengunduh katalog online: '.$e->getMessage().' — Tetap bisa update via USB/WA.'], 500);
+            }
 
             return redirect()->route('pengaturan.katalog')->withErrors(['error' => 'Gagal mengunduh katalog online: '.$e->getMessage().' — Tetap bisa update via USB/WA.']);
         }
@@ -418,12 +445,21 @@ class KatalogUpdateController extends Controller
                 $batch = [];
                 $batchSize = 1000;
                 while (($row = fgetcsv($fh)) !== false) {
-                    if (count($row) < 10) continue;
+                    if (count($row) < 10) {
+                        continue;
+                    }
                     [$kode,$idBarang,$nama,$kodeRek,$satuan,$hargaAcuan,$hargaMin,$hargaMax,$kodeBelanja,$kategori] = $row;
-                    $kode = trim($kode); $idBarang = trim($idBarang);
-                    if ($kode === '' || $nama === '') continue;
+                    $kode = trim($kode);
+                    $idBarang = trim($idBarang);
+                    if ($kode === '' || $nama === '') {
+                        continue;
+                    }
                     $isExisting = isset($existingIds[$idBarang]) || isset($existingIds[$kode]);
-                    if ($isExisting) $updated++; else $inserted++;
+                    if ($isExisting) {
+                        $updated++;
+                    } else {
+                        $inserted++;
+                    }
                     $batch[] = [
                         'kode' => $kode, 'id_barang_arkas' => $idBarang ?: $kode, 'nama' => $nama,
                         'kode_rekening' => $kodeRek ?: null, 'satuan_default' => $satuan ?: null,
@@ -433,12 +469,12 @@ class KatalogUpdateController extends Controller
                     ];
                     $total++;
                     if (count($batch) >= $batchSize) {
-                        DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori','updated_at']);
+                        DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori', 'updated_at']);
                         $batch = [];
                     }
                 }
                 if (count($batch) > 0) {
-                    DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode','nama','kode_rekening','satuan_default','harga_acuan','harga_min','harga_max','kode_belanja','kategori','updated_at']);
+                    DB::table('kode_barang')->upsert($batch, ['id_barang_arkas'], ['kode', 'nama', 'kode_rekening', 'satuan_default', 'harga_acuan', 'harga_min', 'harga_max', 'kode_belanja', 'kategori', 'updated_at']);
                 }
                 fclose($fh);
                 KatalogMeta::create([

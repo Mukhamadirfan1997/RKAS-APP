@@ -108,7 +108,7 @@
             </button>
             <div x-show="open[3]" x-collapse x-cloak class="px-5 pb-5 border-t border-slate-100 dark:border-slate-700/60">
                 <div class="pt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    <p><span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">OK</span> = harga yang Anda isi <strong>sama</strong> dengan harga acuan katalog. <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-red-50 text-red-700 border-red-200">SELISIH</span> = harga berbeda dari acuan. Bukan error — hanya pengingat untuk cek lagi.</p>
+                    <p><span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">OK</span> = harga yang Anda isi <strong>tidak melebihi batas atas SSH</strong> (lebih murah dari harga acuan katalog tetap OK). <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-red-50 text-red-700 border-red-200">DI ATAS SSH</span> = harga melebihi batas atas SSH katalog — perlu diturunkan atau disesuaikan. Bukan larangan mengedit uraian.</p>
                     <p><span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">BENAR</span> = total rupiah sama dengan jumlah alokasi Tahap I + Tahap II. <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold border bg-red-50 text-red-700 border-red-200">SALAH</span> = ada selisih — cek volume per bulan, pastikan jumlahnya pas.</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400">Badge ini muncul di tabel Lembar Kerja dan di file Excel/PDF.</p>
                 </div>
@@ -247,8 +247,8 @@
             <div x-show="open[10]" x-collapse x-cloak class="px-5 pb-5 border-t border-slate-100 dark:border-slate-700/60">
                 <div class="pt-4 space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     <div>
-                        <p class="font-semibold text-slate-800 dark:text-white">Q: Kenapa ada badge SELISIH?</p>
-                        <p class="mt-1">Harga yang Anda isi beda dari harga acuan katalog. Cek lagi — kalau memang sengaja beda (harga lokal), abaikan saja.</p>
+                        <p class="font-semibold text-slate-800 dark:text-white">Q: Kenapa ada badge “DI ATAS SSH”?</p>
+                        <p class="mt-1">Harga yang Anda isi melebihi <strong>batas atas</strong> Standar Satuan Harga (SSH) katalog. Harga boleh lebih murah dari acuan (tetap OK) — yang tidak boleh hanya melebihi batas atas SSH.</p>
                     </div>
                     <div>
                         <p class="font-semibold text-slate-800 dark:text-white">Q: Kenapa RKAS tidak bisa diedit setelah disahkan?</p>

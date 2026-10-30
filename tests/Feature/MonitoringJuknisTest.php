@@ -122,6 +122,34 @@ class MonitoringJuknisTest extends TestCase
         $this->assertEquals(0, (float) $summary['sarpras']['total']);
     }
 
+    public function test_honor_ekstra_pada_kegiatan_non_honor_tetap_masuk_persentase_honor(): void
+    {
+        RkasItem::where('tahun_anggaran_id', $this->ta->id)->delete();
+
+        // Honorarium Narasumber diinput pada kegiatan pelatihan (bukan 07.12.*).
+        // Wajib tetap dihitung honor agar batas 20%/40% tidak bisa diakali.
+        $this->buatItem('03.02.01', '5.1.02.02.01.0003', 'Honorarium Narasumber pelatihan guru', 500000);
+
+        $validator = new JuknisValidator($this->ta);
+        $summary = $validator->summary();
+
+        $this->assertEquals(500000, (float) $summary['honor']['total'], 'Honor ekstra lintas kegiatan harus masuk hitungan honor');
+        $this->assertGreaterThan(0, (float) $summary['honor']['persen']);
+    }
+
+    public function test_belanja_jasa_bukan_honor_tidak_ikut_persentase_honor(): void
+    {
+        RkasItem::where('tahun_anggaran_id', $this->ta->id)->delete();
+
+        // Tagihan listrik: jenis Belanja Jasa & prefix 5.1.02.02.01, tapi bukan honorarium
+        $this->buatItem('03.02.01', '5.1.02.02.01.0061', 'Pembayaran tagihan listrik sekolah', 400000);
+
+        $validator = new JuknisValidator($this->ta);
+        $summary = $validator->summary();
+
+        $this->assertEquals(0, (float) $summary['honor']['total'], 'Tagihan listrik tidak boleh dihitung sebagai honor');
+    }
+
     public function test_prioritas_honor_lebih_tinggi_dari_buku_tidak_dobel(): void
     {
         RkasItem::where('tahun_anggaran_id', $this->ta->id)->delete();

@@ -502,7 +502,7 @@ class RkasController extends Controller
      * Build FLAT data for export — struktur ARKAS RINCIAN asli.
      * Hanya 3 level: Kegiatan → Rekening → Item (TANPA Standar/Program).
      * Tiap item dilengkapi Volume+Jumlah per bulan terpisah (24 kolom),
-     * Validasi Bulanan (BENAR/SALAH), dan Kontrol (OK/SELISIH).
+     * Validasi Bulanan (BENAR/SALAH), dan Kontrol (OK/MELEBIHI batas atas SSH).
      *
      * @param  string  $mode  'tahunan'|'per_tahap'|'per_bulan' — menentukan filter & agregasi
      * @param  int|null  $bulan  1..12 hanya untuk mode per_bulan
