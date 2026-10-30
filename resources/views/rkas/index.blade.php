@@ -456,7 +456,7 @@
                         <div>
                             <label class="label">Uraian <span class="text-red-500">*</span></label>
                             <div class="relative" @click.outside="pickers.barang.open = false">
-                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas. Mulai mengetik untuk melihat saran barang dari katalog..." class="input resize-none"
+                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas." class="input resize-none"
                                     @input="searchUraianSuggestion($event)"
                                     @focus="if (pickers.barang.q && pickers.barang.results.length) pickers.barang.open = true"></textarea>
                                 <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
@@ -468,12 +468,12 @@
                                                 <div class="text-[11px] text-slate-400 dark:text-slate-500" x-text="r.subtext"></div>
                                             </li>
                                         </template>
-                                        <template x-if="pickers.barang.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.barang.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok — coba kata lain atau kurangi kata kunci.</li></template>
                                     </ul>
                                 </template>
                             </div>
                             <div class="mt-0.5 flex items-center justify-between gap-2">
-                                <span class="text-[10px] text-slate-400 dark:text-slate-500" x-show="pickers.barang.open" x-cloak>Saran dari katalog barang resmi ARKAS</span>
+                                <span class="text-[10px] text-slate-400 dark:text-slate-500" x-show="pickers.barang.open" x-cloak>Saran katalog — boleh beberapa kata &amp; urutan bebas (mis. “hvs a4 kertas”)</span>
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 ml-auto" x-text="form.uraian.length + ' / 500'"></span>
                             </div>
                             <div x-show="pickers.rekening.kode" x-cloak class="mt-1 text-[10px] text-indigo-600 dark:text-indigo-400">Filter aktif: hanya barang untuk rekening <span class="font-mono font-bold" x-text="pickers.rekening.kode"></span> • kosongkan rekening untuk lihat semua</div>
@@ -731,7 +731,8 @@ function modalForm() {
         },
         searchUraianSuggestion(ev) {
             const v = (ev && ev.target && ev.target.value) || this.form.uraian || '';
-            const trimmed = v.trim();
+            // Batasi panjang kata kunci agar tidak mengirim kalimat panjang ke server.
+            const trimmed = v.trim().slice(0, 120);
             this.pickers.barang.q = trimmed;
             if (trimmed.length < 2) { this.pickers.barang.open = false; this.pickers.barang.results = []; return; }
             this.debouncedSearch('barang');

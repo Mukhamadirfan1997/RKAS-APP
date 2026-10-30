@@ -32,6 +32,7 @@ KODE-LISENSI*.txt
 *.xlsm
 *.xlsx
 *.xls
+*.exe
 Homestead.json
 Homestead.yaml
 Thumbs.db

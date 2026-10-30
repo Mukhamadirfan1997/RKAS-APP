@@ -43,9 +43,9 @@
                 <th class="r">Harga Satuan</th>
                 <th class="r">Harga ARKAS</th>
                 <th class="r">KOREKSI (Rp)</th>
-                <th class="r">Jumlah Kontrol (Rp)</th>
+                <th class="r">Jumlah (Rp)</th>
                 <th class="r">Jumlah +Koreksi (Rp)</th>
-                <th class="c">KONTROL</th>
+                <th class="c">KONTROL<small style="display:block;font-weight:400;font-size:8px;">Batas Atas SSH</small></th>
                 <th class="r">Tahap I (Rp)</th>
                 <th class="r">Tahap II (Rp)</th>
                 <th>Bulan Aktif</th>

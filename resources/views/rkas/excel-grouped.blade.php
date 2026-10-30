@@ -58,7 +58,7 @@
                 <th class="r" style="width:50px;">Des Vol</th><th class="r" style="width:60px;">Des Jml</th>
                 <th class="r" style="width:70px;">JUMLAH TAHAP II</th>
                 <th class="r" style="width:85px;">TOTAL (TAHAP I + TAHAP II)</th>
-                <th class="c" style="width:50px;">Kontrol</th>
+                <th class="c" style="width:60px;">Kontrol<small style="display:block;font-weight:400;font-size:7px;text-transform:none;">Batas Atas SSH</small></th>
                 <th class="c" style="width:55px;">Validasi</th>
             </tr>
         </thead>

@@ -74,21 +74,49 @@ class RkasSearchController extends Controller
     /**
      * Live search for Katalog Kode Barang / Jasa.
      * Opsional: filter by kode_rekening (exact) agar barang sesuai rekening terpilih.
+     *
+     * Kata kunci dibuat longgar (30 Okt 2026):
+     * - boleh beberapa kata, urutan bebas: "hvs a4 kertas" = "kertas hvs a4";
+     * - tiap kata dicocokkan ke nama, kode barang, dan kode rekening;
+     * - tidak harus di awal kata ("snowman" menemukan "Spidol Whiteboard Snowman");
+     * - hasil yang diawali kata kunci ditampilkan lebih dulu.
      */
     public function searchBarang(Request $request)
     {
-        $q = trim($request->input('q', ''));
+        $q = trim((string) $request->input('q', ''));
         $kodeRekening = trim($request->input('kode_rekening', ''));
 
         $query = KodeBarang::query();
         if ($kodeRekening !== '') {
             $query->where('kode_rekening', $kodeRekening);
         }
-        if ($q !== '') {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('kode', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "{$q}%");
+
+        // Pecah jadi kata; buang wildcard agar '%'/'_' tidak jadi pola aneh.
+        $kata = collect(preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY))
+            ->map(fn ($t) => trim(str_replace(['%', '_'], '', $t)))
+            ->filter(fn ($t) => $t !== '')
+            ->take(6)
+            ->values()
+            ->all();
+
+        if ($kata !== []) {
+            $query->where(function ($sub) use ($kata) {
+                foreach ($kata as $tok) {
+                    // AND antar kata, OR antar kolom: semua kata harus muncul.
+                    $sub->where(function ($w) use ($tok) {
+                        $w->where('nama', 'like', "%{$tok}%")
+                            ->orWhere('kode', 'like', "%{$tok}%")
+                            ->orWhere('kode_rekening', 'like', "%{$tok}%");
+                    });
+                }
             });
+
+            // Relevansi: yang berawalan kata pertama tampil paling atas.
+            $utama = $kata[0];
+            $query->orderByRaw(
+                'CASE WHEN nama LIKE ? THEN 0 WHEN nama LIKE ? THEN 1 ELSE 2 END',
+                [$utama.'%', '% '.$utama.'%']
+            );
         }
 
         $results = $query->limit(30)->get()->map(function ($item) {

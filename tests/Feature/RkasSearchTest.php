@@ -113,4 +113,52 @@ class RkasSearchTest extends TestCase
         $this->getJson('/api/search/kegiatan')->assertOk();
         $this->getJson('/api/search/rekening')->assertOk();
     }
+
+    public function test_search_barang_kata_tengah_di_nama_tetap_ditemukan(): void
+    {
+        KodeBarang::create([
+            'kode' => 'KB-LOOSE-MIDDLE',
+            'nama' => 'Spidol Whiteboard Snowman Hitam',
+            'satuan_default' => 'buah',
+            'harga_acuan' => 12000,
+        ]);
+
+        // Kata kunci bukan di awal nama harus tetap menemukan barang.
+        $results = $this->getJson(route('api.search.barang', ['q' => 'snowman']))->assertOk()->json('results');
+        $this->assertTrue(collect($results)->contains(fn ($r) => $r['kode'] === 'KB-LOOSE-MIDDLE'));
+    }
+
+    public function test_search_barang_beberapa_kata_urutan_bebas(): void
+    {
+        KodeBarang::create([
+            'kode' => 'KB-LOOSE-MULTI',
+            'nama' => 'Kertas HVS A4 70gr Merk LOOSETEST',
+            'satuan_default' => 'rim',
+            'harga_acuan' => 55000,
+        ]);
+
+        $urutNormal = $this->getJson(route('api.search.barang', ['q' => 'kertas hvs loosetest']))->json('results');
+        $this->assertTrue(collect($urutNormal)->contains(fn ($r) => $r['kode'] === 'KB-LOOSE-MULTI'));
+
+        // Urutan kata dibalik dan tetap harus ditemukan.
+        $urutBebas = $this->getJson(route('api.search.barang', ['q' => 'loosetest a4 hvs']))->json('results');
+        $this->assertTrue(collect($urutBebas)->contains(fn ($r) => $r['kode'] === 'KB-LOOSE-MULTI'));
+    }
+
+    public function test_search_barang_bisa_lewat_kode_rekening_dan_wildcard_aman(): void
+    {
+        KodeBarang::create([
+            'kode' => 'KB-LOOSE-REK',
+            'nama' => 'Barang Uji Rekening LOOSEREK',
+            'kode_rekening' => '5.1.02.01.01.0099',
+            'satuan_default' => 'buah',
+            'harga_acuan' => 1000,
+        ]);
+
+        $results = $this->getJson(route('api.search.barang', ['q' => '5.1.02.01.01.0099']))->json('results');
+        $this->assertTrue(collect($results)->contains(fn ($r) => $r['kode'] === 'KB-LOOSE-REK'));
+
+        // Karakter wildcard tidak boleh bikin error / pola aneh.
+        $this->getJson(route('api.search.barang', ['q' => '%_%']))->assertOk()->assertJsonStructure(['results']);
+    }
 }

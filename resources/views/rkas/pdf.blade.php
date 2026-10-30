@@ -63,7 +63,7 @@
                 <th class="r">Volume</th>
                 <th>Satuan</th>
                 <th class="r">Harga Satuan</th>
-                <th class="r">Jumlah Kontrol (Rp)</th>
+                <th class="r">Jumlah (Rp)</th>
                 <th class="r">KOREKSI (Rp)</th>
                 <th class="r">Jumlah +Koreksi (Rp)</th>
                 <th class="r">Tahap I (Rp)</th>
