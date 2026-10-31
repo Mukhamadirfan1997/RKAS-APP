@@ -100,31 +100,23 @@ class ReferensiDinasTest extends TestCase
         );
     }
 
-    public function test_baris_katalog_berkode_rekening_rusak_dihapus(): void
+    public function test_entri_manual_sekolah_berkode_rekening_belum_diisi_tidak_dihapus(): void
     {
         KodeBarang::create([
-            'kode' => 'RUSAK-1',
-            'id_barang_arkas' => 'rusak-1',
+            'kode' => 'MANUAL-1',
+            'id_barang_arkas' => '2afkin-uji',
             'nama' => 'Perangkat komputer PC',
             'satuan_default' => 'Unit',
             'harga_acuan' => 0,
-            'kode_rekening' => ReferensiDinasImporter::KODE_REKENING_RUSAK,
-        ]);
-
-        KodeBarang::create([
-            'kode' => 'BAGUS-1',
-            'id_barang_arkas' => 'bagus-1',
-            'nama' => 'Kertas HVS A4 uji',
-            'satuan_default' => 'rim',
-            'harga_acuan' => 55000,
-            'kode_rekening' => '5.1.02.01.01.0001',
+            'kode_rekening' => ReferensiDinasImporter::KODE_REKENING_BELUM_DIISI,
         ]);
 
         $hasil = app(ReferensiDinasImporter::class)->jalankan();
 
-        $this->assertSame(1, $hasil['katalog_rusak_dihapus']);
-        $this->assertDatabaseMissing('kode_barang', ['kode' => 'RUSAK-1']);
-        $this->assertDatabaseHas('kode_barang', ['kode' => 'BAGUS-1']);
+        // Entri manual sekolah (buku literasi, laptop, dll) adalah data pengguna,
+        // bukan sampah impor: importer tidak boleh menghapusnya.
+        $this->assertArrayNotHasKey('katalog_rusak_dihapus', $hasil);
+        $this->assertDatabaseHas('kode_barang', ['kode' => 'MANUAL-1']);
     }
 
     public function test_harga_acuan_mengikuti_referensi_dinas_tanpa_mengubah_nama(): void

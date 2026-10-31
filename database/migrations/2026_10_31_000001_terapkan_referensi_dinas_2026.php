@@ -12,7 +12,9 @@ return new class extends Migration
      * - 23 kode kegiatan SD baru ke master_program
      * - 3 rekening Belanja Modal (5.2.02.01.03.0003-0005)
      * - 1.052 harga acuan katalog yang namanya cocok persis
-     * - bersihkan 133 baris katalog berkode rekening rusak "....."
+     *
+     * Catatan: entri manual sekolah berkode rekening "....." (133 baris)
+     * TIDAK dihapus — lihat ReferensiDinasImporter.
      *
      * Semua langkah idempotent (lihat App\Services\ReferensiDinasImporter).
      */
@@ -44,7 +46,7 @@ return new class extends Migration
             }
         }
 
-        // Harga acuan & pembersihan katalog sengaja tidak dibalik: bersifat data
-        // referensi dan pemulihannya akan menghidupkan kembali baris rusak.
+        // Harga acuan sengaja tidak dibalik: nilainya data referensi resmi
+        // (SSH dinas), bukan perubahan struktural.
     }
 };

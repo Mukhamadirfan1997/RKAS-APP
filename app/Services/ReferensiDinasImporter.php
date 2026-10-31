@@ -23,17 +23,22 @@ use Illuminate\Support\Facades\Log;
  * Karena itu harga dicocokkan lewat (kode_rekening + nama ternormalisasi),
  * bukan lewat ID.
  *
+ * Importer ini TIDAK menghapus data katalog. Baris berkode rekening "....."
+ * (133 baris) terbukti merupakan entri manual sekolah di xlsm sumber
+ * (buku literasi, ensiklopedia, laptop, proyektor, alat musik, dll) — bukan
+ * sampah impor — sehingga wajib dipertahankan.
+ *
  * Semua langkah idempotent: aman dijalankan berulang tanpa menggandakan data.
  */
 class ReferensiDinasImporter
 {
-    /** Kode rekening rusak hasil impor xlsm lama (133 baris tanpa harga). */
-    public const KODE_REKENING_RUSAK = '.....';
+    /** Kode rekening belum terisi pada entri manual sekolah (jangan dihapus). */
+    public const KODE_REKENING_BELUM_DIISI = '.....';
 
     public function __construct(protected JenisBelanjaResolver $resolver) {}
 
     /**
-     * @return array{kegiatan_baru: int, rekening_baru: int, harga_diperbarui: int, katalog_rusak_dihapus: int}
+     * @return array{kegiatan_baru: int, rekening_baru: int, harga_diperbarui: int}
      */
     public function jalankan(): array
     {
@@ -43,7 +48,6 @@ class ReferensiDinasImporter
             'kegiatan_baru' => $this->tambahKegiatan($data['kegiatan'] ?? []),
             'rekening_baru' => $this->tambahRekening($data['rekening'] ?? []),
             'harga_diperbarui' => $this->terapkanHarga($data['harga'] ?? []),
-            'katalog_rusak_dihapus' => $this->bersihkanKatalogRusak(),
         ];
     }
 
@@ -162,12 +166,5 @@ class ReferensiDinasImporter
         }
 
         return $diperbarui;
-    }
-
-    protected function bersihkanKatalogRusak(): int
-    {
-        return DB::table('kode_barang')
-            ->where('kode_rekening', self::KODE_REKENING_RUSAK)
-            ->delete();
     }
 }
