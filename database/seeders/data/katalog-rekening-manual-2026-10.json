@@ -1,0 +1,1075 @@
+{
+    "meta": {
+        "judul": "Rekening untuk entri manual sekolah di katalog barang",
+        "tanggal": "2026-10-31",
+        "sumber_bukti": "Isi katalog barang ARKAS 81.062 baris (kode_barang) + master_kode_rekening",
+        "jumlah_baris": 133,
+        "catatan": "Semua baris berasal dari entri manual sekolah di xlsm sumber (kolom Kode Rekening berisi \".....\"). Pemetaan mengikuti penempatan baris sejenis di katalog resmi; tidak ada data yang dihapus."
+    },
+    "items": [
+        {
+            "id": 80384,
+            "id_barang_arkas": "2afkin",
+            "nama": "Perangkat komputer PC",
+            "satuan": "Unit",
+            "kode_rekening": "5.2.02.10.01.0002",
+            "basis": "Komputer: katalog menempatkan PC/laptop/AIO di Belanja Modal Personal Computer."
+        },
+        {
+            "id": 80385,
+            "id_barang_arkas": "3afkin",
+            "nama": "Perangkat laptop",
+            "satuan": "Unit",
+            "kode_rekening": "5.2.02.10.01.0002",
+            "basis": "Komputer: katalog menempatkan PC/laptop/AIO di Belanja Modal Personal Computer."
+        },
+        {
+            "id": 80386,
+            "id_barang_arkas": "4afkin",
+            "nama": "Perangkat proyektor",
+            "satuan": "Unit",
+            "kode_rekening": "5.2.02.10.02.0005",
+            "basis": "Komputer: proyektor = peralatan komputer/display (katalog: \"BELANJA MODAL PROYEKTOR ...\")."
+        },
+        {
+            "id": 80387,
+            "id_barang_arkas": "5.2.2.02.011",
+            "nama": "Pupuk Organik",
+            "satuan": "Kilogram",
+            "kode_rekening": "5.1.02.01.01.0008",
+            "basis": "Pupuk: mengikuti 5 dari 6 kembaran resmi \"Pupuk Organik\" (Bahan-Bahan/Bibit Tanaman)."
+        },
+        {
+            "id": 80388,
+            "id_barang_arkas": "5afkin",
+            "nama": "Perangkat jaringan nirkabel (access point)",
+            "satuan": "Unit",
+            "kode_rekening": "5.2.02.10.02.0004",
+            "basis": "Jaringan: katalog menempatkan access point/router/switch di Peralatan Jaringan."
+        },
+        {
+            "id": 80389,
+            "id_barang_arkas": "6afkin",
+            "nama": "Perangkat penyimpanan eksternal atau hardisk",
+            "satuan": "Unit",
+            "kode_rekening": "5.2.02.10.02.0003",
+            "basis": "Komputer: katalog menempatkan hardisk/Scanner di Peralatan Personal Computer."
+        },
+        {
+            "id": 80390,
+            "id_barang_arkas": "123-14",
+            "nama": "Bracket",
+            "satuan": "unit",
+            "kode_rekening": "5.1.02.01.01.0030",
+            "basis": "Perabot kantor: katalog menempatkan \"Bracket Led Tv\" di Perabot Kantor."
+        },
+        {
+            "id": 80391,
+            "id_barang_arkas": "123-9",
+            "nama": "Wall screen projektor",
+            "satuan": "Buah",
+            "kode_rekening": "5.1.02.01.01.0029",
+            "basis": "Perlengkapan komputer: katalog menempatkan \"screen tripod\" di Bahan Komputer."
+        },
+        {
+            "id": 80392,
+            "id_barang_arkas": "5205021001",
+            "nama": "Alat Musik Perkusi",
+            "satuan": "unit",
+            "kode_rekening": "5.2.05.02.01.0001",
+            "basis": "Alat musik: katalog menempatkan \"Alat Musik Perkusi dan Elektronik\" di Belanja Modal Alat Musik."
+        },
+        {
+            "id": 80393,
+            "id_barang_arkas": "5205021002",
+            "nama": "KiDs Atletic",
+            "satuan": "set",
+            "kode_rekening": "5.1.02.01.01.0034",
+            "basis": "Olahraga: katalog memiliki baris persis \"Kids Atletik\" di Perlengkapan Pendukung Olahraga."
+        },
+        {
+            "id": 80394,
+            "id_barang_arkas": "1.3.05.01.1001",
+            "nama": "Kamus Bahasa Indonesia",
+            "satuan": "explempar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80395,
+            "id_barang_arkas": "8.1.02.02.01.100014",
+            "nama": "Pembayaran Listrik Bulanan",
+            "satuan": "Paket",
+            "kode_rekening": "5.1.02.02.01.0061",
+            "basis": "Tagihan listrik: katalog menempatkan token/tarif listrik di Belanja Tagihan Listrik."
+        },
+        {
+            "id": 80396,
+            "id_barang_arkas": "1.3.05.01.1004",
+            "nama": "Mesin Planner/pasrah",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.05.01.0005",
+            "basis": "Alat kantor: katalog menempatkan perforator/mesin kantor di Belanja Modal Alat Kantor Lainnya."
+        },
+        {
+            "id": 80397,
+            "id_barang_arkas": "1.3.05.01.1005",
+            "nama": "running tax-running tax",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.05.01.0005",
+            "basis": "Mengikuti kembaran resmi di katalog (Belanja Modal Alat Kantor Lainnya)."
+        },
+        {
+            "id": 80398,
+            "id_barang_arkas": "1.3.05.01.1007",
+            "nama": "Buku Literasi Perpustakaan",
+            "satuan": "Paket",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80399,
+            "id_barang_arkas": "1.3.05.01.1008",
+            "nama": "Buku AKM Literasi Membaca",
+            "satuan": "buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80400,
+            "id_barang_arkas": "1.3.05.01.1009",
+            "nama": "Buku AKM Numerasi",
+            "satuan": "buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80401,
+            "id_barang_arkas": "1.3.05.01.1010",
+            "nama": "Buku Bidik P5 Gaya Hidup Berkelanjutan",
+            "satuan": "buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80402,
+            "id_barang_arkas": "1.3.05.01.1011",
+            "nama": "Buku Bidik P5 Kearifan Lokal",
+            "satuan": "Buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80403,
+            "id_barang_arkas": "1.3.05.01.1012",
+            "nama": "Buku Bidik P5 Bangunlah Jiwa dan Raganya",
+            "satuan": "buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80404,
+            "id_barang_arkas": "1.3.05.01.1013",
+            "nama": "Buku Bidik P5 Bhinneka Tunggal Ika Kelas VII",
+            "satuan": "Buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80405,
+            "id_barang_arkas": "1.3.05.01.1014",
+            "nama": "Buku Bidik P5 Kewirausahaan",
+            "satuan": "Buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80406,
+            "id_barang_arkas": "1.3.05.01.1015",
+            "nama": "Buku Bidik P5 Suara Demokrasi",
+            "satuan": "buku",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80407,
+            "id_barang_arkas": "1.3.05.01.1016",
+            "nama": "Buku Umum",
+            "satuan": "Paket",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80408,
+            "id_barang_arkas": "1.3.05.01.1017",
+            "nama": "DJI Mini 3 Pro - Drone 4k camera",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.06.01.0002",
+            "basis": "Kamera: drone 4K = peralatan studio video/film (katalog menempatkan drone di sini)."
+        },
+        {
+            "id": 80409,
+            "id_barang_arkas": "123-49",
+            "nama": "Meja kursi siswa",
+            "satuan": "set",
+            "kode_rekening": "5.2.02.05.02.0001",
+            "basis": "Mebel: katalog menempatkan meja & kursi di Belanja Modal Mebel."
+        },
+        {
+            "id": 80410,
+            "id_barang_arkas": "123-50",
+            "nama": "Almari besi",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.05.01.0004",
+            "basis": "Mebel penyimpan: katalog menempatkan \"Almari ...\" di Alat Penyimpan Perlengkapan Kantor."
+        },
+        {
+            "id": 80411,
+            "id_barang_arkas": "1.3.05.01.1018",
+            "nama": "Drumband 1 set",
+            "satuan": "set",
+            "kode_rekening": "5.2.05.02.01.0001",
+            "basis": "Alat musik: drumband 1 set = alat musik (bukan honor pembina)."
+        },
+        {
+            "id": 80412,
+            "id_barang_arkas": "1.3.05.01.1019",
+            "nama": "Samsak",
+            "satuan": "unit",
+            "kode_rekening": "5.1.02.01.01.0034",
+            "basis": "Olahraga: samsak = perlengkapan pendukung olahraga (satu keluarga dengan bola/matras)."
+        },
+        {
+            "id": 80413,
+            "id_barang_arkas": "1.3.05.01.1020",
+            "nama": "Kipas Angin",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.05.02.0004",
+            "basis": "Alat pendingin: katalog menempatkan kipas angin di Belanja Modal Alat Pendingin."
+        },
+        {
+            "id": 80414,
+            "id_barang_arkas": "1.3.05.01.1021",
+            "nama": "Lemari Besi",
+            "satuan": "unit",
+            "kode_rekening": "5.2.02.05.01.0004",
+            "basis": "Mebel penyimpan: lemari besi = alat penyimpan perlengkapan kantor."
+        },
+        {
+            "id": 80415,
+            "id_barang_arkas": "1234-MD-4452",
+            "nama": "TOA HORN SPEAKER ZH -5050M",
+            "satuan": "UNIT",
+            "kode_rekening": "5.2.02.06.01.0001",
+            "basis": "Audio: speaker TOA = peralatan studio audio."
+        },
+        {
+            "id": 80418,
+            "id_barang_arkas": "1234-BK-3832",
+            "nama": "Paket 1 Buku literasi SD/MI 32 Judul",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80419,
+            "id_barang_arkas": "1234-BK-3833",
+            "nama": "Paket 2 Buku literasi SD/MI 32 Judul",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80420,
+            "id_barang_arkas": "1234-BK-3834",
+            "nama": "Paket 3 Buku literasi SD/MI 32 Judul",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80421,
+            "id_barang_arkas": "1234-BK-3835",
+            "nama": "Buku Paket Literasi SMP Paket 1 (15 JUDUL)",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80422,
+            "id_barang_arkas": "1234-BK-3836",
+            "nama": "Buku Paket Literasi SMP Paket 2 (16 JUDUL )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80423,
+            "id_barang_arkas": "1234-BK-3837",
+            "nama": "Buku Paket Literasi SMP Paket 3 ( 5 JUDUL )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80424,
+            "id_barang_arkas": "1234-BK-3838",
+            "nama": "SERI OLIMPIADE SAINS SD/MI (MATEMATIKA & IPA )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80425,
+            "id_barang_arkas": "1234-BK-3839",
+            "nama": "SERI OLIMPIADE SAINS MATEMATIKA SD/MI",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80426,
+            "id_barang_arkas": "1234-BK-3840",
+            "nama": "SERI OLIMPIADE SAINS IPA SD/MI",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80427,
+            "id_barang_arkas": "1234-BK-3841",
+            "nama": "SERI OLIMPIADE SAINS SMP/MTs ( IPS,IPA TERPADU & MATEMATIKA )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80428,
+            "id_barang_arkas": "1234-BK-3842",
+            "nama": "SERI OLIMPIADE SAINS SMP/MTs ( IPA TERPADU & MATEMATIKA )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80429,
+            "id_barang_arkas": "1234-BK-3843",
+            "nama": "SERI OLIMPIADE SAINS SMP/MTs ( IPS)",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80430,
+            "id_barang_arkas": "1234-BK-3844",
+            "nama": "PAKET BUKU OSN SMP/MTs",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80431,
+            "id_barang_arkas": "1234-BK-3845",
+            "nama": "ENSKLOPEDIA BIOLOGI DUNIA HEWAN",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80432,
+            "id_barang_arkas": "1234-BK-3846",
+            "nama": "ENSKLOPEDIA BIOLOGI DUNIA TUMBUHAN",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80433,
+            "id_barang_arkas": "1234-BK-3847",
+            "nama": "SERI PEMBINAAN DAN PENGEMBANGAN EKSTRAKURIKULER \"DASAR\"",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80434,
+            "id_barang_arkas": "1234-BK-3848",
+            "nama": "SERI PENDIDIKAN 18 KARAKTER BANGSA SD/MI - SMP/MTS",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80435,
+            "id_barang_arkas": "1234-BK-3849",
+            "nama": "ENSIKLOPEDIA ILMU PENGETAHUAN ALAM",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80436,
+            "id_barang_arkas": "1234-BK-3850",
+            "nama": "ENSIKLOPEDIA SEJARAH DAN BUDAYA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80437,
+            "id_barang_arkas": "1234-BK-3851",
+            "nama": "INDONESIA HERITAGES SERIES (Warisan Budaya Indonesia )",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80438,
+            "id_barang_arkas": "1234-BK-3852",
+            "nama": "ENSIKLOPEDIA ANTI NARKOBA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80439,
+            "id_barang_arkas": "1234-BK-3853",
+            "nama": "PUSTAKA PENGETAHUAN UNTUK PELAJAR",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80440,
+            "id_barang_arkas": "1234-BK-3854",
+            "nama": "FISIKA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80441,
+            "id_barang_arkas": "1234-BK-3855",
+            "nama": "SERI ANAK PINTAR",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80442,
+            "id_barang_arkas": "1234-BK-3856",
+            "nama": "ENSIKLOEPDIA KIMIA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80443,
+            "id_barang_arkas": "1234-BK-3857",
+            "nama": "ENSIKLOEPDIA SEPAK BOLA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80444,
+            "id_barang_arkas": "1234-BK-3858",
+            "nama": "ENSIKLOEPDIA PRAJA MUDA KARANA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80445,
+            "id_barang_arkas": "1234-BK-3859",
+            "nama": "ENSIKLOEPDIA BAGUS UNTUK ANAK",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80446,
+            "id_barang_arkas": "1234-BK-3860",
+            "nama": "ENSIKLOEPDIA PENGETAHUAN POPULER",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80447,
+            "id_barang_arkas": "1234-BK-3861",
+            "nama": "ENSIKLOEPDIA GEOGRAFI",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80448,
+            "id_barang_arkas": "1234-BK-3862",
+            "nama": "ENSIKLOEPDIA ANTI KORUPSI",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80449,
+            "id_barang_arkas": "1234-BK-3863",
+            "nama": "ENSIKLOEPDIA TEMATIK KETRAMPILAN PRAMUKA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80450,
+            "id_barang_arkas": "1234-BK-3864",
+            "nama": "ENSIKLOEPDIA SAINS DAN TEKNOLOGI",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80451,
+            "id_barang_arkas": "1234-BK-3865",
+            "nama": "ENSIKLOEPDIA IPA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80452,
+            "id_barang_arkas": "1234-BK-3866",
+            "nama": "ENSIKLOEPDIA BIOLOGI DUNIA HEWAN",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80453,
+            "id_barang_arkas": "1234-BK-3867",
+            "nama": "ENSIKLOEPDIA PEMERINTAH DAN KEWARGANEGARAAN",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80454,
+            "id_barang_arkas": "1234-BK-3868",
+            "nama": "ENSIKLOEPDIA PERCOBAAN SAINS",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80455,
+            "id_barang_arkas": "1234-BK-3869",
+            "nama": "ENSIKLOEPDIA JAWATIMUR",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80456,
+            "id_barang_arkas": "1234-BK-3870",
+            "nama": "ENSIKLOEPDIA MATEMATIKA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80457,
+            "id_barang_arkas": "1234-BK-3871",
+            "nama": "ENSIKLOEPDIA SEJARAH DAN BUDAYA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80458,
+            "id_barang_arkas": "1234-BK-3872",
+            "nama": "ENSIKLOEPDIA VIOLOGI DUNIA TUMBUHAN",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80459,
+            "id_barang_arkas": "1234-BK-3873",
+            "nama": "LESTARI BASA JAWA Kelas 7",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80460,
+            "id_barang_arkas": "1234-BK-3874",
+            "nama": "LESTARI BASA JAWA Kelas 8",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80461,
+            "id_barang_arkas": "1234-BK-3875",
+            "nama": "LESTARI BASA JAWA Kelas 9",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80471,
+            "id_barang_arkas": "1234-BK-4215",
+            "nama": "KAMUS INGGRIS INDONESIA",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80472,
+            "id_barang_arkas": "1234-NEON-123",
+            "nama": "NEON BOX",
+            "satuan": "PAKET",
+            "kode_rekening": "5.1.02.01.01.0031",
+            "basis": "Alat listrik: katalog menempatkan lampu LED/neon & letter sign di Alat Listrik."
+        },
+        {
+            "id": 80473,
+            "id_barang_arkas": "1234-BJ-4253",
+            "nama": "SERAGAM/ KOSTUM  TARI",
+            "satuan": "SET",
+            "kode_rekening": "5.1.02.01.01.0032",
+            "basis": "Perlengkapan dinas: katalog menempatkan seragam/kaos olahraga/atribut di Perlengkapan Dinas."
+        },
+        {
+            "id": 80474,
+            "id_barang_arkas": "1234-MD-4433",
+            "nama": "MENGENAL UKS",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80475,
+            "id_barang_arkas": "1234-BK-3086",
+            "nama": "LITERASI PAKET 1",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80476,
+            "id_barang_arkas": "1234-BK-3087",
+            "nama": "LITERASI PAKET 2",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80477,
+            "id_barang_arkas": "1234-BK-3088",
+            "nama": "LITERASI PAKET 3",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80478,
+            "id_barang_arkas": "1234-BK-3089",
+            "nama": "LITERASI PAKET 4 sumber bahagia",
+            "satuan": "paket",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80479,
+            "id_barang_arkas": "1234-MD-4253",
+            "nama": "ALAT AL BANJARI ( DRUM, REBANA SEDANG , REBANA KECIL 1 SET)",
+            "satuan": "SET",
+            "kode_rekening": "5.2.05.02.01.0001",
+            "basis": "Alat musik: katalog menempatkan \"Set Al Banjari\"/\"Rebana\" di Belanja Modal Alat Musik."
+        },
+        {
+            "id": 80480,
+            "id_barang_arkas": "1234-MD-4418",
+            "nama": "WIRELESS RECEIVER  SARAMONIC",
+            "satuan": "UNIT",
+            "kode_rekening": "5.2.02.06.01.0001",
+            "basis": "Audio: wireless receiver = peralatan studio audio."
+        },
+        {
+            "id": 80481,
+            "id_barang_arkas": "1234-MD-4247",
+            "nama": "Penjasorkes 2",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80482,
+            "id_barang_arkas": "1234-MD-4248",
+            "nama": "Penjasorkes 4",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80483,
+            "id_barang_arkas": "1234-MD-4249",
+            "nama": "Penjasorkes 5",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80484,
+            "id_barang_arkas": "1234-MD-4250",
+            "nama": "Buku Literasi ANTI KORUPSI",
+            "satuan": "paket",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80485,
+            "id_barang_arkas": "1234-MD-4421",
+            "nama": "PANDUAN ANTI BULLYING UNTUK SISWA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80486,
+            "id_barang_arkas": "1234-MD-4422",
+            "nama": "PANDUAN PENDIDIKAN ANTIKORUPSI SISWA SMP/MTS KLS.8",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80487,
+            "id_barang_arkas": "1234-MD-4423",
+            "nama": "SISWA JUGA BISA JADI PENGUSAHA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80488,
+            "id_barang_arkas": "1234-MD-4424",
+            "nama": "Panduan Anti Narkoba Untuk Remaja",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80489,
+            "id_barang_arkas": "1234-MD-4425",
+            "nama": "AKU INGIN MENJADI PRESENTER",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80490,
+            "id_barang_arkas": "1234-MD-4426",
+            "nama": "JURNALISTIK ASYIK: PANDUAN PRAKTIS BELAJAR MENULIS BERITA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80491,
+            "id_barang_arkas": "1234-MD-4427",
+            "nama": "PANDUAN IMPLEMENTASI PENGUATAN PENDIDIKAN KARAKTER",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80492,
+            "id_barang_arkas": "1234-MD-4428",
+            "nama": "KATA & RASA: SEKELUMIT INSPIRASI UNTUK PENDIDIK",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80493,
+            "id_barang_arkas": "1234-MD-4429",
+            "nama": "PANEN RUPIAH DARI BUDI DAYA LELE",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80494,
+            "id_barang_arkas": "1234-MD-4430",
+            "nama": "APA YANG BERBEDA DARI GURU HEBAT",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80495,
+            "id_barang_arkas": "1234-MD-4431",
+            "nama": "RAHASIA MENJADI SISWA UNGGUL",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80496,
+            "id_barang_arkas": "1234-MD-4432",
+            "nama": "DIMENSI2 PEND. KARAKTER: WAWASAN, STRATEGI, LANGKAH PRAKTIS",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80497,
+            "id_barang_arkas": "1234-MD-4434",
+            "nama": "PANDUAN PENDIDIKAN ANTIKORUPSI SISWA SMP/MTS KLS.7",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80498,
+            "id_barang_arkas": "1234-MD-4435",
+            "nama": "PANDUAN PENDIDIKAN ANTIKORUPSI SISWA SMP/MTS KLS.9",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80499,
+            "id_barang_arkas": "1234-MD-4436",
+            "nama": "9 KARAKTER GURU EFEKTIF",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80500,
+            "id_barang_arkas": "1234-MD-4437",
+            "nama": "PAKET LITERASI KARAKTER MANDIRI A: AKU INGIN MENJADI",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80501,
+            "id_barang_arkas": "1234-MD-4438",
+            "nama": "PAKET LITERASI PENGUATAN KARAKTER (ISI 3 BUKU)",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80502,
+            "id_barang_arkas": "1234-MD-4439",
+            "nama": "MENJADI GURU MERDEKA, YG MEMBAWA PERUBAHAN BESAR",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80503,
+            "id_barang_arkas": "1234-MD-4440",
+            "nama": "MUATAN LOKAL PEND KEWIRAUSAHAAN LANJUTAN SISWA SMP/MTS KLS.8",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80504,
+            "id_barang_arkas": "1234-MD-4441",
+            "nama": "MENJADI GURU PROFESIONAL",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80505,
+            "id_barang_arkas": "1234-MD-4442",
+            "nama": "PANEN RUPIAH DARI BUDIDAYA NILA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80506,
+            "id_barang_arkas": "1234-MD-4443",
+            "nama": "SERI TEKNOLOGI: PANEN RUPIAH DARI BUDI DAYA GURAMI",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80507,
+            "id_barang_arkas": "1234-MD-4444",
+            "nama": "SERI KULINER NUSANTARA: MI FAVORIT",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80508,
+            "id_barang_arkas": "1234-MD-4445",
+            "nama": "SERI KULINER NUSANTARA: AYAM & BEBEK",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80509,
+            "id_barang_arkas": "1234-MD-4446",
+            "nama": "SERI HIDANGAN POPULER: PASTA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80510,
+            "id_barang_arkas": "1234-MD-4447",
+            "nama": "MI & CAMILAN NUSANTARA",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80511,
+            "id_barang_arkas": "1234-MD-4448",
+            "nama": "WUJUDKAN TULISANMU MENJADI BUKU: MAKE YOUR BOOK COMES TRUE",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80512,
+            "id_barang_arkas": "1234-MD-4449",
+            "nama": "BRIDGET SI RATU SEKOLAH",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80513,
+            "id_barang_arkas": "1234-MD-4450",
+            "nama": "SERI LITERASI REMAJA: MENGENAL BELANDA LEBIH DEKAT",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80514,
+            "id_barang_arkas": "1234-MD-4451",
+            "nama": "SERI MIKROBIOLOGI: MENGENAL VIRUS",
+            "satuan": "exmplr",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80515,
+            "id_barang_arkas": "1234-MD-4736",
+            "nama": "Wonderful English for SMP/Mts Grade VII (Mulok Pasuruan)",
+            "satuan": "EXMPLR",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80516,
+            "id_barang_arkas": "1234-MD- 4737",
+            "nama": "MIC CLIP ON MERK SHURE",
+            "satuan": "UNIT",
+            "kode_rekening": "5.2.02.06.01.0001",
+            "basis": "Audio: katalog menempatkan \"Clip On\"/\"Microfon\" di Peralatan Studio Audio."
+        },
+        {
+            "id": 80517,
+            "id_barang_arkas": "1234- MD-4738",
+            "nama": "LEMARI ETALASE",
+            "satuan": "UNIT",
+            "kode_rekening": "5.2.02.05.01.0004",
+            "basis": "Mebel penyimpan: etalase/almari katalog masuk Alat Penyimpan Perlengkapan Kantor."
+        },
+        {
+            "id": 80518,
+            "id_barang_arkas": "1234-BM-4774",
+            "nama": "ENSIKLOPEDIA TEKNOLOGI A-F ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80519,
+            "id_barang_arkas": "1234-BM-4775",
+            "nama": "ENSIKLOPEDIA SEJARAH DAN BUDAYA JILID 1 ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80520,
+            "id_barang_arkas": "1234-BM-4776",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 1:HABITAT ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80521,
+            "id_barang_arkas": "1234-BM-4777",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 3:BURUNG ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80522,
+            "id_barang_arkas": "1234-BM-4778",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 4:REPTIL ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80523,
+            "id_barang_arkas": "1234-BM-4779",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 5:AMFIBI ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80524,
+            "id_barang_arkas": "1234-BM-4780",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 6:IKAN ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80525,
+            "id_barang_arkas": "1234-BM-4781",
+            "nama": "ENSIKLOPEDIA BIOLOGI DUNIA HEWAN 7:INVERTEBRATA ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80526,
+            "id_barang_arkas": "1234-BM-4782",
+            "nama": "ENSIKLOPEDIA IPA PERCOBAAN SAINS 2 ",
+            "satuan": "eksemplar",
+            "kode_rekening": "5.1.02.01.01.0026",
+            "basis": "Buku/ensiklopedia/literasi: mengikuti 38 dari 39 kembaran resmi di katalog + isi 5.1.02.01.01.0026 memang buku pelajaran (exmplr)."
+        },
+        {
+            "id": 80527,
+            "id_barang_arkas": "1234-BM-4783",
+            "nama": "STAND MIC",
+            "satuan": "BUAH",
+            "kode_rekening": "5.2.02.06.01.0001",
+            "basis": "Audio: stand mic = perlengkapan mikrofon studio audio."
+        }
+    ]
+}

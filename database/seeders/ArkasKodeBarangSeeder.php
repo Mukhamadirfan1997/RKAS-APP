@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Services\KatalogRekeningManualService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -50,6 +51,11 @@ class ArkasKodeBarangSeeder extends Seeder
         $this->loadSharedStrings();
         $this->streamSheet5();
         $this->command->info("\nImpor selesai: {$this->inserted} baris dimasukkan, {$this->skipped} dilewati.");
+
+        // Entri manual sekolah di xlsm (kolom Kode Rekening berisi ".....") tetap
+        // dipertahankan; rekeningnya dilengkapi lewat pemetaan berbasis bukti.
+        $hasil = app(KatalogRekeningManualService::class)->jalankan();
+        $this->command->info("Rekening entri manual dilengkapi: {$hasil['diperbarui']} baris (dilewati {$hasil['dilewati']}).");
     }
 
     private function loadSharedStrings(): void
