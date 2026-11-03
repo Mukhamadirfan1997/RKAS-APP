@@ -109,7 +109,7 @@ class RkasController extends Controller
 
         $tahunAnggaran = $this->resolveTahun($request);
 
-        $selectedBulan = (int) $request->input('bulan', 1); // 1 = Januari default, 0 = Semua
+        $selectedBulan = (int) $request->input('bulan', 0); // 0 = Semua (default), 1..12 = bulan tertentu
 
         $query = RkasItem::with(['program', 'kodeRekening', 'barang', 'alokasiBulan'])
             ->where('tahun_anggaran_id', $tahunAnggaran->id)
@@ -240,6 +240,7 @@ class RkasController extends Controller
             'rekening_text' => $item->kodeRekening ? "[{$item->kodeRekening->kode}] {$item->kodeRekening->nama}" : '',
             'rekening_kode' => $item->kodeRekening->kode ?? '',
             'kode_barang_id' => $item->kode_barang_id,
+            'kode_barang_nama' => $item->barang->nama ?? '',
             'uraian' => $item->uraian,
             'keterangan_kustom' => $item->keterangan_kustom,
             'satuan' => $item->satuan,

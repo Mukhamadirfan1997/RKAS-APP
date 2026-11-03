@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "1.4.0"
+version = "1.4.1"
 description = "KARSA — Kertas Anggaran Sekolah (RKAS) Desktop"
 authors = ["KARSA"]
 license = ""
@@ -23,3 +23,6 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.11.3", features = [] }
 tauri-plugin-log = "2"
+reqwest = { version = "0.13", default-features = false, features = ["stream"] }
+futures-util = "0.3"
+rfd = { version = "0.16", default-features = false }

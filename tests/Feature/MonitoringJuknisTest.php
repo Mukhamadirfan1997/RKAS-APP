@@ -122,19 +122,20 @@ class MonitoringJuknisTest extends TestCase
         $this->assertEquals(0, (float) $summary['sarpras']['total']);
     }
 
-    public function test_honor_ekstra_pada_kegiatan_non_honor_tetap_masuk_persentase_honor(): void
+    public function test_honor_di_kegiatan_non_honor_tidak_masuk_persentase_honor(): void
     {
         RkasItem::where('tahun_anggaran_id', $this->ta->id)->delete();
 
         // Honorarium Narasumber diinput pada kegiatan pelatihan (bukan 07.12.*).
-        // Wajib tetap dihitung honor agar batas 20%/40% tidak bisa diakali.
+        // Honor ekstra di luar kegiatan honor TIDAK dihitung sebagai honor
+        // (mis. honor ekstrakurikuler pada kegiatan 03.03.*).
         $this->buatItem('03.02.01', '5.1.02.02.01.0003', 'Honorarium Narasumber pelatihan guru', 500000);
 
         $validator = new JuknisValidator($this->ta);
         $summary = $validator->summary();
 
-        $this->assertEquals(500000, (float) $summary['honor']['total'], 'Honor ekstra lintas kegiatan harus masuk hitungan honor');
-        $this->assertGreaterThan(0, (float) $summary['honor']['persen']);
+        $this->assertEquals(0, (float) $summary['honor']['total'], 'Honor di luar kegiatan 07.12.* tidak boleh dihitung honor');
+        $this->assertEquals(0, (float) $summary['honor']['persen']);
     }
 
     public function test_belanja_jasa_bukan_honor_tidak_ikut_persentase_honor(): void

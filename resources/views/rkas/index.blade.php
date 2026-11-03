@@ -115,7 +115,7 @@
         $tahap1Total = \App\Models\RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))->whereBetween('bulan', [1, 6])->sum('jumlah');
         $tahap1Pct = $tahunAnggaran->pagu_total > 0 ? round($tahap1Total / $tahunAnggaran->pagu_total * 100) : 0;
     @endphp
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 {{ $selectedBulan > 0 ? 'lg:grid-cols-5' : 'lg:grid-cols-4' }} gap-4">
         <div class="card p-5">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Pagu Total</div>
             <div class="text-lg md:text-xl font-extrabold text-slate-800 dark:text-white mt-1">Rp {{ number_format($tahunAnggaran->pagu_total, 0, ',', '.') }}</div>
@@ -136,6 +136,18 @@
             <div class="text-lg md:text-xl font-extrabold {{ $tahap1Pct >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600' }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
             <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $tahap1Pct }}% dari pagu &middot; {{ $tahap1Pct >= 50 ? 'memenuhi minimal 50%' : 'belum mencapai minimal 50%' }}</div>
         </div>
+        @if($selectedBulan > 0)
+            @php
+                $pctBulan = ($tahunAnggaran->pagu_total ?? 0) > 0
+                    ? round(($totalBulanTerpilih ?? 0) / $tahunAnggaran->pagu_total * 100, 2)
+                    : 0;
+            @endphp
+            <div class="card p-5 ring-2 ring-blue-500/40 dark:ring-blue-400/30">
+                <div class="text-[11px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">Total Bulan {{ $bulanIndonesia[$selectedBulan] }}</div>
+                <div class="text-lg md:text-xl font-extrabold text-blue-700 dark:text-blue-300 mt-1">Rp {{ number_format($totalBulanTerpilih ?? 0, 0, ',', '.') }}</div>
+                <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $pctBulan }}% dari pagu &middot; {{ $items->total() }} item dianggarkan bulan ini</div>
+            </div>
+        @endif
     </div>
 
     <div class="card overflow-hidden">
@@ -190,7 +202,6 @@
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
                             <td class="px-3 py-3 text-center">
                                 <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</div>
-                                <div class="text-[10px] text-slate-400 dark:text-slate-500">#{{ $item->no_urut }}</div>
                             </td>
                             {{-- Program Kegiatan (Standar) — truncate ellipsis --}}
                             <td class="px-3 py-3">
@@ -305,7 +316,7 @@
 
     <div id="rkas-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" style="background-color: rgba(15,23,42,.6); backdrop-filter: blur(3px);">
         <div class="min-h-full flex items-center justify-center p-4" x-data="modalForm()">
-            <div class="bg-white dark:bg-slate-800 w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] ring-1 ring-slate-200 dark:ring-slate-700/60">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-6xl rounded-2xl shadow-2xl flex flex-col max-h-[94vh] ring-1 ring-slate-200 dark:ring-slate-700/60">
                 <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700/60">
                     <div>
                         <h3 class="text-base font-extrabold text-slate-800 dark:text-white" x-text="mode === 'view' ? 'Detail Anggaran Kegiatan' : mode === 'sisip' ? 'Sisip Uraian — Detail Anggaran' : mode === 'edit' ? 'Ubah Anggaran — Detail Kegiatan' : 'Tambah Anggaran — Detail Kegiatan'"></h3>
@@ -454,11 +465,17 @@
                     <div x-show="step===2" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="label">Uraian <span class="text-red-500">*</span></label>
+                            <div class="flex items-center justify-between gap-2">
+                                <label class="label mb-0">Uraian <span class="text-red-500">*</span></label>
+                                <label class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 cursor-pointer select-none" title="Nonaktifkan bila ingin menulis uraian sendiri tanpa saran katalog (mis. Pemeliharaan Ruang Kelas 1)">
+                                    <input type="checkbox" x-model="form.saran_katalog" @change="if (!$event.target.checked) { pickers.barang.open = false; pickers.barang.results = []; }" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                    Saran katalog
+                                </label>
+                            </div>
                             <div class="relative" @click.outside="pickers.barang.open = false">
-                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas." class="input resize-none"
+                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas. Untuk pemeliharaan, tulis sendiri mis. &quot;Pemeliharaan Ruang Kelas 1&quot;." class="input resize-none"
                                     @input="searchUraianSuggestion($event)"
-                                    @focus="if (pickers.barang.q && pickers.barang.results.length) pickers.barang.open = true"></textarea>
+                                    @focus="if (form.saran_katalog && pickers.barang.q && pickers.barang.results.length) pickers.barang.open = true"></textarea>
                                 <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.barang.open && !pickers.barang.loading">
                                     <ul class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
@@ -476,6 +493,27 @@
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500" x-show="pickers.barang.open" x-cloak>Saran katalog — boleh beberapa kata &amp; urutan bebas (mis. “hvs a4 kertas”)</span>
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 ml-auto" x-text="form.uraian.length + ' / 500'"></span>
                             </div>
+
+                            {{-- Status ikatan katalog: bisa dilepas agar uraian 100% manual --}}
+                            <template x-if="form.kode_barang_id">
+                                <div class="mt-1.5 flex flex-wrap items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30">
+                                    <span class="text-[10px] text-blue-700 dark:text-blue-300">
+                                        🔗 Terhubung katalog: <span class="font-semibold" x-text="form.katalog_nama || 'barang katalog'"></span>
+                                    </span>
+                                    <button type="button" @click="detachKatalog()" class="ml-auto text-[10px] font-bold text-blue-700 dark:text-blue-300 underline hover:no-underline">Lepas dari katalog</button>
+                                </div>
+                            </template>
+                            <template x-if="uraianBerbedaKatalog()">
+                                <div class="mt-1 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                                    ⚠️ Uraian sudah diubah manual. Klik <span class="font-bold">“Lepas dari katalog”</span> agar batas SSH/KONTROL tidak mengikuti barang katalog lama.
+                                </div>
+                            </template>
+                            <template x-if="!form.kode_barang_id">
+                                <div class="mt-1 text-[10px] text-slate-400 dark:text-slate-500">
+                                    Uraian bebas / tanpa katalog — boleh diketik sendiri, mis. <span class="font-semibold">“Pemeliharaan Ruang Kelas 1”</span>. KONTROL otomatis OK karena tidak ada batas SSH.
+                                </div>
+                            </template>
+
                             <div x-show="pickers.rekening.kode" x-cloak class="mt-1 text-[10px] text-indigo-600 dark:text-indigo-400">Filter aktif: hanya barang untuk rekening <span class="font-mono font-bold" x-text="pickers.rekening.kode"></span> • kosongkan rekening untuk lihat semua</div>
                         </div>
                         <div>
@@ -638,7 +676,7 @@ function modalForm() {
         step: 1,
         sisipContext: '',
         months: BULAN_KE.map(m => ({ no: m, nama: NAMA_BULAN[m] })),
-        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, satuan: '' },
+        form: { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, katalog_nama: '', saran_katalog: true, satuan: '' },
         alokasi: makeAlokasi(),
         pickers: { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() },
         _timers: {},
@@ -649,7 +687,7 @@ function modalForm() {
             this.mode = 'new';
             this.step = 1;
             this.sisipContext = '';
-            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, satuan: '' };
+            this.form = { uraian: '', keterangan_kustom: '', harga_satuan: 0, harga_satuan_arkas: 0, harga_min: 0, harga_max: 0, koreksi: 0, kode_barang_id: null, katalog_nama: '', saran_katalog: true, satuan: '' };
             this.alokasi = makeAlokasi();
             this.pickers = { kegiatan: makePickerState(), rekening: makePickerState(), barang: makePickerState() };
         },
@@ -730,6 +768,7 @@ function modalForm() {
             this.pickers.barang.open = false;
         },
         searchUraianSuggestion(ev) {
+            if (!this.form.saran_katalog) { this.pickers.barang.open = false; this.pickers.barang.results = []; return; }
             const v = (ev && ev.target && ev.target.value) || this.form.uraian || '';
             // Batasi panjang kata kunci agar tidak mengirim kalimat panjang ke server.
             const trimmed = v.trim().slice(0, 120);
@@ -742,12 +781,34 @@ function modalForm() {
             if (r.nama) { this.form.uraian = r.nama; p.q = r.nama; }
             p.value = r.id; p.open = false;
             this.form.kode_barang_id = r.id;
+            this.form.katalog_nama = r.nama || '';
             this.form.harga_min = Number(r.harga_min) || 0;
             this.form.harga_max = Number(r.harga_max) || 0;
             this.form.harga_satuan_arkas = Number(r.harga) || 0;
             if (r.satuan) { this.form.satuan = r.satuan; this.syncSatuan(); }
             if (Number(r.harga) > 0 && this.form.harga_satuan === 0) this.form.harga_satuan = Number(r.harga);
             this.$nextTick(() => { p.results = []; });
+        },
+
+        /**
+         * Uraian tetap manual: lepaskan ikatan katalog tanpa mengubah teks
+         * uraian/harga/satuan yang sudah diketik. Dipakai untuk belanja seperti
+         * "Pemeliharaan Ruang Kelas 1" yang tidak punya kode barang.
+         */
+        detachKatalog() {
+            this.form.kode_barang_id = null;
+            this.form.katalog_nama = '';
+            this.form.harga_min = 0;
+            this.form.harga_max = 0;
+            this.form.harga_satuan_arkas = 0;
+            this.pickers.barang.open = false;
+            this.pickers.barang.results = [];
+            this.pickers.barang.q = '';
+        },
+
+        uraianBerbedaKatalog() {
+            const nama = (this.form.katalog_nama || '').trim();
+            return !!this.form.kode_barang_id && nama !== '' && (this.form.uraian || '').trim() !== nama;
         },
 
         subtotal(b) {
@@ -782,6 +843,8 @@ function modalForm() {
                     harga_max: Number(d.harga_max) || 0,
                     koreksi: Number(d.koreksi) || 0,
                     kode_barang_id: d.kode_barang_id || null,
+                    katalog_nama: d.kode_barang_nama || '',
+                    saran_katalog: true,
                     satuan: d.satuan || ''
                 };
                 if (d.kegiatan_id) { this.pickers.kegiatan.value = d.kegiatan_id; this.pickers.kegiatan.label = d.kegiatan_text; this.pickers.kegiatan.q = d.kegiatan_text; this.pickers.kegiatan.kode = d.kegiatan_kode || (d.kegiatan_text.match(/\[(.*?)\]/)?.[1] || ''); }

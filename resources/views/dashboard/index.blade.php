@@ -58,8 +58,8 @@
         </div>
     </div>
     <div id="banner-update-done" class="hidden rounded-xl border-2 border-emerald-300 dark:border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">✓ Unduhan selesai — file tersimpan di <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-800 font-mono text-xs">storage/app/updates/</code></div>
-        <a id="btn-buka-installer" href="#" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow">Buka File Installer</a>
+        <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">✓ Unduhan selesai — klik <span class="underline">Simpan File Installer</span> untuk memilih lokasi penyimpanan.</div>
+        <a id="btn-buka-installer" href="#" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow">Simpan File Installer</a>
     </div>
 
     <!-- Header -->
@@ -390,7 +390,7 @@
           document.getElementById('btn-buka-installer').href = '/update/download-file/' + encodeURIComponent(j.file);
           document.getElementById('banner-update-done').classList.remove('hidden');
           document.getElementById('banner-update-done').classList.add('flex');
-          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Buka File Installer".' : 'Unduhan selesai — installer siap dipasang.', 'success', 10000);
+          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Simpan File Installer" untuk memilih lokasi.' : 'Unduhan selesai — klik "Simpan File Installer" untuk memilih lokasi penyimpanan.', 'success', 10000);
         },
         onError(j){
           document.getElementById('banner-update-progress').classList.add('hidden');

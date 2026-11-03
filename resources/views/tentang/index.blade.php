@@ -83,7 +83,7 @@
             <div class="text-xs text-amber-700 dark:text-amber-300/80">Anda pakai v<span id="tentang-versi-sekarang">-</span> — ukuran <span id="tentang-ukuran">-</span> MB</div>
             <div class="mt-3 flex gap-2">
                 <button id="btn-tentang-unduh" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold">Unduh Sekarang (~<span id="tentang-ukuran2">-</span> MB)</button>
-                <a id="btn-tentang-buka" href="#" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">Buka File Installer</a>
+                <a id="btn-tentang-buka" href="#" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">Simpan File Installer</a>
             </div>
             <div id="tentang-progress" class="hidden mt-3 text-sm text-blue-600 dark:text-blue-400">
                 <div class="flex items-center gap-2"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> <span id="tentang-progress-text">Sedang mengunduh...</span></div>
@@ -211,7 +211,7 @@ document.getElementById('btn-restart-tour')?.addEventListener('click', async fun
           btnBuka.classList.remove('hidden');
           done.classList.remove('hidden');
           txtStatus.textContent = j.already ? 'File installer sudah terunduh' : 'Unduhan selesai';
-          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Buka File Installer".' : 'Unduhan selesai — installer siap dipasang.', 'success', 10000);
+          if(window.karsaToast) window.karsaToast(j.already ? 'File installer sudah ada — klik "Simpan File Installer" untuk memilih lokasi.' : 'Unduhan selesai — klik "Simpan File Installer" untuk memilih lokasi penyimpanan.', 'success', 10000);
         },
         onError(j){
           prog.classList.add('hidden');

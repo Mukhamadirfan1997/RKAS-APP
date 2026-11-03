@@ -290,9 +290,144 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
         .unwrap_or_else(|e| panic!("Gagal menjalankan PHP server ({e}). Pastikan PHP bisa dieksekusi."))
 }
 
+/// Decode percent-encoding (untuk `filename*=UTF-8''...` pada Content-Disposition).
+fn persen_decode(teks: &str) -> String {
+    let bytes = teks.as_bytes();
+    let mut hasil: Vec<u8> = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%' {
+            if let Some(hex) = teks.get(i + 1..i + 3) {
+                if let Ok(nilai) = u8::from_str_radix(hex, 16) {
+                    hasil.push(nilai);
+                    i += 3;
+                    continue;
+                }
+            }
+        }
+        hasil.push(bytes[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&hasil).into_owned()
+}
+
+/// Ambil nama berkas dari header Content-Disposition.
+fn nama_berkas_dari_header(headers: &reqwest::header::HeaderMap) -> Option<String> {
+    let nilai = headers
+        .get(reqwest::header::CONTENT_DISPOSITION)?
+        .to_str()
+        .ok()?;
+    let lower = nilai.to_ascii_lowercase();
+
+    if let Some(pos) = lower.find("filename*=") {
+        let sisa = &nilai[pos + 10..];
+        let bagian = sisa.split(';').next().unwrap_or(sisa).trim().trim_matches('"');
+        let nama = match bagian.find("''") {
+            Some(p) => persen_decode(&bagian[p + 2..]),
+            None => persen_decode(bagian),
+        };
+        if !nama.trim().is_empty() {
+            return Some(nama);
+        }
+    }
+
+    if let Some(pos) = lower.find("filename=") {
+        let sisa = &nilai[pos + 9..];
+        let bagian = sisa.split(';').next().unwrap_or(sisa).trim().trim_matches('"');
+        if !bagian.trim().is_empty() {
+            return Some(persen_decode(bagian));
+        }
+    }
+
+    None
+}
+
+/// Unduh berkas dari server lokal memakai cookie sesi WebView, lalu tampilkan
+/// dialog "Simpan sebagai" dengan pilihan Simpan / Batal.
+///
+/// Mengembalikan path tujuan bila disimpan, atau `None` bila dibatalkan.
+#[tauri::command]
+async fn simpan_unduhan(window: tauri::WebviewWindow, url: String) -> Result<Option<String>, String> {
+    let cookies = window
+        .cookies()
+        .map_err(|e| format!("Gagal membaca sesi aplikasi: {e}"))?;
+    let cookie_header = cookies
+        .iter()
+        .map(|c| format!("{}={}", c.name(), c.value()))
+        .collect::<Vec<_>>()
+        .join("; ");
+
+    let client = reqwest::Client::builder()
+        .build()
+        .map_err(|e| format!("Gagal menyiapkan unduhan: {e}"))?;
+
+    let mut permintaan = client
+        .get(&url)
+        .header(reqwest::header::USER_AGENT, "KARSA-Desktop");
+    if !cookie_header.is_empty() {
+        permintaan = permintaan.header(reqwest::header::COOKIE, cookie_header);
+    }
+
+    let respons = permintaan
+        .send()
+        .await
+        .map_err(|e| format!("Gagal menghubungi server lokal: {e}"))?;
+
+    if !respons.status().is_success() {
+        return Err(format!(
+            "Gagal mengunduh berkas (HTTP {}). Muat ulang halaman lalu coba lagi.",
+            respons.status()
+        ));
+    }
+
+    // Server yang mengalihkan ke halaman login (sesi kedaluwarsa) mengembalikan
+    // HTML 200; jangan sampai file HTML disimpan dengan nama PDF/Excel.
+    let tipe = respons
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if tipe.starts_with("text/html") {
+        return Err(
+            "Sesi login berakhir atau berkas tidak tersedia. Muat ulang halaman lalu coba lagi."
+                .to_string(),
+        );
+    }
+
+    let nama = nama_berkas_dari_header(respons.headers())
+        .unwrap_or_else(|| "unduhan-karsa".to_string());
+
+    // Dialog OS dijalankan di thread non-UI agar WebView2 tidak membeku.
+    let pilihan = tauri::async_runtime::spawn_blocking(move || {
+        rfd::FileDialog::new()
+            .set_title("Simpan Berkas KARSA")
+            .set_file_name(nama)
+            .save_file()
+    })
+    .await
+    .map_err(|e| format!("Dialog simpan gagal dibuka: {e}"))?;
+
+    let Some(tujuan) = pilihan else {
+        return Ok(None); // pengguna menekan Batal
+    };
+
+    use futures_util::StreamExt;
+    let mut berkas = std::fs::File::create(&tujuan)
+        .map_err(|e| format!("Gagal membuat berkas tujuan: {e}"))?;
+    let mut aliran = respons.bytes_stream();
+    while let Some(potongan) = aliran.next().await {
+        let potongan = potongan.map_err(|e| format!("Unduhan terputus: {e}"))?;
+        std::io::Write::write_all(&mut berkas, &potongan)
+            .map_err(|e| format!("Gagal menyimpan berkas: {e}"))?;
+    }
+
+    Ok(Some(tujuan.display().to_string()))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![simpan_unduhan])
         .setup(|app| {
             let handle = app.handle().clone();
 

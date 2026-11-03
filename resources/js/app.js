@@ -178,10 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /*
- * Notifikasi semua tombol unduh.
- * WebView/Tauri menyimpan berkas langsung ke folder Downloads tanpa dialog,
- * sehingga pengguna tidak tahu apa yang terjadi. Listener ini menampilkan
- * toast segera saat tombol unduh diklik.
+ * Notifikasi & dialog simpan untuk semua tombol unduh.
+ * - Desktop (Tauri/WebView2): dialog "Simpan sebagai" (tombol Simpan/Batal).
+ * - Browser (mode dev): dialog unduhan bawaan browser; toast hanya penanda.
  */
 (function () {
     const POLA_UNDUH = [
@@ -191,7 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
         /\/update\/download-file\//,
     ];
 
-    document.addEventListener('click', (event) => {
+    const tauriInternals = (typeof window !== 'undefined' && window.__TAURI_INTERNALS__)
+        ? window.__TAURI_INTERNALS__
+        : null;
+    const bisaDialogDesktop = !!(tauriInternals && typeof tauriInternals.invoke === 'function');
+
+    let sedangMenyimpan = false;
+
+    document.addEventListener('click', async (event) => {
         if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
         const anchor = event.target.closest('a[href]');
         if (!anchor) return;
@@ -205,8 +211,36 @@ document.addEventListener('DOMContentLoaded', () => {
             .trim()
             .slice(0, 60) || 'berkas';
 
+        if (!bisaDialogDesktop) {
+            if (window.karsaToast) {
+                window.karsaToast('Mengunduh ' + label + '… Jika muncul dialog, pilih lokasi penyimpanan.', 'info', 9000);
+            }
+            return; // browser menangani dialog unduhannya sendiri
+        }
+
+        event.preventDefault();
+        if (sedangMenyimpan) return;
+        sedangMenyimpan = true;
+
         if (window.karsaToast) {
-            window.karsaToast('Mengunduh ' + label + '… Berkas akan tersimpan di folder Downloads.', 'info', 9000);
+            window.karsaToast('Menyiapkan ' + label + ' — pilih lokasi penyimpanan…', 'info', 6000);
+        }
+
+        try {
+            const hasil = await tauriInternals.invoke('simpan_unduhan', {
+                url: new URL(anchor.href, window.location.href).toString(),
+            });
+
+            if (hasil) {
+                if (window.karsaToast) window.karsaToast('Berkas tersimpan di: ' + hasil, 'success', 12000);
+            } else if (window.karsaToast) {
+                window.karsaToast('Penyimpanan dibatalkan.', 'info', 6000);
+            }
+        } catch (e) {
+            const pesan = (e && (e.message || e.toString())) || 'tidak diketahui';
+            if (window.karsaToast) window.karsaToast('Gagal menyimpan berkas: ' + pesan, 'error', 12000);
+        } finally {
+            sedangMenyimpan = false;
         }
     }, true);
 })();

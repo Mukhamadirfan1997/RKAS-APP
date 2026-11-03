@@ -8,11 +8,10 @@ return [
     | ke komponen tersebut. Kombinasi (AND), bukan salah-satu (OR), agar tidak
     | salah klasifikasi dan tidak dihitung ganda.
     |
-    | PENGECUALIAN HONOR: rekening yang namanya mengandung kata kunci
-    | rekening_nama_keywords (mis. "Honorarium Narasumber", "Upah Tukang")
-    | dihitung honor walau kode kegiatannya bukan 07.12.*, karena batas
-    | 20%/40% berlaku untuk seluruh belanja honorarium, termasuk honor ekstra
-    | pada kegiatan lain.
+    | HONOR: hanya dihitung bila kode kegiatannya 07.12.* DAN salah satu
+    | penanda (jenis belanja / prefix rekening / keyword uraian) cocok.
+    | Honor di kegiatan lain (mis. honor ekstrakurikuler 03.03.*) TIDAK
+    | masuk persentase honor — sesuai aturan yang berlaku sebelum 30 Okt 2026.
     |
     | kode_program : daftar kode kegiatan/sub program yang diakui komponen.
     | jenis_belanja: daftar jenis belanja resmi ARKAS yang diakui komponen.
@@ -31,10 +30,6 @@ return [
         'jenis_belanja' => ['Belanja Jasa'],
         'rekening' => ['5.1.02.02.01'],
         'keywords' => ['honor', 'honorarium'],
-        // Honor juga dikenali dari NAMA rekening, tanpa syarat kode kegiatan.
-        // Tujuannya: honor tambahan/ekstra (mis. Honorarium Narasumber di
-        // kegiatan pelatihan) tetap masuk hitungan batas 20%/40%.
-        'rekening_nama_keywords' => ['honor', 'honorarium', 'upah', 'jasa tenaga'],
     ],
     'buku' => [
         'batas_persen' => 10,

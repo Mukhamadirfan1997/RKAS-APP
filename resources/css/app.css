@@ -181,6 +181,7 @@ html:not(.dark) .placeholder\:text-slate-400::placeholder {
     animation: karsa-toast-in 0.18s ease-out;
 }
 .karsa-toast .karsa-toast-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.2; }
+.karsa-toast .karsa-toast-body { overflow-wrap: anywhere; }
 .karsa-toast-success { background: rgb(236 253 245); border-color: rgb(167 243 208); color: rgb(6 95 70); }
 .karsa-toast-error { background: rgb(254 242 242); border-color: rgb(254 202 202); color: rgb(153 27 27); }
 .karsa-toast-info { background: rgb(239 246 255); border-color: rgb(191 219 254); color: rgb(30 64 175); }

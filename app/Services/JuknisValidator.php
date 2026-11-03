@@ -39,14 +39,13 @@ class JuknisValidator
         foreach ($this->items as $item) {
             $jenisBelanja = $item->kodeRekening->jenisBelanja->nama ?? '';
             $kodeRekening = $item->kodeRekening->kode ?? '';
-            $namaRekening = strtolower($item->kodeRekening->nama ?? '');
             $programKode = $item->program->kode ?? '';
             $uraian = strtolower($item->uraian ?? '');
 
             $jumlah = (float) $item->jumlah;
 
             // Kombinasi presisi ARKAS: program AND (jenis belanja / prefix rekening / keyword)
-            $kategori = $this->klasifikasi($programKode, $jenisBelanja, $kodeRekening, $uraian, $namaRekening);
+            $kategori = $this->klasifikasi($programKode, $jenisBelanja, $kodeRekening, $uraian);
 
             if ($kategori === 'honor') {
                 $this->honorTotal += $jumlah;
@@ -172,18 +171,14 @@ class JuknisValidator
      *
      * Presisi ARKAS: kombinasi AND antara kode program (kegiatan) dengan
      * (jenis belanja ATAU prefix kode rekening ATAU kata kunci uraian).
-     * PENGECUALIAN: nama rekening honorarium/upah/jasa tenaga selalu
-     * dihitung honor (honor ekstra lintas kegiatan ikut batas 20%/40%).
+     * Honor hanya diakui pada kegiatan 07.12.*; honor di kegiatan lain
+     * (mis. ekstrakurikuler) tidak masuk persentase honor.
      * Prioritas eksklusif: honor > buku > sarpras -> null (tanpa komponen).
      *
      * @return string|null 'honor' | 'buku' | 'sarpras' | null
      */
-    protected function klasifikasi(string $programKode, string $jenisBelanja, string $kodeRekening, string $uraian, string $namaRekening = ''): ?string
+    protected function klasifikasi(string $programKode, string $jenisBelanja, string $kodeRekening, string $uraian): ?string
     {
-        if ($this->honorRekening($namaRekening)) {
-            return 'honor';
-        }
-
         if ($this->kombinasi('honor', $programKode, $jenisBelanja, $kodeRekening, $uraian)) {
             return 'honor';
         }
@@ -197,22 +192,6 @@ class JuknisValidator
         }
 
         return null;
-    }
-
-    /**
-     * Honor dikenali dari NAMA rekening (honorarium/upah/jasa tenaga).
-     * Tidak mensyaratkan kode kegiatan 07.12.* agar honor ekstra pada
-     * kegiatan lain tetap masuk hitungan persentase honor.
-     */
-    protected function honorRekening(string $namaRekening): bool
-    {
-        if ($namaRekening === '') {
-            return false;
-        }
-
-        $keywords = config('juknis.honor.rekening_nama_keywords', ['honor', 'honorarium']);
-
-        return $this->uraianHits($namaRekening, $keywords);
     }
 
     /**
