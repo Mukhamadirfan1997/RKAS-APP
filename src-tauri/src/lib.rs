@@ -275,8 +275,70 @@ fn wait_ready(port: u16) -> bool {
 
 /// Spawn PHP built-in server langsung (bukan `artisan serve`) agar argumen
 /// php.ini (cacert, dst) berlaku pada proses yang benar-benar menangani HTTP.
-fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -> Child {
+/// Perintah PHP dasar dengan environment aplikasi terpasang (DB di
+/// app_data_dir, storage di KARSA_DATA_DIR, sertifikat HTTPS bundle).
+/// Dipakai bersama oleh server web dan proses migrasi.
+fn perintah_php(app: &tauri::AppHandle, root: &std::path::Path) -> Command {
     let php = php_binary(app);
+    let data_dir = app.path().app_data_dir().expect("cannot resolve app data dir");
+
+    let mut cmd = Command::new(&php);
+    // Muat php.ini bundle secara eksplisit (letaknya di folder php)
+    if php.components().count() > 1 {
+        let ini = php.parent().map(|p| p.join("php.ini"));
+        if let Some(ini) = ini.filter(|p| p.is_file()) {
+            cmd.arg("-c").arg(native_path(&ini));
+        }
+    }
+
+    cmd.current_dir(root)
+        .env("DB_DATABASE", db_path_for(app))
+        .env("KARSA_DATA_DIR", &data_dir)
+        .env("APP_ENV", "production")
+        .env("APP_VERSION", env!("CARGO_PKG_VERSION"));
+
+    prepend_php_to_path(&mut cmd, app);
+    apply_cacert_scan(&mut cmd, app);
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+
+    cmd
+}
+
+/// Jalankan `php artisan migrate --force` di latar belakang. Setiap migrasi
+/// pada proyek ini bersifat menambah (tidak menghapus data sekolah), jadi
+/// aplikasi boleh langsung dipakai; katalog/kolom baru muncul setelah selesai.
+/// Kegagalan hanya dicatat di log — aplikasi tetap berjalan.
+fn jalankan_migrasi(app: &tauri::AppHandle, root: &std::path::Path) {
+    let mut cmd = perintah_php(app, root);
+    cmd.arg("artisan")
+        .arg("migrate")
+        .arg("--force")
+        .arg("--no-interaction")
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+
+    log::info!("Menjalankan migrasi database di {:?}", root);
+    match cmd.output() {
+        Ok(out) => {
+            let mut teks = String::from_utf8_lossy(&out.stdout).to_string();
+            teks.push_str(&String::from_utf8_lossy(&out.stderr));
+            if out.status.success() {
+                log::info!("Migrasi database selesai ({}):\n{}", out.status, teks.trim());
+            } else {
+                log::error!("Migrasi database gagal ({}):\n{}", out.status, teks.trim());
+            }
+        }
+        Err(e) => log::error!("Migrasi database tidak bisa dijalankan: {e}"),
+    }
+}
+
+fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -> Child {
     let data_dir = app.path().app_data_dir().expect("cannot resolve app data dir");
 
     let server_router = root
@@ -289,14 +351,7 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
         .join("resources")
         .join("server.php");
 
-    let mut cmd = Command::new(&php);
-    // Muat php.ini bundle secara eksplisit (letaknya di folder php)
-    if php.components().count() > 1 {
-        let ini = php.parent().map(|p| p.join("php.ini"));
-        if let Some(ini) = ini.filter(|p| p.is_file()) {
-            cmd.arg("-c").arg(native_path(&ini));
-        }
-    }
+    let mut cmd = perintah_php(app, root);
     cmd.arg("-d")
         .arg("display_errors=0")
         .arg("-d")
@@ -307,21 +362,8 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
         .arg(format!("127.0.0.1:{port}"))
         .arg(native_path(&server_router))
         .current_dir(root.join("public"))
-        .env("DB_DATABASE", db_path_for(app))
-        .env("KARSA_DATA_DIR", &data_dir)
-        .env("APP_ENV", "production")
-        .env("APP_VERSION", env!("CARGO_PKG_VERSION"))
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null());
-    prepend_php_to_path(&mut cmd, app);
-    apply_cacert_scan(&mut cmd, app);
-
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-        cmd.creation_flags(CREATE_NO_WINDOW);
-    }
 
     cmd.spawn()
         .unwrap_or_else(|e| panic!("Gagal menjalankan PHP server ({e}). Pastikan PHP bisa dieksekusi."))
@@ -561,6 +603,15 @@ pub fn run() {
             let root = app_root(&handle);
             ensure_db_ready(&handle, &root);
             ensure_storage_ready(&handle);
+
+            // Mode terpasang: terapkan migrasi database di latar belakang agar
+            // fitur/katalog baru (impor referensi dinas) aktif tanpa menahan
+            // jendela. Migrasi proyek ini hanya menambah, tidak menghapus data.
+            if !cfg!(debug_assertions) {
+                let handle_migrasi = handle.clone();
+                let root_migrasi = root.clone();
+                std::thread::spawn(move || jalankan_migrasi(&handle_migrasi, &root_migrasi));
+            }
 
             let port = if cfg!(debug_assertions) {
                 // Dev: sebelumDevCommand sudah menjalankan artisan serve di 9200

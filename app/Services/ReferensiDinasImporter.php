@@ -146,23 +146,34 @@ class ReferensiDinasImporter
     }
 
     /**
+     * Harga dari file dinas dicocokkan lewat (nama + kode rekening), BUKAN
+     * lewat `id_barang_arkas`: ID di file dinas memakai skema ARKAS
+     * (…-1-510201010001) sedangkan katalog aplikasi memakai kode barang
+     * sekolah (01.001, 1234-BK-4629). Uji 2026-11-04: 1.052 baris fixture
+     * cocok persis lewat (nama, kode_rekening), 0 lewat ID.
+     *
      * @param  array<int, array<string, mixed>>  $list
      */
     protected function terapkanHarga(array $list): int
     {
         $diperbarui = 0;
 
-        foreach (array_chunk($list, 200) as $chunk) {
-            foreach ($chunk as $harga) {
-                $diperbarui += DB::table('kode_barang')
-                    ->where('id_barang_arkas', $harga['id_barang_arkas'])
-                    ->update([
-                        'harga_acuan' => $harga['harga_acuan'],
-                        'harga_min' => $harga['harga_min'],
-                        'harga_max' => $harga['harga_max'],
-                        'updated_at' => now(),
-                    ]);
+        foreach ($list as $harga) {
+            $nama = trim((string) ($harga['nama'] ?? ''));
+            $rekening = trim((string) ($harga['kode_rekening'] ?? ''));
+            if ($nama === '' || $rekening === '') {
+                continue;
             }
+
+            $diperbarui += DB::table('kode_barang')
+                ->where('nama', $nama)
+                ->where('kode_rekening', $rekening)
+                ->update([
+                    'harga_acuan' => $harga['harga_acuan'],
+                    'harga_min' => $harga['harga_min'],
+                    'harga_max' => $harga['harga_max'],
+                    'updated_at' => now(),
+                ]);
         }
 
         return $diperbarui;
