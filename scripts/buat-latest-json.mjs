@@ -2,10 +2,15 @@
  * Membuat `latest.json` untuk tauri-plugin-updater dari hasil `npx tauri build`.
  *
  * Pakai:
- *   node scripts/buat-latest-json.mjs
+ *   node scripts/buat-latest-json.mjs      (atau: npm run rilis:manifest)
  *
- * Hasil: `latest.json` di root proyek (unggah bersama
- * `KARSA_<versi>_x64-setup.nsis.zip` + `.sig` ke GitHub Release bertag v<versi>).
+ * Tauri v2 dengan `"createUpdaterArtifacts": true` menghasilkan paket updater
+ * berupa installer NSIS itu sendiri (`KARSA_<versi>_x64-setup.exe`) beserta
+ * tanda tangannya (`.exe.sig`). Versi Tauri lama memakai
+ * `KARSA_<versi>_x64-setup.nsis.zip` + `.sig`; keduanya didukung di sini.
+ *
+ * Hasil: `latest.json` di root proyek (unggah bersama paket updater + `.sig`
+ * ke GitHub Release bertag v<versi>).
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -22,11 +27,19 @@ if (!existsSync(dirNsis)) {
     process.exit(1);
 }
 
-const nama = `KARSA_${versi}_x64-setup.nsis.zip`;
 const berkas = readdirSync(dirNsis);
-if (!berkas.includes(nama)) {
-    console.error(`Berkas updater "${nama}" tidak ditemukan di ${dirNsis}.`);
-    console.error('Pastikan tauri.conf.json memakai "createUpdaterArtifacts": true.');
+
+/** Urutan prioritas: paket updater Tauri v2 (.exe) lalu v1 (.nsis.zip). */
+const kandidat = [
+    `KARSA_${versi}_x64-setup.exe`,
+    `KARSA_${versi}_x64-setup.nsis.zip`,
+];
+
+const nama = kandidat.find((k) => berkas.includes(k));
+
+if (!nama) {
+    console.error(`Paket updater untuk v${versi} tidak ditemukan di ${dirNsis}.`);
+    console.error('Pastikan tauri.conf.json memakai "createUpdaterArtifacts": true dan build memakai kunci signing.');
     process.exit(1);
 }
 
@@ -51,4 +64,5 @@ const data = {
 const tujuan = join(root, 'latest.json');
 writeFileSync(tujuan, JSON.stringify(data, null, 2) + '\n');
 console.log(`latest.json dibuat (versi ${versi}).`);
-console.log(`URL paket: ${url}`);
+console.log(`Paket updater : ${nama}`);
+console.log(`URL paket     : ${url}`);
