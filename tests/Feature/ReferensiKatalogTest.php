@@ -4,6 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
+use App\Models\MasterProgram;
+use App\Models\RkasItem;
+use App\Models\User;
 use App\Services\KatalogRekeningResolver;
 use App\Services\ReferensiDinasImporter;
 use App\Services\ReferensiKatalogImporter;
@@ -373,5 +376,56 @@ class ReferensiKatalogTest extends TestCase
         $this->assertDatabaseMissing('kode_barang', ['id' => $impor->id]);
         $this->assertDatabaseHas('kode_barang', ['id' => $milikSekolah->id]);
         $this->assertFalse(DB::getSchemaBuilder()->hasColumn('kode_barang', 'sumber'));
+    }
+
+    // ------------------------------------------------- dipakai di modal RKAS
+
+    /**
+     * Barang hasil impor harus benar-benar bisa dipakai operator: muncul di
+     * saran katalog modal "Detail Anggaran Kegiatan", lalu bisa disimpan
+     * sebagai baris RKAS dengan acuan SSH dari katalog.
+     */
+    public function test_barang_hasil_impor_bisa_dipakai_di_modal_rkas(): void
+    {
+        $buku = KodeBarang::create([
+            'kode' => '291225129',
+            'id_barang_arkas' => null,
+            'nama' => 'BAHASA INDONESIA SD/MI Kls. III',
+            'satuan_default' => 'EKSEMPLAR',
+            'harga_acuan' => 23100,
+            'harga_min' => 0,
+            'harga_max' => 23100,
+            'kode_rekening' => '5.2.05.01.01.0005',
+            'sumber' => ReferensiKatalogImporter::SUMBER,
+        ]);
+
+        $this->actingAs(User::first());
+
+        // 1. Muncul di autocomplete uraian modal (cari lewat kode barang).
+        $this->getJson('/api/search/barang?q=291225129')
+            ->assertOk()
+            ->assertJsonFragment(['nama' => 'BAHASA INDONESIA SD/MI Kls. III']);
+
+        // 2. Bisa disimpan sebagai baris RKAS dari modal.
+        $this->postJson('/rkas/store', [
+            'master_program_id' => MasterProgram::first()->id,
+            'master_kode_rekening_id' => MasterKodeRekening::where('kode', '5.2.05.01.01.0005')->firstOrFail()->id,
+            'kode_barang_id' => $buku->id,
+            'uraian' => $buku->nama,
+            'harga_satuan' => 23100,
+            'satuan' => 'EKSEMPLAR',
+            'alokasi' => [
+                '1' => ['volume' => 2, 'satuan' => 'EKSEMPLAR'],
+            ],
+        ])->assertJson(['success' => true]);
+
+        $item = RkasItem::where('kode_barang_id', $buku->id)->first();
+
+        $this->assertNotNull($item, 'Baris RKAS harus tersimpan dan tetap terhubung ke katalog impor.');
+        $this->assertSame(46200.0, (float) $item->jumlah, '2 EKSEMPLAR x Rp 23.100.');
+        $this->assertSame(23100.0, (float) $item->harga_satuan_arkas, 'Harga acuan diambil dari katalog impor, bukan input manual.');
+        $this->assertSame('OK', $item->kontrol, 'Harga tepat pada batas atas SSH masih dinilai OK.');
+        $this->assertSame(46200.0, (float) $item->tahap1, 'Januari termasuk Tahap I.');
+        $this->assertSame('EKSEMPLAR', $item->satuan);
     }
 }
