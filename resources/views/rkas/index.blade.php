@@ -871,6 +871,12 @@ function modalForm() {
             if (!rek.value) { this.error = 'Silakan pilih Kode Rekening terlebih dahulu.'; return; }
             if (!this.form.uraian.trim()) { this.error = 'Uraian wajib diisi.'; return; }
             if (!this.form.satuan.trim()) { this.error = 'Satuan wajib diisi.'; return; }
+            // Minimal satu bulan harus punya volume > 0. Tanpa ini baris akan
+            // tersimpan dengan total Rp 0 dan menggantung di kertas kerja.
+            if (!BULAN_KE.some(m => (Number(this.alokasi[m].volume) || 0) > 0)) {
+                this.error = 'Isi volume minimal pada satu bulan sebelum menyimpan (misalnya Januari).';
+                return;
+            }
             // pastikan satuan utama menyebar ke semua bulan sebelum simpan (jika masih ada yang kosong)
             const _mainSat = (this.form.satuan||'').trim();
             if (_mainSat) { BULAN_KE.forEach(m=>{ if(!this.alokasi[m].satuan) this.alokasi[m].satuan = _mainSat; }); }

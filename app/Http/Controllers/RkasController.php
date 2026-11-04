@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
 class RkasController extends Controller
@@ -272,6 +273,38 @@ class RkasController extends Controller
     }
 
     /**
+     * Total volume seluruh bulan pada satu payload alokasi.
+     */
+    private function totalVolumeAlokasi(array $alokasi): float
+    {
+        $total = 0.0;
+
+        foreach ($alokasi as $data) {
+            if (is_array($data) && isset($data['volume'])) {
+                $total += max(0, (float) $data['volume']);
+            }
+        }
+
+        return $total;
+    }
+
+    /**
+     * Tolak penyimpanan bila tidak ada satu bulan pun yang diisi volumenya.
+     * Baris seperti itu akan tampil sebagai baris Rp 0 di kertas kerja/PDF/
+     * Excel dan membuat pagu tidak pernah terpakai walau item sudah "diinput".
+     *
+     * @throws ValidationException
+     */
+    private function assertAdaAlokasiBulan(array $alokasi): void
+    {
+        if ($this->totalVolumeAlokasi($alokasi) <= 0) {
+            throw ValidationException::withMessages([
+                'alokasi' => 'Isi volume minimal pada satu bulan sebelum menyimpan (misalnya Januari).',
+            ]);
+        }
+    }
+
+    /**
      * Store new RKAS item with 12-month allocation.
      */
     public function store(Request $request)
@@ -296,6 +329,8 @@ class RkasController extends Controller
             'alokasi.*.volume' => 'nullable|numeric|min:0',
             'alokasi.*.satuan' => 'nullable|string|max:50',
         ]);
+
+        $this->assertAdaAlokasiBulan($validated['alokasi']);
 
         DB::beginTransaction();
         try {
@@ -401,6 +436,8 @@ class RkasController extends Controller
             'alokasi.*.volume' => 'nullable|numeric|min:0',
             'alokasi.*.satuan' => 'nullable|string|max:50',
         ]);
+
+        $this->assertAdaAlokasiBulan($validated['alokasi']);
 
         DB::beginTransaction();
         try {

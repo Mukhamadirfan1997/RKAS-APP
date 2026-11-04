@@ -262,6 +262,66 @@ class RkasFlowTest extends TestCase
         $this->assertDatabaseMissing('rkas_item', ['uraian' => 'Tanpa satuan harus gagal']);
     }
 
+    public function test_store_ditolak_bila_semua_bulan_tanpa_volume()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Tanpa volume bulan harus ditolak',
+            'harga_satuan' => 23100,
+            'satuan' => 'EKSEMPLAR',
+            'alokasi' => [
+                1 => ['volume' => 0, 'satuan' => 'EKSEMPLAR'],
+                2 => ['volume' => 0, 'satuan' => 'EKSEMPLAR'],
+            ],
+        ]);
+
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['alokasi']);
+        $this->assertStringContainsString('volume minimal', strtolower((string) $resp->json('errors.alokasi.0')));
+        $this->assertDatabaseMissing('rkas_item', ['uraian' => 'Tanpa volume bulan harus ditolak']);
+    }
+
+    public function test_store_ditolak_bila_alokasi_kosong()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+
+        $resp = $this->postJson('/rkas/store', [
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Alokasi kosong harus ditolak',
+            'harga_satuan' => 10000,
+            'satuan' => 'rim',
+            'alokasi' => [],
+        ]);
+
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['alokasi']);
+        $this->assertDatabaseMissing('rkas_item', ['uraian' => 'Alokasi kosong harus ditolak']);
+    }
+
+    public function test_update_ditolak_bila_semua_bulan_dikosongkan()
+    {
+        $item = RkasItem::first();
+
+        $resp = $this->postJson('/rkas/'.$item->id.'/update', [
+            'master_program_id' => $item->master_program_id,
+            'master_kode_rekening_id' => $item->master_kode_rekening_id,
+            'uraian' => $item->uraian,
+            'harga_satuan' => $item->harga_satuan,
+            'satuan' => $item->satuan ?: 'dus',
+            'alokasi' => [1 => ['volume' => 0, 'satuan' => 'dus']],
+        ]);
+
+        $resp->assertStatus(422);
+        $resp->assertJsonValidationErrors(['alokasi']);
+        $this->assertGreaterThan(0, $item->alokasiBulan()->sum('volume'), 'Alokasi lama tidak boleh terhapus saat penyimpanan ditolak.');
+    }
+
     public function test_store_fails_satuan_too_long()
     {
         $program = MasterProgram::first();
