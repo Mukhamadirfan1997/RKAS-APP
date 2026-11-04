@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "KARSA",
   "version": "1.5.0",
@@ -53,7 +53,7 @@
       "endpoints": [
         "https://github.com/Mukhamadirfan1997/RKAS-APP/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2NzFENzA4RTk2NDVBMUEKUldRYVdtVHBDTmR4VnY0UDNqNUtEc2xQL0toNWtud012Wk9IdmY2MG9od0p3a3R5MEUzS1o1MVIK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhEN0EzRkMwMTI0Nzc2QjEKUldTeGRrY1N3RDk2amU2S2VKb0Fick1MWGtpa0R6Tk5PR3BDOTFkTW5kNzgvOUFoWXY2VGg3SmgK",
       "windows": {
         "installMode": "quiet"
       }
