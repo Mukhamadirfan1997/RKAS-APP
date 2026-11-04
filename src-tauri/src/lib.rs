@@ -7,8 +7,45 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_updater::UpdaterExt;
 
 struct PhpServerState(Mutex<Option<Child>>);
+
+/// Progres pemasangan update yang dibaca antarmuka lewat polling `status_update`.
+#[derive(Clone, serde::Serialize)]
+struct ProgresUpdate {
+    tahap: String,
+    persen: f64,
+    terunduh: u64,
+    total: u64,
+    versi: String,
+}
+
+impl Default for ProgresUpdate {
+    fn default() -> Self {
+        Self {
+            tahap: "diam".to_string(),
+            persen: 0.0,
+            terunduh: 0,
+            total: 0,
+            versi: String::new(),
+        }
+    }
+}
+
+struct UpdateState(Mutex<ProgresUpdate>);
+
+impl UpdateState {
+    fn set(&self, tahap: &str, persen: f64, terunduh: u64, total: u64, versi: &str) {
+        if let Ok(mut guard) = self.0.lock() {
+            guard.tahap = tahap.to_string();
+            guard.persen = persen;
+            guard.terunduh = terunduh;
+            guard.total = total;
+            guard.versi = versi.to_string();
+        }
+    }
+}
 
 impl PhpServerState {
     fn shutdown(&self) {
@@ -424,10 +461,91 @@ async fn simpan_unduhan(window: tauri::WebviewWindow, url: String) -> Result<Opt
     Ok(Some(tujuan.display().to_string()))
 }
 
+/// Progres terkini pemasangan update (dipanggil berulang oleh antarmuka).
+#[tauri::command]
+fn status_update(state: tauri::State<'_, UpdateState>) -> ProgresUpdate {
+    state
+        .0
+        .lock()
+        .map(|guard| guard.clone())
+        .unwrap_or_default()
+}
+
+/// Unduh, verifikasi tanda tangan, lalu pasang pembaruan; aplikasi menutup dan
+/// terbuka kembali dengan versi baru (Windows).
+#[tauri::command]
+async fn perbarui_sekarang(app: tauri::AppHandle) -> Result<String, String> {
+    let progres = app.state::<UpdateState>();
+    progres.set("cek", 0.0, 0, 0, "");
+
+    // Hook `on_before_exit` berjalan setelah paket berhasil diekstrak, tepat
+    // sebelum installer dijalankan. Di sini server PHP dimatikan agar berkas di
+    // folder instalasi (php.exe, vendor) tidak terkunci saat diganti.
+    let handle_exit = app.clone();
+    let updater = app
+        .updater_builder()
+        .on_before_exit(move || {
+            if let Some(server) = handle_exit.try_state::<PhpServerState>() {
+                server.shutdown();
+            }
+            handle_exit.cleanup_before_exit();
+        })
+        .build()
+        .map_err(|e| format!("Pengaturan pembaruan tidak valid: {e}"))?;
+
+    let update = updater
+        .check()
+        .await
+        .map_err(|e| format!("Gagal memeriksa pembaruan: {e}"))?;
+
+    let Some(update) = update else {
+        return Ok("terbaru".to_string());
+    };
+
+    let versi = update.version.clone();
+    progres.set("unduh", 0.0, 0, 0, &versi);
+
+    let handle_progress = app.clone();
+    let versi_progress = versi.clone();
+    let bytes = update
+        .download(
+            move |potongan, total| {
+                if let Ok(mut guard) = handle_progress.state::<UpdateState>().0.lock() {
+                    guard.tahap = "unduh".to_string();
+                    guard.versi = versi_progress.clone();
+                    guard.terunduh = guard.terunduh.saturating_add(potongan as u64);
+                    guard.total = total.unwrap_or(0);
+                    guard.persen = match total {
+                        Some(t) if t > 0 => (guard.terunduh as f64 / t as f64) * 100.0,
+                        _ => 0.0,
+                    };
+                }
+            },
+            || {},
+        )
+        .await
+        .map_err(|e| format!("Gagal mengunduh pembaruan: {e}"))?;
+
+    progres.set("pasang", 100.0, 0, 0, &versi);
+
+    // Windows: installer berjalan (mode senyap) lalu proses ini keluar sendiri.
+    update
+        .install(bytes)
+        .map_err(|e| format!("Gagal memasang pembaruan: {e}"))?;
+
+    Ok("dipasang".to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![simpan_unduhan])
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(UpdateState(Mutex::new(ProgresUpdate::default())))
+        .invoke_handler(tauri::generate_handler![
+            simpan_unduhan,
+            status_update,
+            perbarui_sekarang
+        ])
         .setup(|app| {
             let handle = app.handle().clone();
 

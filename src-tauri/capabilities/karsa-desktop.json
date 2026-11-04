@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "karsa-desktop",
+  "description": "Izin command kustom KARSA untuk antarmuka yang disajikan server PHP lokal (http://127.0.0.1:<port>).",
+  "windows": [
+    "main"
+  ],
+  "remote": {
+    "urls": [
+      "http://127.0.0.1:*"
+    ]
+  },
+  "permissions": [
+    "allow-simpan-unduhan",
+    "allow-perbarui-sekarang",
+    "allow-status-update"
+  ]
+}

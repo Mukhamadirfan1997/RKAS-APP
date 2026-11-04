@@ -1,0 +1,16 @@
+# Permission aplikasi (bukan plugin) untuk command kustom KARSA.
+# Dirujuk dari capabilities/karsa-desktop.json.
+[[permission]]
+identifier = "allow-simpan-unduhan"
+description = "Izinkan dialog Simpan Berkas KARSA untuk unduhan PDF, Excel, backup, dan installer."
+commands.allow = ["simpan_unduhan"]
+
+[[permission]]
+identifier = "allow-perbarui-sekarang"
+description = "Izinkan pemeriksaan, pengunduhan, dan pemasangan pembaruan aplikasi secara otomatis."
+commands.allow = ["perbarui_sekarang"]
+
+[[permission]]
+identifier = "allow-status-update"
+description = "Izinkan pembacaan progres unduhan/pemasangan pembaruan."
+commands.allow = ["status_update"]

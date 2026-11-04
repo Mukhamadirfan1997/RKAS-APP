@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "KARSA",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "identifier": "id.karsa.rkas2026",
   "build": {
     "frontendDist": "../public",
@@ -18,6 +18,7 @@
   "bundle": {
     "active": true,
     "targets": ["nsis", "msi"],
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -45,6 +46,17 @@
     },
     "android": {
       "debugApplicationIdSuffix": ".debug"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/Mukhamadirfan1997/RKAS-APP/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2NzFENzA4RTk2NDVBMUEKUldRYVdtVHBDTmR4VnY0UDNqNUtEc2xQL0toNWtud012Wk9IdmY2MG9od0p3a3R5MEUzS1o1MVIK",
+      "windows": {
+        "installMode": "quiet"
+      }
     }
   }
 }

@@ -201,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
         const anchor = event.target.closest('a[href]');
         if (!anchor) return;
+        if (anchor.dataset.karsaBypass) return;
 
         const href = anchor.getAttribute('href') || '';
         const cocok = anchor.hasAttribute('download') || POLA_UNDUH.some((pola) => pola.test(href));
@@ -238,12 +239,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             const pesan = (e && (e.message || e.toString())) || 'tidak diketahui';
-            if (window.karsaToast) window.karsaToast('Gagal menyimpan berkas: ' + pesan, 'error', 12000);
+            if (window.karsaToast) {
+                window.karsaToast('Dialog simpan tidak tersedia (' + pesan + '). Mengunduh lewat cara bawaan…', 'error', 12000);
+            }
+
+            // Jaring pengaman: bila command desktop ditolak/di luar kendali,
+            // teruskan ke perilaku unduh bawaan agar pengguna tidak buntu.
+            anchor.dataset.karsaBypass = '1';
+            anchor.click();
+            setTimeout(() => { delete anchor.dataset.karsaBypass; }, 0);
         } finally {
             sedangMenyimpan = false;
         }
     }, true);
 })();
+
+/*
+ * Pemasangan update otomatis (khusus aplikasi desktop Tauri).
+ * Alur: cek versi -> unduh + verifikasi tanda tangan -> pasang -> aplikasi
+ * menutup dan terbuka kembali dengan versi baru.
+ * handlers: { onProgress({tahap, persen, terunduh, total, versi}) }
+ */
+window.karsaDesktop = !!(typeof window !== 'undefined'
+    && window.__TAURI_INTERNALS__
+    && typeof window.__TAURI_INTERNALS__.invoke === 'function');
+
+window.karsaPasangUpdate = async function (handlers = {}) {
+    if (!window.karsaDesktop) {
+        throw new Error('Pemasangan otomatis hanya tersedia di aplikasi desktop.');
+    }
+
+    let berhenti = false;
+    const timer = setInterval(async () => {
+        if (berhenti) return;
+        try {
+            const status = await window.__TAURI_INTERNALS__.invoke('status_update');
+            if (!berhenti && handlers.onProgress) handlers.onProgress(status || {});
+        } catch (e) {
+            /* progres hanya pelengkap; abaikan bila belum siap */
+        }
+    }, 400);
+
+    try {
+        return await window.__TAURI_INTERNALS__.invoke('perbarui_sekarang');
+    } finally {
+        berhenti = true;
+        clearInterval(timer);
+    }
+};
 
 /*
  * Unduh installer update dengan progres nyata (NDJSON stream dari server).

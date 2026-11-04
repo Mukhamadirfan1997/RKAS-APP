@@ -43,11 +43,12 @@
             <div>
                 <div class="text-sm font-extrabold text-amber-800 dark:text-amber-300">Versi <span id="upd-versi-baru">-</span> tersedia</div>
                 <div class="text-xs text-amber-700 dark:text-amber-300/80">Anda pakai v<span id="upd-versi-sekarang">-</span> — ukuran <span id="upd-ukuran">-</span> MB</div>
-                <div class="text-[11px] text-amber-600 dark:text-amber-400 mt-1">Unduh sekali (±35–45 MB), lalu instal manual — data RKAS tetap aman.</div>
+                <div id="upd-hint" class="text-[11px] text-amber-600 dark:text-amber-400 mt-1">Unduh sekali (±35–45 MB), lalu instal manual — data RKAS tetap aman.</div>
             </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
             <button id="btn-unduh-update" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold shadow">Unduh Sekarang</button>
+            <a id="btn-unduh-manual" href="#" class="hidden text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline">Unduh manual</a>
             <button onclick="document.getElementById('banner-update').classList.add('hidden')" class="px-3 py-2 text-xs text-amber-700 hover:underline">Nanti</button>
         </div>
     </div>
@@ -406,7 +407,61 @@
       if(window.karsaToast) window.karsaToast('Gagal mengunduh: '+e.message, 'error', 12000);
     }
   }
-  document.getElementById('btn-unduh-update')?.addEventListener('click', unduh);
+  const desktop = !!window.karsaDesktop;
+  const btnUtama = document.getElementById('btn-unduh-update');
+  const btnManual = document.getElementById('btn-unduh-manual');
+  if(desktop){
+    if(btnUtama) btnUtama.textContent = 'Perbarui Sekarang';
+    if(btnManual) btnManual.classList.remove('hidden');
+    const hint = document.getElementById('upd-hint');
+    if(hint) hint.textContent = 'Pemasangan otomatis — aplikasi menutup dan terbuka kembali dengan versi baru. Data RKAS tetap aman.';
+  }
+
+  async function perbaruiOtomatis(){
+    if(!updInfo) return;
+    const yakin = window.confirm('Perbarui KARSA ke versi ' + updInfo.versi_baru + ' sekarang?\n\nAplikasi akan tertutup dan terbuka kembali otomatis setelah pemasangan selesai. Data RKAS tidak dihapus.');
+    if(!yakin) return;
+
+    document.getElementById('banner-update').classList.add('hidden');
+    document.getElementById('banner-update-progress').classList.remove('hidden');
+    tampilkanProgresUnduh('Memeriksa pembaruan…', 0);
+
+    try{
+      if(typeof window.karsaPasangUpdate !== 'function') throw new Error('Fitur pembaruan belum siap — muat ulang aplikasi.');
+      const hasil = await window.karsaPasangUpdate({
+        onProgress(s){
+          if(s.tahap === 'unduh'){
+            const total = s.total || updInfo.size_bytes || 0;
+            const now = s.terunduh || 0;
+            const persen = total > 0 ? (now / total * 100) : (s.persen || 0);
+            tampilkanProgresUnduh(
+              total > 0
+                ? 'Mengunduh ' + fmtUnduh(now) + ' / ' + fmtUnduh(total) + ' (' + Math.round(persen) + '%)'
+                : 'Mengunduh ' + fmtUnduh(now),
+              persen
+            );
+          } else if(s.tahap === 'pasang'){
+            tampilkanProgresUnduh('Memasang pembaruan… aplikasi akan menutup dan terbuka kembali.', 100);
+          } else if(s.tahap === 'cek'){
+            tampilkanProgresUnduh('Memeriksa pembaruan…', 0);
+          }
+        }
+      });
+      if(hasil === 'terbaru'){
+        document.getElementById('banner-update-progress').classList.add('hidden');
+        if(window.karsaToast) window.karsaToast('KARSA sudah versi terbaru.', 'info', 8000);
+      }
+    }catch(e){
+      document.getElementById('banner-update-progress').classList.add('hidden');
+      document.getElementById('banner-update').classList.remove('hidden');
+      document.getElementById('banner-update').classList.add('flex');
+      const pesan = (e && (e.message || e)) || 'tidak diketahui';
+      if(window.karsaToast) window.karsaToast('Gagal memperbarui otomatis: ' + pesan + ' — silakan pakai "Unduh manual".', 'error', 14000);
+    }
+  }
+
+  btnUtama?.addEventListener('click', () => { if(desktop) perbaruiOtomatis(); else unduh(); });
+  btnManual?.addEventListener('click', (ev) => { ev.preventDefault(); unduh(); });
   if(document.readyState==='complete') setTimeout(cekUpdate,800);
   else window.addEventListener('load',()=> setTimeout(cekUpdate,800));
 })();

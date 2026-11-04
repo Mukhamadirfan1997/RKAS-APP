@@ -81,8 +81,9 @@
         <div id="area-update-hasil" class="hidden mt-4 rounded-xl border-2 border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-4">
             <div class="text-sm font-extrabold text-amber-800 dark:text-amber-300">Versi <span id="tentang-versi-baru">-</span> tersedia</div>
             <div class="text-xs text-amber-700 dark:text-amber-300/80">Anda pakai v<span id="tentang-versi-sekarang">-</span> — ukuran <span id="tentang-ukuran">-</span> MB</div>
-            <div class="mt-3 flex gap-2">
-                <button id="btn-tentang-unduh" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold">Unduh Sekarang (~<span id="tentang-ukuran2">-</span> MB)</button>
+            <div class="mt-3 flex flex-wrap gap-2 items-center">
+                <button id="btn-tentang-unduh" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold"><span id="tentang-unduh-label">Unduh Sekarang</span> (~<span id="tentang-ukuran2">-</span> MB)</button>
+                <a id="btn-tentang-manual" href="#" class="hidden text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline">Unduh manual</a>
                 <a id="btn-tentang-buka" href="#" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">Simpan File Installer</a>
             </div>
             <div id="tentang-progress" class="hidden mt-3 text-sm text-blue-600 dark:text-blue-400">
@@ -226,8 +227,59 @@ document.getElementById('btn-restart-tour')?.addEventListener('click', async fun
     }
     finally{ btnUnduh.disabled = false; }
   }
+  const desktop = !!window.karsaDesktop;
+  const btnManual = document.getElementById('btn-tentang-manual');
+  if(desktop){
+    const label = document.getElementById('tentang-unduh-label');
+    if(label) label.textContent = 'Perbarui Sekarang';
+    btnManual?.classList.remove('hidden');
+  }
+
+  async function perbaruiOtomatis(){
+    if(!info) return;
+    const yakin = window.confirm('Perbarui KARSA ke versi ' + info.versi_baru + ' sekarang?\n\nAplikasi akan tertutup dan terbuka kembali otomatis setelah pemasangan selesai. Data RKAS tidak dihapus.');
+    if(!yakin) return;
+
+    btnUnduh.disabled = true; prog.classList.remove('hidden'); done.classList.add('hidden');
+    progresUnduh('Memeriksa pembaruan…', 0);
+    try{
+      if(typeof window.karsaPasangUpdate !== 'function') throw new Error('Fitur pembaruan belum siap — muat ulang aplikasi.');
+      const hasil = await window.karsaPasangUpdate({
+        onProgress(s){
+          if(s.tahap === 'unduh'){
+            const total = s.total || info.size_bytes || 0;
+            const now = s.terunduh || 0;
+            const persen = total > 0 ? (now / total * 100) : (s.persen || 0);
+            progresUnduh(
+              total > 0
+                ? 'Mengunduh ' + fmtUnduh(now) + ' / ' + fmtUnduh(total) + ' (' + Math.round(persen) + '%)'
+                : 'Mengunduh ' + fmtUnduh(now),
+              persen
+            );
+          } else if(s.tahap === 'pasang'){
+            progresUnduh('Memasang pembaruan… aplikasi akan menutup dan terbuka kembali.', 100);
+          } else if(s.tahap === 'cek'){
+            progresUnduh('Memeriksa pembaruan…', 0);
+          }
+        }
+      });
+      if(hasil === 'terbaru'){
+        prog.classList.add('hidden');
+        txtStatus.textContent = 'Sudah versi terbaru ✓';
+        if(window.karsaToast) window.karsaToast('KARSA sudah versi terbaru.', 'info', 8000);
+      }
+    }catch(e){
+      prog.classList.add('hidden');
+      const pesan = (e && (e.message || e)) || 'tidak diketahui';
+      txtStatus.textContent = 'Gagal memperbarui otomatis';
+      if(window.karsaToast) window.karsaToast('Gagal memperbarui otomatis: ' + pesan + ' — silakan pakai "Unduh manual".', 'error', 14000);
+    }
+    finally{ btnUnduh.disabled = false; }
+  }
+
   btnCek?.addEventListener('click', cek);
-  btnUnduh?.addEventListener('click', unduh);
+  btnUnduh?.addEventListener('click', () => { if(desktop) perbaruiOtomatis(); else unduh(); });
+  btnManual?.addEventListener('click', (ev) => { ev.preventDefault(); unduh(); });
 })();
 </script>
 @endsection

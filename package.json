@@ -7,7 +7,8 @@
         "dev": "vite",
         "tauri": "tauri",
         "tauri:dev": "tauri dev",
-        "tauri:build": "npm run build && tauri build"
+        "tauri:build": "npm run build && tauri build",
+        "rilis:manifest": "node scripts/buat-latest-json.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
