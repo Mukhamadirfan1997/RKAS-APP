@@ -228,9 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const hasil = await tauriInternals.invoke('simpan_unduhan', {
-                url: new URL(anchor.href, window.location.href).toString(),
-            });
+            // Batas waktu hanya sebagai jaring pengaman bila proses di sisi
+            // desktop tidak pernah menjawab (mis. kegagalan internal). Dialog
+            // yang sedang terbuka tidak terpengaruh.
+            let batasWaktu = null;
+            const hasil = await Promise.race([
+                tauriInternals.invoke('simpan_unduhan', {
+                    url: new URL(anchor.href, window.location.href).toString(),
+                }),
+                new Promise((_, tolak) => {
+                    batasWaktu = setTimeout(
+                        () => tolak(new Error('KARSA_TIMEOUT')),
+                        10 * 60 * 1000,
+                    );
+                }),
+            ]).finally(() => clearTimeout(batasWaktu));
 
             if (hasil) {
                 if (window.karsaToast) window.karsaToast('Berkas tersimpan di: ' + hasil, 'success', 12000);
@@ -239,6 +251,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             const pesan = (e && (e.message || e.toString())) || 'tidak diketahui';
+
+            if (pesan === 'KARSA_TIMEOUT') {
+                if (window.karsaToast) {
+                    window.karsaToast(
+                        'Aplikasi belum merespons permintaan simpan berkas. Silakan coba lagi.',
+                        'error',
+                        12000,
+                    );
+                }
+                return; // jangan memicu unduhan kedua saat dialog mungkin masih terbuka
+            }
+
             if (window.karsaToast) {
                 window.karsaToast('Dialog simpan tidak tersedia (' + pesan + '). Mengunduh lewat cara bawaan…', 'error', 12000);
             }

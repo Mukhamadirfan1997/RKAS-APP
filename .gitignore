@@ -36,3 +36,6 @@ KODE-LISENSI*.txt
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Artefak rilis (dibuat ulang tiap build oleh scripts/buat-latest-json.mjs)
+/latest.json

@@ -310,6 +310,71 @@ fn perintah_php(app: &tauri::AppHandle, root: &std::path::Path) -> Command {
     cmd
 }
 
+/// Timestamp UTC ringkas (YYYY-MM-DD HH:MM:SS) tanpa menambah dependensi baru.
+fn waktu_utc() -> String {
+    let detik = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+
+    // Konversi epoch -> tanggal sipil (algoritma Howard Hinnant).
+    let hari = (detik / 86_400) as i64;
+    let sisa = detik % 86_400;
+    let z = hari + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365;
+    let tahun = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let tanggal = doy - (153 * mp + 2) / 5 + 1;
+    let bulan = if mp < 10 { mp + 3 } else { mp - 9 };
+    let tahun = if bulan <= 2 { tahun + 1 } else { tahun };
+
+    format!(
+        "{:04}-{:02}-{:02} {:02}:{:02}:{:02} UTC",
+        tahun,
+        bulan,
+        tanggal,
+        sisa / 3_600,
+        (sisa % 3_600) / 60,
+        sisa % 60
+    )
+}
+
+/// Catat hasil migrasi ke `storage/logs/migrate.log` di folder data aplikasi.
+///
+/// Pada aplikasi terpasang (build release) `tauri_plugin_log` tidak menulis ke
+/// berkas, sehingga tanpa ini kegagalan migrasi tidak meninggalkan jejak yang
+/// bisa diperiksa teknisi. Berkas dibatasi ±512 KB (dirotasi ke `.1`).
+fn catat_migrasi(app: &tauri::AppHandle, baris: &str) {
+    let Ok(data_dir) = app.path().app_data_dir() else {
+        return;
+    };
+    let dir = data_dir.join("storage").join("logs");
+    if std::fs::create_dir_all(&dir).is_err() {
+        return;
+    }
+    let berkas = dir.join("migrate.log");
+
+    if let Ok(meta) = std::fs::metadata(&berkas) {
+        if meta.len() > 512 * 1024 {
+            let arsip = dir.join("migrate.log.1");
+            let _ = std::fs::remove_file(&arsip);
+            let _ = std::fs::rename(&berkas, &arsip);
+        }
+    }
+
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&berkas)
+    {
+        use std::io::Write;
+        let _ = writeln!(f, "[{}] {}", waktu_utc(), baris);
+    }
+}
+
 /// Jalankan `php artisan migrate --force` di latar belakang. Setiap migrasi
 /// pada proyek ini bersifat menambah (tidak menghapus data sekolah), jadi
 /// aplikasi boleh langsung dipakai; katalog/kolom baru muncul setelah selesai.
@@ -324,17 +389,30 @@ fn jalankan_migrasi(app: &tauri::AppHandle, root: &std::path::Path) {
         .stderr(std::process::Stdio::piped());
 
     log::info!("Menjalankan migrasi database di {:?}", root);
+    catat_migrasi(
+        app,
+        &format!("mulai migrasi database di {}", root.display()),
+    );
+
     match cmd.output() {
         Ok(out) => {
             let mut teks = String::from_utf8_lossy(&out.stdout).to_string();
             teks.push_str(&String::from_utf8_lossy(&out.stderr));
             if out.status.success() {
                 log::info!("Migrasi database selesai ({}):\n{}", out.status, teks.trim());
+                catat_migrasi(
+                    app,
+                    &format!("selesai ({}) — {}", out.status, teks.trim()),
+                );
             } else {
                 log::error!("Migrasi database gagal ({}):\n{}", out.status, teks.trim());
+                catat_migrasi(app, &format!("GAGAL ({}) — {}", out.status, teks.trim()));
             }
         }
-        Err(e) => log::error!("Migrasi database tidak bisa dijalankan: {e}"),
+        Err(e) => {
+            log::error!("Migrasi database tidak bisa dijalankan: {e}");
+            catat_migrasi(app, &format!("GAGAL menjalankan php artisan: {e}"));
+        }
     }
 }
 
@@ -427,6 +505,26 @@ fn nama_berkas_dari_header(headers: &reqwest::header::HeaderMap) -> Option<Strin
 /// Mengembalikan path tujuan bila disimpan, atau `None` bila dibatalkan.
 #[tauri::command]
 async fn simpan_unduhan(window: tauri::WebviewWindow, url: String) -> Result<Option<String>, String> {
+    // Jaring pengaman: bila terjadi panic di dalam proses unduh (mis. kegagalan
+    // internal klien HTTP), kembalikan pesan error agar antarmuka tidak
+    // menggantung menunggu hasil yang tidak pernah datang.
+    use futures_util::FutureExt;
+    let proses = std::panic::AssertUnwindSafe(unduh_lalu_simpan(window, url)).catch_unwind();
+    match proses.await {
+        Ok(hasil) => hasil,
+        Err(_) => Err(
+            "Proses simpan berkas gagal karena kesalahan internal. Silakan coba lagi."
+                .to_string(),
+        ),
+    }
+}
+
+/// Bagian inti `simpan_unduhan`: ambil berkas dari server lokal, tampilkan
+/// dialog simpan, lalu tulis ke lokasi pilihan pengguna.
+async fn unduh_lalu_simpan(
+    window: tauri::WebviewWindow,
+    url: String,
+) -> Result<Option<String>, String> {
     let cookies = window
         .cookies()
         .map_err(|e| format!("Gagal membaca sesi aplikasi: {e}"))?;
@@ -580,6 +678,12 @@ async fn perbarui_sekarang(app: tauri::AppHandle) -> Result<String, String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // reqwest 0.13 di proyek ini memakai fitur `rustls-no-provider` (diaktifkan
+    // bersama oleh crate lain), sehingga `Client::build()` akan panic bila tidak
+    // ada provider kripto terpasang. Tanpa ini, tombol unduh tidak pernah
+    // menampilkan dialog simpan karena perintahnya gagal di latar belakang.
+    let _ = rustls::crypto::ring::default_provider().install_default();
+
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(UpdateState(Mutex::new(ProgresUpdate::default())))
@@ -627,7 +731,7 @@ pub fn run() {
             };
 
             let url = format!("http://127.0.0.1:{port}/");
-            let _window = WebviewWindowBuilder::new(
+            let mut pembangun = WebviewWindowBuilder::new(
                 app,
                 "main",
                 WebviewUrl::External(url.parse().expect("URL server PHP tidak valid")),
@@ -635,8 +739,26 @@ pub fn run() {
             .title("KARSA — Kertas Kerja RKAS")
             .inner_size(1440.0, 900.0)
             .min_inner_size(1024.0, 700.0)
-            .center()
-            .build()?;
+            .center();
+
+            // Diagnostik opsional (tidak aktif secara bawaan): memungkinkan
+            // pemeriksaan antarmuka lewat Chrome DevTools Protocol tanpa
+            // mengubah build, contoh: KARSA_WEBVIEW_ARGS="--remote-debugging-port=9333".
+            if let Ok(args) = std::env::var("KARSA_WEBVIEW_ARGS") {
+                if !args.trim().is_empty() {
+                    pembangun = pembangun.additional_browser_args(&args);
+                }
+            }
+            // Diagnostik: pakai folder data WebView2 terpisah agar build dev bisa
+            // berjalan berdampingan dengan aplikasi terpasang (yang memakai
+            // folder data bawaan) tanpa bentrok.
+            if let Ok(dir) = std::env::var("KARSA_WEBVIEW_DATA_DIR") {
+                if !dir.trim().is_empty() {
+                    pembangun = pembangun.data_directory(std::path::PathBuf::from(dir));
+                }
+            }
+
+            let _window = pembangun.build()?;
 
             Ok(())
         })

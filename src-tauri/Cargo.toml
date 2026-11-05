@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "1.5.0"
+version = "1.5.1"
 description = "KARSA — Kertas Anggaran Sekolah (RKAS) Desktop"
 authors = ["KARSA"]
 license = ""
@@ -25,5 +25,8 @@ tauri = { version = "2.11.3", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-updater = "2"
 reqwest = { version = "0.13", default-features = false, features = ["stream"] }
+# Provider kripto untuk reqwest (fitur rustls-no-provider dipakai bersama crate
+# lain). Tanpa ini `reqwest::Client::build()` panic dan dialog simpan tidak muncul.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
 futures-util = "0.3"
 rfd = { version = "0.16", default-features = false }
