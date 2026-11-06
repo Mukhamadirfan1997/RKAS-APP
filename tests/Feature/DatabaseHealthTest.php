@@ -6,6 +6,7 @@ use App\Models\PengaturanSekolah;
 use App\Models\User;
 use App\Services\BackupService;
 use App\Services\DatabaseHealthService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -17,7 +18,7 @@ class DatabaseHealthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     public function test_wal_pramga_diaktifkan_untuk_file_db(): void
@@ -212,7 +213,7 @@ class DatabaseHealthTest extends TestCase
         $this->assertFalse(DatabaseHealthService::isCorrupt());
         $this->assertNull(DatabaseHealthService::getCorruptMessage());
 
-        // runIntegrityCheck sehat — tidak boleh exception, harus auto-create baris default
+        // runIntegrityCheck sehat â€” tidak boleh exception, harus auto-create baris default
         $result = null;
         try {
             $result = DatabaseHealthService::runIntegrityCheck();
@@ -235,7 +236,7 @@ class DatabaseHealthTest extends TestCase
         $resp->assertStatus(200);
         $resp->assertDontSee('Masalah terdeteksi pada database');
 
-        // Skenario kedua: kosong lagi lalu integrity GAGAL — harus tetap buat baris + flag korup + audit tanpa throw
+        // Skenario kedua: kosong lagi lalu integrity GAGAL â€” harus tetap buat baris + flag korup + audit tanpa throw
         PengaturanSekolah::query()->delete();
         DatabaseHealthService::$fakeIntegrityResult = 'database disk image is malformed';
         try {
@@ -247,7 +248,7 @@ class DatabaseHealthTest extends TestCase
             $this->assertEquals('database disk image is malformed', $row2->db_corrupt_message);
             $this->assertTrue(DatabaseHealthService::isCorrupt());
             $this->assertDatabaseHas('audit_logs', ['action' => 'database.corrupt_detected']);
-            // Boot tetap tidak throw meski korup — hanya banner
+            // Boot tetap tidak throw meski korup â€” hanya banner
             $resp2 = $this->get(route('rkas.index'));
             $resp2->assertStatus(200);
             $resp2->assertSee('Masalah terdeteksi pada database');
@@ -258,7 +259,7 @@ class DatabaseHealthTest extends TestCase
 
     public function test_backup_vacuum_into_tetap_aman_dengan_wal(): void
     {
-        // VACUUM INTO otomatis menggabungkan WAL ke snapshot final — tidak perlu ubah logika backup
+        // VACUUM INTO otomatis menggabungkan WAL ke snapshot final â€” tidak perlu ubah logika backup
         $tmpFile = database_path('test-backup-wal-'.uniqid().'.sqlite');
         touch($tmpFile);
         config(['database.connections.test_backup' => [
@@ -281,7 +282,7 @@ class DatabaseHealthTest extends TestCase
             $mode = strtolower(trim((string) (array_values((array) $rows[0])[0] ?? '')));
             $this->assertEquals('wal', $mode);
 
-            // Buat snapshot via VACUUM INTO (seperti BackupService) — harus berhasil dan berisi data
+            // Buat snapshot via VACUUM INTO (seperti BackupService) â€” harus berhasil dan berisi data
             $snapshot = $tmpFile.'.snapshot.sqlite';
             $conn->getPdo()->exec("VACUUM INTO '".str_replace("'", "''", $snapshot)."'");
             $this->assertFileExists($snapshot);

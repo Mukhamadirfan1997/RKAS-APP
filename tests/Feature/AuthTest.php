@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AuditLog;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,14 +15,14 @@ class AuthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     public function test_login_success_redirects_and_logs_audit(): void
     {
         $resp = $this->post(route('login.attempt'), [
-            'email' => 'admin@sekolah.id',
-            'password' => 'password',
+            'email' => 'uji@karsa.local',
+            'password' => 'rahasia123',
         ]);
 
         $resp->assertRedirect(route('dashboard.index'));
@@ -33,7 +34,7 @@ class AuthTest extends TestCase
         ]);
         $log = AuditLog::where('action', 'login')->latest('id')->first();
         $this->assertNotNull($log);
-        $this->assertEquals(User::where('email', 'admin@sekolah.id')->first()->id, $log->user_id);
+        $this->assertEquals(User::where('email', 'uji@karsa.local')->first()->id, $log->user_id);
     }
 
     public function test_login_fails_with_wrong_password(): void
@@ -41,7 +42,7 @@ class AuthTest extends TestCase
         $before = AuditLog::where('action', 'login')->count();
 
         $resp = $this->post(route('login.attempt'), [
-            'email' => 'admin@sekolah.id',
+            'email' => 'uji@karsa.local',
             'password' => 'salah-password',
         ]);
 
@@ -60,7 +61,7 @@ class AuthTest extends TestCase
 
         $resp = $this->post(route('login.attempt'), [
             'email' => 'tidakada@sekolah.id',
-            'password' => 'password',
+            'password' => 'rahasia123',
         ]);
 
         $resp->assertSessionHasErrors(['email']);

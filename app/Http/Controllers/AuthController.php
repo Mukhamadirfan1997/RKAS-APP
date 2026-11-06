@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\PengaturanSekolah;
 use App\Models\User;
+use App\Support\Instalasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,11 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
+        }
+
+        // Instalasi baru (belum ada akun) → arahkan ke registrasi lebih dulu.
+        if (Instalasi::belumTerdaftar()) {
+            return redirect()->route('registrasi');
         }
 
         return view('auth.login');
@@ -61,6 +67,9 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
+        }
+        if (Instalasi::belumTerdaftar()) {
+            return redirect()->route('registrasi');
         }
 
         return view('auth.lupa-password');
@@ -120,6 +129,9 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
         }
+        if (Instalasi::belumTerdaftar()) {
+            return redirect()->route('registrasi');
+        }
         if (! $request->session()->get('pw_reset_npsn_verified')) {
             return redirect()->route('auth.forgot')->withErrors(['npsn' => 'Silakan verifikasi NPSN dan email terlebih dahulu.']);
         }
@@ -150,9 +162,12 @@ class AuthController extends Controller
         ]);
 
         $userId = $request->session()->get('pw_reset_user_id');
-        $user = $userId ? User::find($userId) : User::first();
+        $user = $userId ? User::find($userId) : null;
         if (! $user) {
-            return back()->withErrors(['password' => 'User tidak ditemukan.']);
+            $request->session()->forget(['pw_reset_npsn_verified', 'pw_reset_npsn_at', 'pw_reset_user_id']);
+
+            return redirect()->route('auth.forgot')
+                ->withErrors(['email' => 'Sesi pemulihan tidak valid. Silakan verifikasi NPSN dan email lagi.']);
         }
 
         $user->update(['password' => Hash::make($request->password)]);

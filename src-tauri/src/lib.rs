@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_updater::UpdaterExt;
 
 struct PhpServerState(Mutex<Option<Child>>);
@@ -246,7 +247,16 @@ fn ensure_db_ready(app: &tauri::AppHandle, root: &std::path::Path) {
     let seed = match seed_path {
         Some(p) => p,
         None => {
-            log::warn!("First-run: seed file tidak ditemukan di kandidat {:?}, lewati copy", candidates);
+            // Jangan diam: tanpa seed, aplikasi tetap terbuka tetapi katalog
+            // 91 ribu barang & master hilang → RKAS tidak bisa diisi.
+            let pesan = format!(
+                "PERINGATAN: berkas seed database tidak ditemukan (kandidat: {:?}). \
+                 Katalog barang & master tidak tersedia sehingga RKAS tidak dapat diisi. \
+                 Pasang ulang aplikasi atau hubungi pembuat.",
+                candidates
+            );
+            log::error!("{}", pesan);
+            catat_migrasi(app, &pesan);
             return;
         }
     };
@@ -256,8 +266,16 @@ fn ensure_db_ready(app: &tauri::AppHandle, root: &std::path::Path) {
     }
 
     match std::fs::copy(&seed, &db_path) {
-        Ok(bytes) => log::info!("First-run: copied seed DB {:?} -> {:?} ({} bytes)", seed, db_path, bytes),
-        Err(e) => log::error!("First-run: gagal copy seed DB {:?} -> {:?}: {}", seed, db_path, e),
+        Ok(bytes) => {
+            let baris = format!("First-run: copied seed DB {:?} -> {:?} ({} bytes)", seed, db_path, bytes);
+            log::info!("{}", baris);
+            catat_migrasi(app, &baris);
+        }
+        Err(e) => {
+            let baris = format!("GAGAL first-run: copy seed DB {:?} -> {:?}: {}", seed, db_path, e);
+            log::error!("{}", baris);
+            catat_migrasi(app, &baris);
+        }
     }
 }
 
@@ -360,6 +378,38 @@ fn catat_migrasi(app: &tauri::AppHandle, baris: &str) {
     if let Ok(meta) = std::fs::metadata(&berkas) {
         if meta.len() > 512 * 1024 {
             let arsip = dir.join("migrate.log.1");
+            let _ = std::fs::remove_file(&arsip);
+            let _ = std::fs::rename(&berkas, &arsip);
+        }
+    }
+
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&berkas)
+    {
+        use std::io::Write;
+        let _ = writeln!(f, "[{}] {}", waktu_utc(), baris);
+    }
+}
+
+/// Catat aktivitas unduhan (Simpan Berkas) ke `storage/logs/unduh.log`.
+///
+/// Tujuan: bila pengguna melapor "berkas tidak tersimpan", teknisi bisa melihat
+/// nama berkas, tujuan, dan pesan galat tanpa perlu membuka WebView.
+fn catat_unduh(app: &tauri::AppHandle, baris: &str) {
+    let Ok(data_dir) = app.path().app_data_dir() else {
+        return;
+    };
+    let dir = data_dir.join("storage").join("logs");
+    if std::fs::create_dir_all(&dir).is_err() {
+        return;
+    }
+    let berkas = dir.join("unduh.log");
+
+    if let Ok(meta) = std::fs::metadata(&berkas) {
+        if meta.len() > 512 * 1024 {
+            let arsip = dir.join("unduh.log.1");
             let _ = std::fs::remove_file(&arsip);
             let _ = std::fs::rename(&berkas, &arsip);
         }
@@ -574,31 +624,77 @@ async fn unduh_lalu_simpan(
     let nama = nama_berkas_dari_header(respons.headers())
         .unwrap_or_else(|| "unduhan-karsa".to_string());
 
-    // Dialog OS dijalankan di thread non-UI agar WebView2 tidak membeku.
+    // Dialog "Simpan sebagai" memakai plugin resmi Tauri (tauri-plugin-dialog).
+    //
+    // Catatan penting (sama seperti SmartRKAS):
+    // - versi NON-blocking (`save_file` + callback) dipakai agar tidak memblokir
+    //   event loop / thread async;
+    // - `set_parent(&window)` WAJIB di Windows: tanpa parent, IFileDialog bisa
+    //   tidak muncul atau muncul di belakang jendela aplikasi secara senyap;
+    // - hasil dialog ditunggu dengan channel + batas waktu 120 detik agar
+    //   command tidak pernah menggantung selamanya bila dialog gagal.
+    let builder = window
+        .dialog()
+        .file()
+        .set_title("Simpan Berkas KARSA")
+        .set_file_name(&nama)
+        .set_parent(&window);
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    builder.save_file(move |pilihan| {
+        let _ = tx.send(pilihan);
+    });
+
     let pilihan = tauri::async_runtime::spawn_blocking(move || {
-        rfd::FileDialog::new()
-            .set_title("Simpan Berkas KARSA")
-            .set_file_name(nama)
-            .save_file()
+        rx.recv_timeout(std::time::Duration::from_secs(120))
     })
     .await
-    .map_err(|e| format!("Dialog simpan gagal dibuka: {e}"))?;
+    .map_err(|e| format!("Dialog simpan gagal dibuka: {e}"))?
+    .map_err(|_| "Dialog simpan tidak merespons dalam 120 detik. Silakan coba lagi.".to_string())?;
 
-    let Some(tujuan) = pilihan else {
+    let Some(bekas) = pilihan else {
+        catat_unduh(window.app_handle(), &format!("dibatalkan: {nama}"));
         return Ok(None); // pengguna menekan Batal
     };
 
-    use futures_util::StreamExt;
-    let mut berkas = std::fs::File::create(&tujuan)
-        .map_err(|e| format!("Gagal membuat berkas tujuan: {e}"))?;
-    let mut aliran = respons.bytes_stream();
-    while let Some(potongan) = aliran.next().await {
-        let potongan = potongan.map_err(|e| format!("Unduhan terputus: {e}"))?;
-        std::io::Write::write_all(&mut berkas, &potongan)
-            .map_err(|e| format!("Gagal menyimpan berkas: {e}"))?;
-    }
+    let tujuan = bekas
+        .into_path()
+        .map_err(|e| format!("Lokasi penyimpanan tidak valid: {e}"))?;
 
-    Ok(Some(tujuan.display().to_string()))
+    use futures_util::StreamExt;
+    let hasil = async {
+        let mut berkas = std::fs::File::create(&tujuan)
+            .map_err(|e| format!("Gagal membuat berkas tujuan: {e}"))?;
+        let mut aliran = respons.bytes_stream();
+        let mut total: u64 = 0;
+        while let Some(potongan) = aliran.next().await {
+            let potongan = potongan.map_err(|e| format!("Unduhan terputus: {e}"))?;
+            total += potongan.len() as u64;
+            std::io::Write::write_all(&mut berkas, &potongan)
+                .map_err(|e| format!("Gagal menyimpan berkas: {e}"))?;
+        }
+        Ok::<u64, String>(total)
+    }
+    .await;
+
+    match hasil {
+        Ok(byte) => {
+            catat_unduh(
+                window.app_handle(),
+                &format!("tersimpan: {} ({} byte)", tujuan.display(), byte),
+            );
+            Ok(Some(tujuan.display().to_string()))
+        }
+        Err(e) => {
+            // Jangan tinggalkan berkas setengah jadi di folder pengguna.
+            let _ = std::fs::remove_file(&tujuan);
+            catat_unduh(
+                window.app_handle(),
+                &format!("gagal: {} -> {}", nama, e),
+            );
+            Err(e)
+        }
+    }
 }
 
 /// Progres terkini pemasangan update (dipanggil berulang oleh antarmuka).
@@ -685,6 +781,7 @@ pub fn run() {
     let _ = rustls::crypto::ring::default_provider().install_default();
 
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(UpdateState(Mutex::new(ProgresUpdate::default())))
         .invoke_handler(tauri::generate_handler![

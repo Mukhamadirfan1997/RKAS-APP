@@ -9,6 +9,7 @@ use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\RkaGelondonganService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class RkaGelondonganTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
         // Set pagu known for deterministic tests
         $this->ta->update(['pagu_total' => 10000000, 'is_active' => true]);
@@ -67,7 +68,7 @@ class RkaGelondonganTest extends TestCase
 
     public function test_3_kategori_menghitung_benar_sesuai_mapping(): void
     {
-        // Barang & Jasa = 6 jenis — buat 1 item tiap jenis dengan koreksi test
+        // Barang & Jasa = 6 jenis â€” buat 1 item tiap jenis dengan koreksi test
         $this->buatItem('Belanja Barang', 100000, 5000); // koreksi 5k -> 105k
         $this->buatItem('Belanja Barang Persediaan', 200000); // 200k
         $this->buatItem('Belanja Cetak', 30000); // 30k
@@ -326,7 +327,7 @@ class RkaGelondonganTest extends TestCase
         $response = $this->get(route('dashboard.index'));
         $response->assertOk();
         $response->assertSee('3 kategori RKA sesuai target Dinas', false);
-        // Harus ada ikon silang (tidak centang) — cek ada class bg-slate-100 untuk tidak ok
+        // Harus ada ikon silang (tidak centang) â€” cek ada class bg-slate-100 untuk tidak ok
         // Cek via service
         $result = RkaGelondonganService::calculate($this->ta->fresh());
         $this->assertEquals('lebih', $result['status_per_row']['barang_jasa']);

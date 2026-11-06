@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -14,7 +15,7 @@ class AkunTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     public function test_update_akun_success(): void
@@ -24,7 +25,7 @@ class AkunTest extends TestCase
         $resp = $this->post(route('pengaturan.update-akun'), [
             'name' => 'Operator Baru',
             'email' => 'baru@sekolah.id',
-            'current_password' => 'password',
+            'current_password' => 'rahasia123',
             'password' => 'newpass123',
             'password_confirmation' => 'newpass123',
         ]);
@@ -58,13 +59,13 @@ class AkunTest extends TestCase
         $resp = $this->post(route('pengaturan.update-akun'), [
             'name' => 'Nama Baru Saja',
             'email' => 'nama@sekolah.id',
-            'current_password' => 'password',
+            'current_password' => 'rahasia123',
             'password' => '',
             'password_confirmation' => '',
         ]);
         $resp->assertRedirect();
         $user->refresh();
         $this->assertEquals('Nama Baru Saja', $user->name);
-        $this->assertTrue(Hash::check('password', $user->password)); // tetap lama
+        $this->assertTrue(Hash::check('rahasia123', $user->password)); // tetap lama
     }
 }

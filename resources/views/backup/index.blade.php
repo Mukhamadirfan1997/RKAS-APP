@@ -81,7 +81,7 @@
                 </div>
                 <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Pulihkan dari File (.zip)</h2>
             </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-4">Unggah file backup .zip dari flashdisk / folder lain.</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-4">Unggah file backup .zip dari flashdisk / folder lain. Batas unggah server: <b>{{ $maksUnggahMb }} MB</b>.</p>
             <form method="POST" action="{{ route('backup.restore') }}" enctype="multipart/form-data" onsubmit="return confirm('Yakin restore? Data saat ini akan ditimpa (backup keselamatan otomatis dibuat).')">
                 @csrf
                 <input type="file" name="file" accept=".zip" required class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-50 file:px-3 file:py-2 file:text-amber-700 file:font-semibold hover:file:bg-amber-100 dark:file:bg-amber-500/10 dark:file:text-amber-400 mb-3">

@@ -6,15 +6,21 @@ use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class RkasSearchController extends Controller
 {
+    /**
+     * Batas hasil per permintaan (dipakai juga oleh infinite scroll di modal).
+     */
+    private const BATAS_MAKS = 100;
+
     /**
      * Live search for Kegiatan (Program 8 SNP).
      */
     public function searchKegiatan(Request $request)
     {
-        $q = trim($request->input('q', ''));
+        $q = trim((string) $request->input('q', ''));
 
         $query = MasterProgram::query();
         if ($q !== '') {
@@ -25,8 +31,16 @@ class RkasSearchController extends Controller
                     ->orWhere('sub_program', 'like', "%{$q}%");
             });
         }
+        // Urutan harus deterministik agar paginasi (scroll) tidak menggandakan
+        // atau melewatkan baris saat ada nilai yang sama.
+        $query->orderBy('kode')->orderBy('id');
 
-        $results = $query->limit(25)->get()->map(function ($item) {
+        [$limit, $offset] = $this->limitOffset($request, 25);
+
+        $total = (clone $query)->count();
+        $rows = $query->offset($offset)->limit($limit + 1)->get();
+
+        $hasil = $rows->take($limit)->map(function ($item) {
             return [
                 'id' => $item->id,
                 'kode' => $item->kode,
@@ -36,9 +50,9 @@ class RkasSearchController extends Controller
                 'text' => "[{$item->kode}] {$item->nama}",
                 'subtext' => trim(($item->sub_program ?? $item->program ?? '')),
             ];
-        });
+        })->values();
 
-        return response()->json(['results' => $results]);
+        return response()->json($this->bingkai($hasil, $rows, $limit, $offset, $total));
     }
 
     /**
@@ -46,7 +60,7 @@ class RkasSearchController extends Controller
      */
     public function searchRekening(Request $request)
     {
-        $q = trim($request->input('q', ''));
+        $q = trim((string) $request->input('q', ''));
 
         $query = MasterKodeRekening::query()->with('jenisBelanja');
         if ($q !== '') {
@@ -56,8 +70,16 @@ class RkasSearchController extends Controller
                     ->orWhereHas('jenisBelanja', fn ($jb) => $jb->where('nama', 'like', "%{$q}%"));
             });
         }
+        // Urutan harus deterministik agar paginasi (scroll) tidak menggandakan
+        // atau melewatkan baris saat ada nilai yang sama.
+        $query->orderBy('kode')->orderBy('id');
 
-        $results = $query->limit(25)->get()->map(function ($item) {
+        [$limit, $offset] = $this->limitOffset($request, 25);
+
+        $total = (clone $query)->count();
+        $rows = $query->offset($offset)->limit($limit + 1)->get();
+
+        $hasil = $rows->take($limit)->map(function ($item) {
             return [
                 'id' => $item->id,
                 'kode' => $item->kode,
@@ -66,9 +88,9 @@ class RkasSearchController extends Controller
                 'text' => "[{$item->kode}] {$item->nama}",
                 'subtext' => 'Jenis Belanja: '.($item->jenisBelanja->nama ?? '-'),
             ];
-        });
+        })->values();
 
-        return response()->json(['results' => $results]);
+        return response()->json($this->bingkai($hasil, $rows, $limit, $offset, $total));
     }
 
     /**
@@ -80,11 +102,14 @@ class RkasSearchController extends Controller
      * - tiap kata dicocokkan ke nama, kode barang, dan kode rekening;
      * - tidak harus di awal kata ("snowman" menemukan "Spidol Whiteboard Snowman");
      * - hasil yang diawali kata kunci ditampilkan lebih dulu.
+     *
+     * Mendukung offset untuk infinite scroll. Total sengaja tidak dihitung
+     * (tabel 91 ribu baris): gunakan `has_more` untuk memuat halaman berikutnya.
      */
     public function searchBarang(Request $request)
     {
         $q = trim((string) $request->input('q', ''));
-        $kodeRekening = trim($request->input('kode_rekening', ''));
+        $kodeRekening = trim((string) $request->input('kode_rekening', ''));
 
         $query = KodeBarang::query();
         if ($kodeRekening !== '') {
@@ -118,8 +143,13 @@ class RkasSearchController extends Controller
                 [$utama.'%', '% '.$utama.'%']
             );
         }
+        $query->orderBy('nama')->orderBy('id');
 
-        $results = $query->limit(30)->get()->map(function ($item) {
+        [$limit, $offset] = $this->limitOffset($request, 30);
+
+        $rows = $query->offset($offset)->limit($limit + 1)->get();
+
+        $hasil = $rows->take($limit)->map(function ($item) {
             $sshInfo = '';
             if ((float) $item->harga_min > 0 || (float) $item->harga_max > 0) {
                 $sshInfo = ' | SSH: Rp '.number_format((float) $item->harga_min, 0, ',', '.').' - Rp '.number_format((float) $item->harga_max, 0, ',', '.');
@@ -136,8 +166,40 @@ class RkasSearchController extends Controller
                 'text' => $item->nama,
                 'subtext' => 'Satuan: '.($item->satuan_default ?? '-').' | Acuan: Rp '.number_format((float) $item->harga_acuan, 0, ',', '.').$sshInfo,
             ];
-        });
+        })->values();
 
-        return response()->json(['results' => $results]);
+        return response()->json($this->bingkai($hasil, $rows, $limit, $offset, null));
+    }
+
+    /**
+     * @return array{0:int,1:int} [limit, offset]
+     */
+    private function limitOffset(Request $request, int $bawaan): array
+    {
+        $limit = (int) $request->input('limit', $bawaan);
+        $limit = max(1, min($limit, self::BATAS_MAKS));
+
+        $offset = max(0, (int) $request->input('offset', 0));
+
+        return [$limit, $offset];
+    }
+
+    /**
+     * Bentuk respons standar (kompatibel dengan pemakaian lama: `results`).
+     *
+     * @param  Collection  $hasil
+     * @param  Collection  $rows  baris mentah (limit + 1)
+     */
+    private function bingkai($hasil, $rows, int $limit, int $offset, ?int $total): array
+    {
+        $hasMore = $rows->count() > $limit;
+
+        return [
+            'results' => $hasil,
+            'total' => $total,
+            'limit' => $limit,
+            'offset' => $offset,
+            'has_more' => $hasMore,
+        ];
     }
 }

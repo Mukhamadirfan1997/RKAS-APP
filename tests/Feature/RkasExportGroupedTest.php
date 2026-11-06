@@ -11,6 +11,7 @@ use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -27,7 +28,7 @@ class RkasExportGroupedTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
@@ -218,11 +219,11 @@ class RkasExportGroupedTest extends TestCase
         $sheet = $ss->getActiveSheet();
         $rows = $sheet->toArray(null, true, true, true);
         $flat = implode("\n", array_map(fn ($r) => implode(' ', (array) $r), $rows));
-        // Tidak boleh ada judul section "Tahap I —" dua kali
-        $countTahapI = substr_count($flat, 'Tahap I —');
-        $this->assertEquals(0, $countTahapI, 'Tidak boleh ada judul section Tahap I — (harus hanya kolom JUMLAH TAHAP I)');
-        $countTahapII = substr_count($flat, 'Tahap II —');
-        $this->assertEquals(0, $countTahapII, 'Tidak boleh ada judul section Tahap II —');
+        // Tidak boleh ada judul section "Tahap I â€”" dua kali
+        $countTahapI = substr_count($flat, 'Tahap I â€”');
+        $this->assertEquals(0, $countTahapI, 'Tidak boleh ada judul section Tahap I â€” (harus hanya kolom JUMLAH TAHAP I)');
+        $countTahapII = substr_count($flat, 'Tahap II â€”');
+        $this->assertEquals(0, $countTahapII, 'Tidak boleh ada judul section Tahap II â€”');
         // Kolom label harus ada tepat 1 kali di header
         $headerRow = null;
         foreach ($rows as $row) {
@@ -341,7 +342,7 @@ class RkasExportGroupedTest extends TestCase
         $this->assertEquals(1, $sheet->getPageSetup()->getFitToWidth());
         $this->assertEquals(0, $sheet->getPageSetup()->getFitToHeight());
         $this->assertStringContainsString('AJ', $sheet->getPageSetup()->getPrintArea());
-        // FreezePane dinamis: D{headerRow+1} — header kini di baris kop+judul (mencari "No"/"Kode Barang")
+        // FreezePane dinamis: D{headerRow+1} â€” header kini di baris kop+judul (mencari "No"/"Kode Barang")
         $headerRowDetected = null;
         $hrMax = $sheet->getHighestRow();
         for ($r = 1; $r <= min(10, $hrMax); $r++) {
@@ -370,8 +371,8 @@ class RkasExportGroupedTest extends TestCase
         $ref->setAccessible(true);
         $data = $ref->invoke($ctrl, $this->ta);
         $html = view('rkas.pdf-grouped', array_merge(['sekolah' => PengaturanSekolah::first(), 'tahunAnggaran' => $this->ta], $data))->render();
-        $this->assertStringNotContainsString('Tahap I —', $html, 'PDF html tidak boleh ada judul Tahap I — terpisah (harus hanya kolom)');
-        $this->assertStringNotContainsString('Tahap II —', $html, 'PDF html tidak boleh ada judul Tahap II — terpisah');
+        $this->assertStringNotContainsString('Tahap I â€”', $html, 'PDF html tidak boleh ada judul Tahap I â€” terpisah (harus hanya kolom)');
+        $this->assertStringNotContainsString('Tahap II â€”', $html, 'PDF html tidak boleh ada judul Tahap II â€” terpisah');
         $this->assertStringContainsString('JUMLAH TAHAP I', $html);
         $this->assertStringContainsString('JUMLAH TAHAP II', $html);
         $this->assertStringNotContainsString('Koreksi', $html, 'Koreksi harus hapus');

@@ -6,6 +6,7 @@ use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Services\ReferensiDinasImporter;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class ReferensiDinasTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     /**

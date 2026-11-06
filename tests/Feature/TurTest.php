@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,7 +14,7 @@ class TurTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     public function test_user_baru_kolom_tour_default_false(): void
@@ -31,7 +32,7 @@ class TurTest extends TestCase
 
         $resp = $this->get(route('dashboard.index'));
         $resp->assertOk();
-        // window.karsaToursSeen diinject di layout — cek ada script dengan false
+        // window.karsaToursSeen diinject di layout â€” cek ada script dengan false
         $resp->assertSee('window.karsaToursSeen', false);
         $resp->assertSee('dashboard: false', false);
         $resp->assertSee('rkas: false', false);
@@ -125,7 +126,7 @@ class TurTest extends TestCase
         $user = User::first();
         $this->actingAs($user);
 
-        // Panggilan pertama — ukur waktu
+        // Panggilan pertama â€” ukur waktu
         $start = microtime(true);
         $this->post(route('tur.tandai', ['nama' => 'dashboard']))->assertOk()->assertJson(['ok' => true]);
         $elapsed1 = microtime(true) - $start;
@@ -133,7 +134,7 @@ class TurTest extends TestCase
         $user->refresh();
         $this->assertTrue((bool) $user->tour_dashboard_seen);
 
-        // Panggilan kedua idempoten — tetap 200, tidak error, tetap true
+        // Panggilan kedua idempoten â€” tetap 200, tidak error, tetap true
         $start2 = microtime(true);
         $this->post(route('tur.tandai', ['nama' => 'dashboard']))->assertOk()->assertJson(['ok' => true]);
         $elapsed2 = microtime(true) - $start2;
@@ -141,11 +142,11 @@ class TurTest extends TestCase
         $user->refresh();
         $this->assertTrue((bool) $user->tour_dashboard_seen);
 
-        // Endpoint harus cepat (< 1 detik) — tidak ada operasi berat, penting untuk keepalive race
+        // Endpoint harus cepat (< 1 detik) â€” tidak ada operasi berat, penting untuk keepalive race
         $this->assertLessThan(1.0, $elapsed1, 'POST /tur/tandai selesai harus <1s (aktual: '.$elapsed1.'s)');
         $this->assertLessThan(1.0, $elapsed2, 'POST idempoten kedua harus <1s (aktual: '.$elapsed2.'s)');
 
-        // Simulasi navigasi cepat setelah Selesai: GET dashboard lalu /rkas lalu balik dashboard — tur tidak muncul lagi
+        // Simulasi navigasi cepat setelah Selesai: GET dashboard lalu /rkas lalu balik dashboard â€” tur tidak muncul lagi
         $this->get(route('rkas.index'))->assertOk();
         $resp = $this->get(route('dashboard.index'));
         $resp->assertSee('dashboard: true', false);

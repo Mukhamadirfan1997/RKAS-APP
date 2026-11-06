@@ -7,6 +7,7 @@ use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class DashboardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
         $this->ta2026 = TahunAnggaran::where('tahun', 2026)->first();

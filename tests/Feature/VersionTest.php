@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Services\UpdateService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -16,7 +17,7 @@ class VersionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     protected function tearDown(): void
@@ -89,7 +90,7 @@ class VersionTest extends TestCase
     {
         Config::set('karsa.version', null);
 
-        // Fake GitHub API mengembalikan versi baru 9.9.9 — seharusnya tetap null karena versi lokal tidak diketahui
+        // Fake GitHub API mengembalikan versi baru 9.9.9 â€” seharusnya tetap null karena versi lokal tidak diketahui
         Http::fake([
             UpdateService::GITHUB_API => Http::response([
                 'tag_name' => 'v9.9.9',

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\KatalogRekeningResolver;
 use App\Services\ReferensiDinasImporter;
 use App\Services\ReferensiKatalogImporter;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -34,7 +35,7 @@ class ReferensiKatalogTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     protected function tearDown(): void

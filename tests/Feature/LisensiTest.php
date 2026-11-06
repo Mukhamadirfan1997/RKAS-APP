@@ -11,6 +11,7 @@ use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\LisensiService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class LisensiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->actingAs(User::first());
     }
 

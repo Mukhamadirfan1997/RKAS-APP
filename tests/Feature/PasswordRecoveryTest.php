@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\PengaturanSekolah;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +15,7 @@ class PasswordRecoveryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     public function test_lupa_password_page_shows(): void
@@ -82,7 +83,7 @@ class PasswordRecoveryTest extends TestCase
         $this->post(route('logout'));
         $this->post(route('login.attempt'), [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => 'rahasia123',
         ])->assertSessionHasErrors(['email']);
     }
 }

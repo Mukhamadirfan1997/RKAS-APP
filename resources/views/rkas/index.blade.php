@@ -1,4 +1,4 @@
-@extends('layouts.focus')
+@extends('layouts.app')
 
 @section('content')
 @php
@@ -21,10 +21,6 @@
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('dashboard.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    Kembali
-                </a>
                 <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Lembar Kerja RKAS {{ $tahunAnggaran->tahun }}</h1>
             </div>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -98,7 +94,7 @@
             <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             <div>
                 <div class="font-bold">RKAS ini sudah disahkan. Data terkunci — tidak bisa ditambah/diedit/dihapus.</div>
-                <div class="text-xs mt-1 opacity-80">Jika perlu revisi, buka kembali dari <a href="{{ route('pengaturan.index') }}" class="underline font-semibold hover:no-underline">halaman Pengaturan → Status RKAS</a>.</div>
+                <div class="text-xs mt-1 opacity-80">Jika perlu revisi, buka kembali dari <a href="{{ route('pengaturan.pagu') }}" class="underline font-semibold hover:no-underline">halaman Pengaturan → Pagu &amp; Status RKAS</a>.</div>
             </div>
         </div>
     @elseif($tahunAnggaran->status_pengesahan === 'Pergeseran')
@@ -420,12 +416,12 @@
                         <div>
                             <label class="label">Kegiatan <span class="text-red-500">*</span></label>
                             <div class="relative" @click.outside="pickers.kegiatan.open = false">
-                                <input type="text" x-model="pickers.kegiatan.q" @input="debouncedSearch('kegiatan')" placeholder="Ketik untuk mencari kegiatan dari 8 SNP..." autocomplete="off"
-                                    @focus="if (pickers.kegiatan.q) pickers.kegiatan.open = true"
+                                <input type="text" x-model="pickers.kegiatan.q" @input="debouncedSearch('kegiatan')" placeholder="Klik untuk melihat daftar / ketik untuk mencari kegiatan..." autocomplete="off"
+                                    @focus="openPicker('kegiatan')"
                                     class="input">
                                 <template x-if="pickers.kegiatan.open && pickers.kegiatan.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.kegiatan.open && !pickers.kegiatan.loading">
-                                    <ul class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('kegiatan', $event)" class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.kegiatan.results" :key="r.id">
                                             <li @click="selectKegiatan(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
@@ -433,6 +429,7 @@
                                             </li>
                                         </template>
                                         <template x-if="pickers.kegiatan.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.kegiatan.hasMore"><li class="px-3 py-2 text-[11px] text-center text-slate-400 dark:text-slate-500">Gulir ke bawah untuk memuat lebih banyak…</li></template>
                                     </ul>
                                 </template>
                                 <template x-if="pickers.kegiatan.label"><div class="mt-1 flex items-center gap-1.5 text-[11px]"><span class="text-emerald-600 dark:text-emerald-400" x-text="'Terpilih: ' + pickers.kegiatan.label"></span><span x-show="mode === 'sisip'" x-cloak class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 text-[10px] font-bold">otomatis terisi</span></div></template>
@@ -441,12 +438,12 @@
                         <div>
                             <label class="label">Kode Rekening Belanja <span class="text-red-500">*</span></label>
                             <div class="relative" @click.outside="pickers.rekening.open = false">
-                                <input type="text" x-model="pickers.rekening.q" @input="debouncedSearch('rekening')" placeholder="Ketik untuk mencari kode rekening belanja..." autocomplete="off"
-                                    @focus="if (pickers.rekening.q) pickers.rekening.open = true"
+                                <input type="text" x-model="pickers.rekening.q" @input="debouncedSearch('rekening')" placeholder="Klik untuk melihat daftar / ketik untuk mencari kode rekening..." autocomplete="off"
+                                    @focus="openPicker('rekening')"
                                     class="input">
                                 <template x-if="pickers.rekening.open && pickers.rekening.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.rekening.open && !pickers.rekening.loading">
-                                    <ul class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('rekening', $event)" class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.rekening.results" :key="r.id">
                                             <li @click="selectRekening(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
@@ -454,6 +451,7 @@
                                             </li>
                                         </template>
                                         <template x-if="pickers.rekening.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok.</li></template>
+                                        <template x-if="pickers.rekening.hasMore"><li class="px-3 py-2 text-[11px] text-center text-slate-400 dark:text-slate-500">Gulir ke bawah untuk memuat lebih banyak…</li></template>
                                     </ul>
                                 </template>
                                 <template x-if="pickers.rekening.label"><div class="mt-1 flex items-center gap-1.5 text-[11px]"><span class="text-emerald-600 dark:text-emerald-400" x-text="'Terpilih: ' + pickers.rekening.label"></span><span x-show="mode === 'sisip'" x-cloak class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 text-[10px] font-bold">otomatis terisi</span></div></template>
@@ -473,19 +471,25 @@
                                 </label>
                             </div>
                             <div class="relative" @click.outside="pickers.barang.open = false">
-                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas. Untuk pemeliharaan, tulis sendiri mis. &quot;Pemeliharaan Ruang Kelas 1&quot;." class="input resize-none"
+                                <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Klik untuk melihat saran katalog, atau ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas. Untuk pemeliharaan, tulis sendiri mis. &quot;Pemeliharaan Ruang Kelas 1&quot;." class="input resize-none"
                                     @input="searchUraianSuggestion($event)"
-                                    @focus="if (form.saran_katalog && pickers.barang.q && pickers.barang.results.length) pickers.barang.open = true"></textarea>
+                                    @focus="form.saran_katalog && openPicker('barang')"></textarea>
                                 <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.barang.open && !pickers.barang.loading">
-                                    <ul class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('barang', $event)" class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.barang.results" :key="r.id">
                                             <li @click="applyBarangSuggestion(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200 font-medium" x-text="r.nama"></div>
                                                 <div class="text-[11px] text-slate-400 dark:text-slate-500" x-text="r.subtext"></div>
                                             </li>
                                         </template>
-                                        <template x-if="pickers.barang.results.length === 0"><li class="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Tidak ada data cocok — coba kata lain atau kurangi kata kunci.</li></template>
+                                        <template x-if="pickers.barang.results.length === 0">
+                                            <li class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+                                                <span x-text="pickers.barang.semua ? 'Tidak ada data cocok — coba kata lain atau kurangi kata kunci.' : (pickers.rekening.kode ? 'Tidak ada hasil pada rekening terpilih. Barang ini mungkin terdaftar di kode rekening lain.' : 'Tidak ada data cocok — coba kata lain atau kurangi kata kunci.')"></span>
+                                                <button type="button" x-show="pickers.rekening.kode && !pickers.barang.semua" @click="cariSemuaRekening()" class="mt-1.5 block text-[11px] font-bold text-blue-600 dark:text-blue-400 underline hover:no-underline">🔎 Cari di semua rekening</button>
+                                            </li>
+                                        </template>
+                                        <template x-if="pickers.barang.hasMore"><li class="px-3 py-2 text-[11px] text-center text-slate-400 dark:text-slate-500">Gulir ke bawah untuk memuat lebih banyak…</li></template>
                                     </ul>
                                 </template>
                             </div>
@@ -493,6 +497,13 @@
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500" x-show="pickers.barang.open" x-cloak>Saran katalog — boleh beberapa kata &amp; urutan bebas (mis. “hvs a4 kertas”)</span>
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 ml-auto" x-text="form.uraian.length + ' / 500'"></span>
                             </div>
+                            {{-- Penjelas agar filter rekening tidak dikira "pencarian rusak" --}}
+                            <template x-if="pickers.rekening.kode && !pickers.barang.semua">
+                                <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-amber-600 dark:text-amber-400">
+                                    <span>Saran dibatasi ke rekening terpilih<span x-show="pickers.rekening.label" x-text="' (' + pickers.rekening.kode + ')'"></span>.</span>
+                                    <button type="button" @click="cariSemuaRekening()" class="font-bold underline hover:no-underline">Cari di semua rekening</button>
+                                </div>
+                            </template>
 
                             {{-- Status ikatan katalog: bisa dilepas agar uraian 100% manual --}}
                             <template x-if="form.kode_barang_id">
@@ -663,7 +674,7 @@ function makeAlokasi() {
 }
 
 function makePickerState() {
-    return { q: '', results: [], open: false, loading: false, value: '', label: '', kode: '' };
+    return { q: '', results: [], open: false, loading: false, value: '', label: '', kode: '', offset: 0, hasMore: false, semua: false };
 }
 
 function modalForm() {
@@ -727,10 +738,32 @@ function modalForm() {
 
         async debouncedSearch(key) {
             clearTimeout(this._timers[key]);
-            this._timers[key] = setTimeout(() => this.search(key), 250);
+            this._timers[key] = setTimeout(() => this.search(key, true), 250);
         },
 
-        async search(key) {
+        /**
+         * Buka daftar saran saat field diklik/di-fokus walau belum mengetik.
+         * Server mengirim halaman pertama (q kosong = daftar awal).
+         */
+        openPicker(key) {
+            const p = this.pickers[key];
+            if (!p) return;
+            if (key === 'barang' && !this.form.saran_katalog) return;
+            p.open = true;
+            if (!p.loading && p.results.length === 0) this.search(key, true);
+        },
+
+        /** Muat halaman berikutnya saat daftar saran digulir ke bawah. */
+        gulirMuat(key, ev) {
+            const el = ev && ev.target;
+            const p = this.pickers[key];
+            if (!el || !p) return;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 24) {
+                if (!p.loading && p.hasMore) this.search(key, false);
+            }
+        },
+
+        async search(key, reset = true) {
             const url = key === 'kegiatan' ? '/api/search/kegiatan' : key === 'rekening' ? '/api/search/rekening' : '/api/search/barang';
             const p = this.pickers[key];
             // Jika mengetik rekening baru (q != label), reset pilihan sebelumnya agar filter tidak salah
@@ -738,21 +771,40 @@ function modalForm() {
                 p.value = '';
                 p.kode = '';
             }
+            if (reset) {
+                p.results = [];
+                p.offset = 0;
+                p.hasMore = false;
+            }
             p.loading = true;
             p.open = true;
             try {
-                let fetchUrl = url + '?q=' + encodeURIComponent(p.q);
-                if (key === 'barang' && this.pickers.rekening.kode) {
+                const batas = key === 'barang' ? 30 : 25;
+                let fetchUrl = url + '?q=' + encodeURIComponent(key === 'barang' ? (this.pickers.barang.q || '') : p.q)
+                    + '&limit=' + batas + '&offset=' + p.offset;
+                if (key === 'barang' && this.pickers.rekening.kode && !p.semua) {
                     fetchUrl += '&kode_rekening=' + encodeURIComponent(this.pickers.rekening.kode);
                 }
                 const res = await fetch(fetchUrl);
                 const d = await res.json();
-                p.results = d.results || [];
+                const baru = d.results || [];
+                p.results = reset ? baru : p.results.concat(baru);
+                p.offset = p.results.length;
+                p.hasMore = !!d.has_more;
             } catch (e) {
-                p.results = [];
+                if (reset) p.results = [];
+                p.hasMore = false;
             } finally {
                 p.loading = false;
             }
+        },
+
+        /** Cari katalog tanpa membatasi ke rekening terpilih (jalan keluar bila 0 hasil). */
+        cariSemuaRekening() {
+            const p = this.pickers.barang;
+            p.semua = true;
+            p.open = true;
+            this.search('barang', true);
         },
 
         selectKegiatan(r) {
@@ -766,6 +818,9 @@ function modalForm() {
             this.pickers.barang.q = '';
             this.pickers.barang.results = [];
             this.pickers.barang.open = false;
+            this.pickers.barang.hasMore = false;
+            this.pickers.barang.offset = 0;
+            this.pickers.barang.semua = false;
         },
         searchUraianSuggestion(ev) {
             if (!this.form.saran_katalog) { this.pickers.barang.open = false; this.pickers.barang.results = []; return; }
@@ -787,7 +842,7 @@ function modalForm() {
             this.form.harga_satuan_arkas = Number(r.harga) || 0;
             if (r.satuan) { this.form.satuan = r.satuan; this.syncSatuan(); }
             if (Number(r.harga) > 0 && this.form.harga_satuan === 0) this.form.harga_satuan = Number(r.harga);
-            this.$nextTick(() => { p.results = []; });
+            this.$nextTick(() => { p.results = []; p.hasMore = false; p.offset = 0; });
         },
 
         /**

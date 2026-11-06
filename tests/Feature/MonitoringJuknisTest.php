@@ -9,6 +9,7 @@ use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\JuknisValidator;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class MonitoringJuknisTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
@@ -111,7 +112,7 @@ class MonitoringJuknisTest extends TestCase
         RkasItem::where('tahun_anggaran_id', $this->ta->id)->delete();
 
         // Program honor 07.12.01, tapi rekening bukan honor (5.1.02.01.01.0031 = Bahan Alat Listrik, Persediaan)
-        // dan uraian tanpa kata honor/honorarium → harus TIDAK terhitung
+        // dan uraian tanpa kata honor/honorarium â†’ harus TIDAK terhitung
         $this->buatItem('07.12.01', '5.1.02.01.01.0031', 'Pembelian lampu LED', 200000);
 
         $validator = new JuknisValidator($this->ta);
@@ -157,7 +158,7 @@ class MonitoringJuknisTest extends TestCase
 
         // Skenario double kalau OR: program Honor (07.12.01) + uraian mengandung kata "buku"
         // Dengan logika AND+prioritas, harus hanya honor, bukan buku
-        // Rekening honor: 5.1.02.02.01.0013 (Belanja Jasa, prefix honor) → honor kombinasi true
+        // Rekening honor: 5.1.02.02.01.0013 (Belanja Jasa, prefix honor) â†’ honor kombinasi true
         $this->buatItem('07.12.01', '5.1.02.02.01.0013', 'Honorarium pembelian buku paket', 150000);
 
         $validator = new JuknisValidator($this->ta);

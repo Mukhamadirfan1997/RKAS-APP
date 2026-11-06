@@ -7,6 +7,7 @@ use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -22,7 +23,7 @@ class KoreksiExportBackupTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }

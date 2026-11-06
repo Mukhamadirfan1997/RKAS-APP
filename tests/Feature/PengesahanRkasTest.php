@@ -8,6 +8,7 @@ use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -23,7 +24,7 @@ class PengesahanRkasTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
@@ -61,7 +62,7 @@ class PengesahanRkasTest extends TestCase
             ->count();
 
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.pagu', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
 
         $this->ta->refresh();
@@ -110,7 +111,7 @@ class PengesahanRkasTest extends TestCase
         // Pergeseran -> Disahkan harus berhasil (point 4)
         $this->ta->update(['status_pengesahan' => 'Pergeseran']);
         $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.pagu', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Disahkan', $this->ta->fresh()->status_pengesahan);
     }
@@ -205,7 +206,7 @@ class PengesahanRkasTest extends TestCase
         $this->ta->update(['status_pengesahan' => 'Disahkan']);
 
         $resp = $this->post(route('pengaturan.pengesahan.buka-kembali'));
-        $resp->assertRedirect(route('pengaturan.status', ['tahun' => $this->ta->tahun]));
+        $resp->assertRedirect(route('pengaturan.pagu', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Pergeseran', $this->ta->fresh()->status_pengesahan);
 

@@ -7,6 +7,7 @@ use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Models\MasterProgram;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -22,7 +23,7 @@ class MasterDataTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }
@@ -251,7 +252,7 @@ class MasterDataTest extends TestCase
         $this->post(route('master.import'), ['file' => $file1, 'target' => 'program']);
         @unlink($path1);
 
-        // Upload kedua dengan nama beda di kode sama — harus tidak menimpa
+        // Upload kedua dengan nama beda di kode sama â€” harus tidak menimpa
         $rows2 = [
             ['88.88.88', 'Hacked Name', 'SNP Hack'],
         ];

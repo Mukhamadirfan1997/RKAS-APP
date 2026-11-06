@@ -10,6 +10,7 @@ use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class RkasPdfPerBulanTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->actingAs(User::first());
         $this->ta = TahunAnggaran::where('tahun', 2026)->first();
     }
@@ -156,7 +157,7 @@ class RkasPdfPerBulanTest extends TestCase
         // No harus 1,2 berurutan (strip html untuk cari >1< dan >2<)
         $this->assertStringContainsString('>1<', $html);
         $this->assertStringContainsString('>2<', $html);
-        // Pastikan kolom Validasi tidak ada (header Validasi dihapus untuk per-bulan) — cek th spesifik, bukan css
+        // Pastikan kolom Validasi tidak ada (header Validasi dihapus untuk per-bulan) â€” cek th spesifik, bukan css
         $this->assertStringNotContainsString('Validasi<small>', $html);
         $this->assertStringNotContainsString('>Validasi<', $html);
         $this->assertStringContainsString('badge-kontrol', $html);
@@ -164,7 +165,7 @@ class RkasPdfPerBulanTest extends TestCase
 
     public function test_builder_mode_per_bulan_reuse_where_has(): void
     {
-        // Pastikan mode per_bulan memanggil whereHas (filter) — item Maret kosong harus 0
+        // Pastikan mode per_bulan memanggil whereHas (filter) â€” item Maret kosong harus 0
         $this->seedBulanItems(); // hanya Jan & Feb
         $ctrl = app(RkasController::class);
         $ref = new \ReflectionMethod($ctrl, 'buildFlatForExport');

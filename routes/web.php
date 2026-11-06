@@ -10,6 +10,7 @@ use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
 use App\Http\Controllers\PanduanController;
 use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\RkasController;
 use App\Http\Controllers\RkasSearchController;
 use App\Http\Controllers\TentangController;
@@ -18,6 +19,14 @@ use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    // Registrasi awal (hanya tersedia saat instalasi belum punya akun sama sekali).
+    Route::get('/registrasi', [RegistrasiController::class, 'show'])->name('registrasi');
+    Route::post('/registrasi', [RegistrasiController::class, 'store'])->name('registrasi.simpan');
+
+    // Pulihkan dari backup tanpa registrasi (juga hanya saat belum ada akun).
+    Route::get('/pulihkan', [RegistrasiController::class, 'showPulihkan'])->name('pulihkan');
+    Route::post('/pulihkan', [RegistrasiController::class, 'pulihkan'])->name('pulihkan.proses');
+
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
     Route::get('/lupa-password', [AuthController::class, 'showForgot'])->name('auth.forgot');
@@ -30,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard', [DashboardController::class, 'index']); // alias tanpa nama (nama ganda memblokir route:cache)
     Route::get('/rkas', [RkasController::class, 'index'])->name('rkas.index');
     Route::post('/rkas/store', [RkasController::class, 'store'])->middleware('cek.lisensi')->name('rkas.store');
     Route::get('/rkas/{id}/json', [RkasController::class, 'showJson'])->name('rkas.json');
@@ -51,7 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/backup/{filename}/delete', [BackupController::class, 'destroy'])->middleware('cek.lisensi')->name('backup.destroy');
 
     // Dashboard & Monitoring JUKNIS
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/monitoring/juknis', [MonitoringJuknisController::class, 'index'])->name('monitoring.juknis');
     Route::post('/monitoring/juknis/mapping', [MonitoringJuknisController::class, 'mapping'])->middleware('cek.lisensi')->name('monitoring.juknis.mapping');
 

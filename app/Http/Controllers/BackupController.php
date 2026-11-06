@@ -9,7 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use ZipArchive;
 
 class BackupController extends Controller
 {
@@ -56,6 +55,7 @@ class BackupController extends Controller
 
         $jumlahBackup = $allFiles->count();
         $totalUkuran = $allFiles->sum('ukuran');
+        $maksUnggahMb = BackupService::batasUnggahMb();
 
         // Rekomendasi: file terbaru yang harus diambil user (prioritas: Manual > Pengesahan > Otomatis)
         $rekomendasi = $allFiles->firstWhere(fn ($x) => $x['jenis'] === 'Manual')
@@ -69,7 +69,7 @@ class BackupController extends Controller
         $currentItems = $allFiles->forPage($currentPage, $perPage)->values();
         $files = new LengthAwarePaginator($currentItems, $allFiles->count(), $perPage, $currentPage, ['path' => $request->url(), 'query' => $request->query()]);
 
-        return view('backup.index', compact('files', 'jumlahBackup', 'totalUkuran', 'rekomendasi'));
+        return view('backup.index', compact('files', 'jumlahBackup', 'totalUkuran', 'rekomendasi', 'maksUnggahMb'));
     }
 
     /**
@@ -115,8 +115,20 @@ class BackupController extends Controller
      */
     public function restore(Request $request)
     {
+        // PHP membuang body bila melebihi post_max_size → beri pesan jelas, bukan "pilih berkas".
+        $batasUnggah = BackupService::batasUnggahByte();
+        $maksMb = BackupService::batasUnggahMb();
+        $konten = (int) $request->server('CONTENT_LENGTH', 0);
+        if ($konten > 0 && $batasUnggah > 0 && $konten > $batasUnggah) {
+            return redirect()->route('backup.index')->withErrors([
+                'error' => "Ukuran berkas backup melebihi batas server {$maksMb} MB.",
+            ]);
+        }
+
         $request->validate([
-            'file' => 'required|file|mimes:zip',
+            'file' => 'required|file|mimes:zip|max:'.($maksMb * 1024),
+        ], [
+            'file.max' => "Ukuran berkas backup melebihi batas server {$maksMb} MB.",
         ]);
 
         return $this->restoreFromZip($request->file('file')->getRealPath());
@@ -137,67 +149,16 @@ class BackupController extends Controller
 
     private function restoreFromZip(string $zipPath)
     {
-        $stamp = now()->format('Y-m-d_H-i-s');
-        $tmpDir = $this->dir.'/restore-tmp-'.$stamp;
-        File::ensureDirectoryExists($tmpDir);
-
         try {
-            $extractPath = $tmpDir.'/extract';
-            File::ensureDirectoryExists($extractPath);
-
-            $zip = new ZipArchive;
-            if ($zip->open($zipPath) !== true) {
-                throw new \RuntimeException('Zip tidak valid.');
-            }
-            $zip->extractTo($extractPath);
-            $zip->close();
-
-            // Cari file database.sqlite di dalam zip
-            $dbFiles = collect(File::allFiles($extractPath))
-                ->filter(fn ($f) => $f->getFilename() === 'database.sqlite');
-
-            if ($dbFiles->isEmpty()) {
-                throw new \RuntimeException('Isi zip tidak valid: tidak ada database/database.sqlite.');
-            }
-
-            $dbBaru = $dbFiles->first()->getPathname();
-            if (! $this->isValidSqlite($dbBaru)) {
-                throw new \RuntimeException('File database dalam zip bukan SQLite yang valid.');
-            }
-
-            // Simpan cadangan keselamatan DB saat ini sebelum menimpa
-            $safetyZip = $this->dir.'/rkas-pre-restore-'.$stamp.'.zip';
-            BackupService::snapshotDbZip($safetyZip);
-
-            // Hanya timpa file database aktif bila memang memakai file (bukan :memory:/testing)
-            // Mendukung DB di app_data_dir (Tauri produksi, writable tanpa admin) maupun install dir (dev)
-            $dbName = DB::connection()->getDatabaseName();
-            if ($dbName === ':memory:') {
-                if (app()->environment('testing')) {
-                    // Testing dengan :memory: tidak punya file aktif untuk ditimpa,
-                    // tapi tetap salin ke file agar backup/restore flow dapat diuji tanpa fake success.
-                    copy($dbBaru, database_path('database.sqlite'));
-                } else {
-                    throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar ('.$dbName.')');
-                }
-            } elseif ($dbName !== '' && $dbName !== ':memory:') {
-                DB::disconnect();
-                // $dbName bisa berupa app_data_dir/database.sqlite (produksi) atau database/database.sqlite (dev)
-                copy($dbBaru, $dbName);
-            } else {
-                throw new \RuntimeException('Restore gagal: koneksi database aktif bukan file database.sqlite standar ('.$dbName.')');
-            }
+            $safetyZip = BackupService::restoreFromZip($zipPath);
 
             $this->catatAudit('backup.restore', $safetyZip);
-            BackupService::pruneAllSafety();
 
             return redirect()->route('backup.index')->with('success', 'Restore berhasil. Data telah dikembalikan dari backup.');
         } catch (\Exception $e) {
             Log::error('Gagal restore: '.$e->getMessage());
 
             return redirect()->route('backup.index')->withErrors(['error' => 'Gagal restore: '.$e->getMessage()]);
-        } finally {
-            File::deleteDirectory($tmpDir);
         }
     }
 
@@ -235,25 +196,7 @@ class BackupController extends Controller
 
     private function isValidSqlite(string $path): bool
     {
-        $handle = fopen($path, 'rb');
-        if ($handle === false) {
-            return false;
-        }
-        $header = fread($handle, 16);
-        fclose($handle);
-
-        return $header === "SQLite format 3\x00";
-    }
-
-    // Delegasi ke BackupService untuk reuse di Pengesahan (jangan duplikat logika VACUUM)
-    private function buatSnapshot(string $tmp): void
-    {
-        BackupService::buatSnapshot($tmp);
-    }
-
-    private function snapshotDbZip(string $zipPath): void
-    {
-        BackupService::snapshotDbZip($zipPath);
+        return BackupService::isValidSqlite($path);
     }
 
     private function catatAudit(string $action, ?string $file): void

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ class UpdateDownloadSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
         File::ensureDirectoryExists(storage_path('app/updates'));
@@ -37,7 +38,7 @@ class UpdateDownloadSecurityTest extends TestCase
 
     public function test_path_traversal_dot_dot_slash_is_rejected(): void
     {
-        // coba akses .env via traversal — harus 404, bukan 200
+        // coba akses .env via traversal â€” harus 404, bukan 200
         $this->get('/update/download-file/..%2F..%2F..%2F.env')->assertStatus(404);
         $this->get('/update/download-file/..%2F.env')->assertStatus(404);
         // encoded slash

@@ -91,12 +91,8 @@ class PengaturanController extends Controller
 
     public function indexStatus(Request $request)
     {
-        $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah;
-        $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
-        $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
-        $user = auth()->user();
-
-        return view('pengaturan.status', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
+        // Halaman Status RKAS sudah digabung ke tab "Pagu & Status RKAS".
+        return redirect()->route('pengaturan.pagu', array_filter(['tahun' => $request->input('tahun')]));
     }
 
     public function indexTahun(Request $request)
@@ -241,7 +237,7 @@ class PengaturanController extends Controller
             ],
         ]);
 
-        return redirect()->route('pengaturan.status', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.');
+        return redirect()->route('pengaturan.pagu', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.');
     }
 
     public function bukaKembali(Request $request)
@@ -268,7 +264,7 @@ class PengaturanController extends Controller
             'new_values' => ['status_pengesahan' => 'Pergeseran'],
         ]);
 
-        return redirect()->route('pengaturan.status', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' dibuka kembali untuk revisi (status: Pergeseran). Perubahan akan tercatat di audit log.');
+        return redirect()->route('pengaturan.pagu', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' dibuka kembali untuk revisi (status: Pergeseran). Perubahan akan tercatat di audit log.');
     }
 
     public function storeTahun(Request $request)

@@ -1,52 +1,29 @@
-<!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-100">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reset Password - KARSA</title>
-    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}</style>
-</head>
-<body class="h-full flex items-center justify-center bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 p-4">
-    <div class="w-full max-w-sm">
-        <div class="text-center mb-6">
-            <div class="w-16 h-16 mx-auto rounded-2xl bg-white p-2 shadow-xl flex items-center justify-center">
-                <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+@extends('layouts.guest')
+
+@section('judul', 'Reset Password')
+@section('subjudul', 'Buat Kata Sandi Baru (minimal 8 karakter)')
+
+@section('kartu')
+    <form method="POST" action="{{ route('auth.reset.attempt') }}" class="space-y-4" x-data="{ lihatSandi: false }">
+        @csrf
+        <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kata sandi baru <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <input :type="lihatSandi ? 'text' : 'password'" name="password" required autofocus minlength="8" autocomplete="new-password"
+                    class="w-full rounded-lg border border-slate-300 px-3 pr-11 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" @click="lihatSandi = !lihatSandi" class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-700"
+                    :aria-label="lihatSandi ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'">
+                    <svg x-show="!lihatSandi" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <svg x-show="lihatSandi" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.223-3.592m3.11-2.183A9.96 9.96 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411M3 3l18 18"/></svg>
+                </button>
             </div>
-            <h1 class="text-white font-display font-bold text-xl mt-4">Reset Password</h1>
-            <p class="text-blue-100 text-xs mt-1">Buat password baru (min 8 karakter)</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-2xl p-6">
-            @if($errors->any())
-                <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
-                    @foreach($errors->all() as $err)<div>{{ $err }}</div>@endforeach
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">{{ session('error') }}</div>
-            @endif
-            <form method="POST" action="{{ route('auth.reset.attempt') }}" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Password baru <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" required autofocus
-                        class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Konfirmasi password <span class="text-red-500">*</span></label>
-                    <input type="password" name="password_confirmation" required
-                        class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <button type="submit" class="w-full px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm">Simpan & Masuk</button>
-            </form>
-            <p class="text-[10px] text-slate-400 text-center mt-3">Sesi verifikasi berlaku 10 menit.</p>
+        <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Ulangi kata sandi <span class="text-red-500">*</span></label>
+            <input :type="lihatSandi ? 'text' : 'password'" name="password_confirmation" required minlength="8" autocomplete="new-password"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
-    </div>
-</body>
-</html>
+        <button type="submit" class="w-full px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm">Simpan &amp; Masuk</button>
+    </form>
+    <p class="text-[10px] text-slate-400 text-center mt-3">Sesi verifikasi berlaku 10 menit.</p>
+@endsection

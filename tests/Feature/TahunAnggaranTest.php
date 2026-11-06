@@ -8,6 +8,7 @@ use App\Models\MasterProgram;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +21,7 @@ class TahunAnggaranTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }
@@ -47,7 +48,7 @@ class TahunAnggaranTest extends TestCase
         $this->assertTrue((bool) $ta2027->fresh()->is_active);
         $this->assertFalse((bool) $ta2026->fresh()->is_active);
 
-        // Aktifkan lagi 2026 — tetap tepat 1
+        // Aktifkan lagi 2026 â€” tetap tepat 1
         $this->post(route('pengaturan.tahun.aktifkan', $ta2026->id))->assertRedirect();
         $this->assertEquals(1, TahunAnggaran::where('is_active', true)->count());
         $this->assertTrue((bool) $ta2026->fresh()->is_active);

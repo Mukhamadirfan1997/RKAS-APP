@@ -10,6 +10,7 @@ use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\JuknisValidator;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class RkasFlowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\KodeBarang;
 use App\Models\MasterKodeRekening;
 use App\Services\KatalogRekeningManualService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +21,7 @@ class KatalogRekeningManualTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
     }
 
     /**

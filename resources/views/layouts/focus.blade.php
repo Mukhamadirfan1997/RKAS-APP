@@ -6,9 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'KARSA - Kertas Kerja RKAS' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    {{-- Font Inter & Outfit di-host lokal (aplikasi offline) --}}
     @auth
     <script>
         window.karsaToursSeen = {
@@ -29,6 +27,7 @@
         @include('layouts.partials.topbar', ['hideSidebarToggle' => true])
         @include('layouts.partials.lisensi-banner')
         @include('layouts.partials.database-health-banner')
+        @include('layouts.partials.katalog-kosong-banner')
         <main class="flex-1 overflow-y-auto px-4 lg:px-10 py-6">
             {{ $slot ?? '' }}
             @yield('content')

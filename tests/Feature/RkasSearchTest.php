@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\KodeBarang;
 use App\Models\MasterProgram;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +18,7 @@ class RkasSearchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }
@@ -68,7 +69,7 @@ class RkasSearchTest extends TestCase
 
     public function test_search_barang_match_prefix_nama(): void
     {
-        // Cari dengan prefix nama — seeder punya "Kertas HVS A4..."
+        // Cari dengan prefix nama â€” seeder punya "Kertas HVS A4..."
         $resp = $this->getJson(route('api.search.barang', ['q' => 'Kertas HVS']));
         $resp->assertOk();
         $results = $resp->json('results');

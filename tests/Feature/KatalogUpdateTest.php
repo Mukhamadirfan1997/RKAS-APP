@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\KatalogMeta;
 use App\Models\KodeBarang;
 use App\Models\User;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,7 @@ class KatalogUpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->seed(DataUjiSeeder::class);
         $this->user = User::first();
         $this->actingAs($this->user);
     }
@@ -69,7 +70,7 @@ class KatalogUpdateTest extends TestCase
     private function seedRowsForSuccess(): array
     {
         // Ambil 1 barang existing untuk di-update, plus 1 barang baru
-        // Seed awal (KB-001..009) punya id_barang_arkas null → set dulu agar upsert match via unique id_barang_arkas
+        // Seed awal (KB-001..009) punya id_barang_arkas null â†’ set dulu agar upsert match via unique id_barang_arkas
         $existing = KodeBarang::first();
         if (empty($existing->id_barang_arkas)) {
             $existing->update(['id_barang_arkas' => $existing->kode]);
@@ -90,7 +91,7 @@ class KatalogUpdateTest extends TestCase
         $custom = KodeBarang::create([
             'kode' => 'KB-CUSTOM-001',
             'id_barang_arkas' => null,
-            'nama' => 'Barang Custom Sekolah — Jangan Hapus',
+            'nama' => 'Barang Custom Sekolah â€” Jangan Hapus',
             'satuan_default' => 'unit',
             'harga_acuan' => 77777,
             'kode_rekening' => '5.1.02.01.01.0001',
@@ -108,7 +109,7 @@ class KatalogUpdateTest extends TestCase
         $response->assertSessionHas('success');
 
         // Custom tetap ada
-        $this->assertDatabaseHas('kode_barang', ['kode' => 'KB-CUSTOM-001', 'nama' => 'Barang Custom Sekolah — Jangan Hapus']);
+        $this->assertDatabaseHas('kode_barang', ['kode' => 'KB-CUSTOM-001', 'nama' => 'Barang Custom Sekolah â€” Jangan Hapus']);
         $freshCustom = KodeBarang::where('kode', 'KB-CUSTOM-001')->first();
         $this->assertNotNull($freshCustom);
         $this->assertEquals(77777, (float) $freshCustom->harga_acuan);

@@ -7,6 +7,7 @@ use App\Models\AuditLogArchive;
 use App\Models\PengaturanSekolah;
 use App\Models\User;
 use App\Services\AuditLogArchiveService;
+use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,8 +18,8 @@ class AuditLogArchiveTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
-        // Seed via LogsActivity membuat ratusan audit log dari master data — bersihkan agar test fokus pada log buatan test
+        $this->seed(DataUjiSeeder::class);
+        // Seed via LogsActivity membuat ratusan audit log dari master data â€” bersihkan agar test fokus pada log buatan test
         AuditLog::query()->delete();
         AuditLogArchive::query()->delete();
     }
@@ -136,7 +137,7 @@ class AuditLogArchiveTest extends TestCase
         $this->assertNull(AuditLogArchiveService::getLastArchiveAt());
 
         // Buat log lama saat fresh install kosong
-        User::firstOrCreate(['email' => 'admin@sekolah.id'], ['name' => 'Operator', 'password' => bcrypt('password')]);
+        User::firstOrCreate(['email' => 'uji@karsa.local'], ['name' => 'Operator', 'password' => bcrypt('rahasia123')]);
         AuditLog::create([
             'user_id' => User::first()->id,
             'action' => 'created',

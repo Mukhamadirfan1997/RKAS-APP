@@ -29,4 +29,4 @@ reqwest = { version = "0.13", default-features = false, features = ["stream"] }
 # lain). Tanpa ini `reqwest::Client::build()` panic dan dialog simpan tidak muncul.
 rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
 futures-util = "0.3"
-rfd = { version = "0.16", default-features = false }
+tauri-plugin-dialog = "2"
