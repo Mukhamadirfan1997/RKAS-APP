@@ -111,10 +111,30 @@ class RkasController extends Controller
         $tahunAnggaran = $this->resolveTahun($request);
 
         $selectedBulan = (int) $request->input('bulan', 0); // 0 = Semua (default), 1..12 = bulan tertentu
+        $q = trim((string) $request->input('q', ''));
 
         $query = RkasItem::with(['program', 'kodeRekening', 'barang', 'alokasiBulan'])
             ->where('tahun_anggaran_id', $tahunAnggaran->id)
             ->orderBy('no_urut');
+
+        if ($q !== '') {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('uraian', 'like', "%{$q}%")
+                    ->orWhere('keterangan_kustom', 'like', "%{$q}%")
+                    ->orWhereHas('program', function ($qp) use ($q) {
+                        $qp->where('nama', 'like', "%{$q}%")
+                            ->orWhere('kode', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('kodeRekening', function ($qr) use ($q) {
+                        $qr->where('nama', 'like', "%{$q}%")
+                            ->orWhere('kode', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('barang', function ($qb) use ($q) {
+                        $qb->where('nama', 'like', "%{$q}%")
+                            ->orWhere('kode', 'like', "%{$q}%");
+                    });
+            });
+        }
 
         if ($selectedBulan > 0) {
             $query->whereHas('alokasiBulan', function ($q) use ($selectedBulan) {
@@ -133,6 +153,8 @@ class RkasController extends Controller
                 $item->jumlah_bulan = $bulanItem ? (float) $bulanItem->jumlah : 0;
             });
         }
+
+        $totalFiltered = $filteredAll->sum(fn ($i) => (float) ($selectedBulan > 0 ? ($i->jumlah_bulan ?? 0) : $i->jumlah_koreksi));
 
         // Calculate total summary (grand — tidak terpengaruh pagination, dipakai footer & badge Tahap)
         $allItems = RkasItem::where('tahun_anggaran_id', $tahunAnggaran->id)->with('alokasiBulan')->get();
@@ -204,11 +226,13 @@ class RkasController extends Controller
             'tahunAnggaran',
             'daftarTahun',
             'selectedBulan',
+            'q',
             'items',
             'kegiatanGroups',
             'totalSudahDianggarkan',
             'totalSudahKoreksi',
             'totalBulanTerpilih',
+            'totalFiltered',
             'sisaPagu',
             'grandTahap1Jumlah',
             'grandTahap2Jumlah'

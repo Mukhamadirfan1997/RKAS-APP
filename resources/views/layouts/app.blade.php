@@ -31,7 +31,7 @@
 
     @php
         $current = request()->route() ? request()->route()->getName() : '';
-        $navGroups = \App\Support\Navigasi::grup();
+        $sidebarItems = \App\Support\Navigasi::sidebar();
         $isActiveOf = fn ($group) => \App\Support\Navigasi::aktif($group, $current);
     @endphp
 
@@ -60,25 +60,21 @@
                 </div>
             </div>
 
-            <!-- Nav -->
-            <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-                @foreach($navGroups as $groupName => $items)
-                    <div>
-                        <div x-show="!collapsed" x-cloak class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ $groupName }}</div>
-                        <div class="space-y-1">
-                            @foreach($items as $item)
-                                @php $active = $isActiveOf($item['group']); @endphp
-                                <a href="{{ route($item['route']) }}" x-data="{tip: false}" x-on:mouseenter="collapsed && (tip=true)" x-on:mouseleave="tip=false"
-                                   class="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors
-                                          {{ $active ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-slate-100' }}">
-                                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $item['svg'] !!}</svg>
-                                    <span x-show="!collapsed" x-cloak class="truncate">{{ $item['label'] }}</span>
-                                    <span x-show="tip" x-cloak class="absolute left-full ml-2 px-2 py-1 rounded-md bg-slate-800 text-white text-xs whitespace-nowrap z-50 shadow-lg">{{ $item['label'] }}</span>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
+            <!-- Nav (hanya menu kerja harian: Dashboard & Lembar Kerja; menu lainnya ada di dropdown profil topbar) -->
+            <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                <div x-show="!collapsed" x-cloak class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Menu Utama</div>
+                <div class="space-y-1">
+                    @foreach($sidebarItems as $item)
+                        @php $active = $isActiveOf($item['group']); @endphp
+                        <a href="{{ route($item['route']) }}" x-data="{tip: false}" x-on:mouseenter="collapsed && (tip=true)" x-on:mouseleave="tip=false"
+                           class="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors
+                                  {{ $active ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-slate-100' }}">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $item['svg'] !!}</svg>
+                            <span x-show="!collapsed" x-cloak class="truncate">{{ $item['label'] }}</span>
+                            <span x-show="tip" x-cloak class="absolute left-full ml-2 px-2 py-1 rounded-md bg-slate-800 text-white text-xs whitespace-nowrap z-50 shadow-lg">{{ $item['label'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </nav>
 
             <!-- Footer / user (tombol Keluar ada di menu topbar, satu pintu) -->

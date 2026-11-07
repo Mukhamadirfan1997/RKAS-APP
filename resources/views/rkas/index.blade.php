@@ -151,21 +151,48 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Kertas Kerja &mdash; Daftar Kegiatan &amp; Rincian Anggaran</h2>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Pilih bulan untuk melihat rencana pelaksanaan. Tiap kegiatan menampilkan total anggaran yang sudah dianggarkan.</p>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Pilih bulan atau cari kata kunci untuk menyaring rincian anggaran yang sudah diinput.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    @if($selectedBulan > 0)
-                        <a href="{{ route('rkas.index', array_filter(['tahun' => request('tahun'), 'bulan' => 0])) }}" class="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500">Reset</a>
+                    @if($q !== '')
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">
+                            Cari: &ldquo;{{ $q }}&rdquo; ({{ $items->total() }})
+                        </span>
+                    @endif
+                    @if($selectedBulan > 0 || $q !== '')
+                        <a href="{{ route('rkas.index', array_filter(['tahun' => request('tahun')])) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 transition-colors" title="Hapus semua filter">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Reset Filter
+                        </a>
                     @endif
                 </div>
             </div>
-            <form id="tour-rkas-filter" method="GET" action="{{ route('rkas.index') }}" class="mt-4">
+
+            <form id="tour-rkas-filter" method="GET" action="{{ route('rkas.index') }}" class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 @if(request('tahun'))<input type="hidden" name="tahun" value="{{ request('tahun') }}">@endif
+                <input type="hidden" name="bulan" id="rkas-form-bulan" value="{{ $selectedBulan }}">
+
+                {{-- Filter Bulan --}}
                 <div class="flex gap-1.5 overflow-x-auto pb-1 items-center">
-                    <button type="submit" name="bulan" value="0" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
+                    <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = 0" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
                     @for($b = 1; $b <= 12; $b++)
-                        <button type="submit" name="bulan" value="{{ $b }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === $b ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">{{ substr($bulanIndonesia[$b], 0, 3) }}</button>
+                        <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = {{ $b }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === $b ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">{{ substr($bulanIndonesia[$b], 0, 3) }}</button>
                     @endfor
+                </div>
+
+                {{-- Input Pencarian Data Terinput --}}
+                <div class="relative w-full md:w-80 shrink-0">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" name="q" value="{{ $q }}" placeholder="Cari uraian, kegiatan, rekening..."
+                        class="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        title="Ketik kata kunci lalu tekan Enter untuk menyaring data yang sudah terinput">
+                    @if($q !== '')
+                        <a href="{{ route('rkas.index', array_filter(['tahun' => request('tahun'), 'bulan' => $selectedBulan])) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Hapus kata kunci pencarian">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>
@@ -278,8 +305,17 @@
                     @empty
                         <tr>
                             <td colspan="9" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
-                                <div class="text-sm font-semibold">Belum ada rincian anggaran</div>
-                                <div class="text-xs mt-1">Klik tombol &ldquo;Tambah Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
+                                @if($q !== '')
+                                    <div class="text-sm font-semibold text-slate-700 dark:text-slate-200">Tidak ada anggaran yang cocok</div>
+                                    <div class="text-xs mt-1 text-slate-500 dark:text-slate-400">Tidak ditemukan data yang sesuai dengan kata kunci &ldquo;<span class="font-bold text-slate-700 dark:text-slate-200">{{ $q }}</span>&rdquo;.</div>
+                                    <a href="{{ route('rkas.index', array_filter(['tahun' => request('tahun'), 'bulan' => $selectedBulan])) }}" class="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-300 text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-500/25 transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                        Hapus Pencarian
+                                    </a>
+                                @else
+                                    <div class="text-sm font-semibold">Belum ada rincian anggaran</div>
+                                    <div class="text-xs mt-1">Klik tombol &ldquo;Tambah Anggaran&rdquo; untuk mulai menyusun RKAS {{ $tahunAnggaran->tahun }}.</div>
+                                @endif
                             </td>
                         </tr>
                     @endforelse
@@ -287,8 +323,13 @@
                 @if($items->total() > 0)
                 <tfoot class="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60 text-sm">
                     <tr>
-                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">Total Keseluruhan <span class="font-normal text-[11px] text-slate-400">({{ $items->total() }} item, semua halaman)</span></td>
-                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">Rp {{ number_format($totalSudahKoreksi ?? $totalSudahDianggarkan, 0, ',', '.') }}</td>
+                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">
+                            Total {{ ($selectedBulan > 0 || $q !== '') ? 'Hasil Filter' : 'Keseluruhan' }}
+                            <span class="font-normal text-[11px] text-slate-400">({{ $items->total() }} item, semua halaman)</span>
+                        </td>
+                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">
+                            Rp {{ number_format($totalFiltered ?? ($totalSudahKoreksi ?? $totalSudahDianggarkan), 0, ',', '.') }}
+                        </td>
                     </tr>
                 </tfoot>
                 @endif

@@ -10,6 +10,7 @@ use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
 use App\Services\JuknisValidator;
+use App\Support\Navigasi;
 use Database\Seeders\DataUjiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -389,5 +390,62 @@ class RkasFlowTest extends TestCase
         ]);
         $resp->assertStatus(422);
         $resp->assertJsonValidationErrors(['satuan']);
+    }
+
+    public function test_rkas_worksheet_search_filters_inputted_items()
+    {
+        $program = MasterProgram::first();
+        $rekening = MasterKodeRekening::first();
+        $ta = TahunAnggaran::where('tahun', 2026)->first();
+
+        RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Item Unik Spidol Hitam 99',
+            'keterangan_kustom' => 'Ruang Guru 1',
+            'harga_satuan' => 15000,
+            'satuan' => 'buah',
+            'volume' => 2,
+            'jumlah' => 30000,
+            'no_urut' => 99,
+        ]);
+
+        RkasItem::create([
+            'tahun_anggaran_id' => $ta->id,
+            'master_program_id' => $program->id,
+            'master_kode_rekening_id' => $rekening->id,
+            'uraian' => 'Item Unik Penghapus Putih 88',
+            'keterangan_kustom' => 'Ruang Lab 2',
+            'harga_satuan' => 5000,
+            'satuan' => 'buah',
+            'volume' => 4,
+            'jumlah' => 20000,
+            'no_urut' => 100,
+        ]);
+
+        // Cari 'Spidol'
+        $resp = $this->get('/rkas?q=Spidol');
+        $resp->assertStatus(200);
+        $resp->assertSee('Item Unik Spidol Hitam 99');
+        $resp->assertDontSee('Item Unik Penghapus Putih 88');
+
+        // Cari kata kunci yang tidak ada
+        $respNone = $this->get('/rkas?q=KataKunciTidakAda123');
+        $respNone->assertStatus(200);
+        $respNone->assertSee('Tidak ada anggaran yang cocok');
+        $respNone->assertDontSee('Item Unik Spidol Hitam 99');
+    }
+
+    public function test_sidebar_contains_only_dashboard_and_lembar_kerja()
+    {
+        $resp = $this->get('/rkas');
+        $resp->assertStatus(200);
+
+        // Sidebar items
+        $sidebarItems = Navigasi::sidebar();
+        $this->assertCount(2, $sidebarItems);
+        $this->assertEquals('Dashboard', $sidebarItems[0]['label']);
+        $this->assertEquals('Lembar Kerja', $sidebarItems[1]['label']);
     }
 }
