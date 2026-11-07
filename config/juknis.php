@@ -20,6 +20,11 @@ return [
     |
     | Prioritas klasifikasi per item: honor > buku > sarpras (eksklusif).
     |
+    | PENTING — komponen buku dikenali dari PREFIX KODE REKENING (5.2.05),
+    | bukan dari nama jenis belanja. Sejak 7 Nov 2026 seluruh 5.2.05 berjenis
+    | "Belanja Modal Aset Tetap Lainnya" (sesuai hierarki kode), dan kepatuhan
+    | buku tetap terhitung karena penandanya prefix rekening.
+    |
     | Batas honor bervariasi menurut status sekolah: negeri 20% / swasta 40%.
     | Semua batas dihitung dari TOTAL pagu satu tahun anggaran.
     */
@@ -34,6 +39,9 @@ return [
     'buku' => [
         'batas_persen' => 10,
         'kode_program' => ['03.02.02', '05.02.02', '05.02.03', '05.02.04', '05.02.05'],
+        // Penanda utama komponen buku = prefix rekening 5.2.05 (lihat header).
+        // 'Belanja Modal Buku' dipertahankan hanya untuk rekening lama/custom
+        // yang jenisnya belum diseragamkan.
         'jenis_belanja' => ['Belanja Modal Buku'],
         'rekening' => ['5.2.05'],
         'keywords' => ['buku'],

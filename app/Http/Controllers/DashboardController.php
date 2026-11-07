@@ -9,6 +9,7 @@ use App\Models\RkasItem;
 use App\Models\RkasItemBulan;
 use App\Models\TahunAnggaran;
 use App\Services\JuknisValidator;
+use App\Services\KesiapanRkasService;
 use App\Services\RkaGelondonganService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,23 +96,14 @@ class DashboardController extends Controller
         // Ringkasan RKA Gelondongan — reuse service yang sama dengan MonitoringJuknis
         $gelondongan = RkaGelondonganService::calculate($tahunAnggaran);
 
-        // Kesiapan RKAS — 5 item lama + 1 kondisional untuk gelondongan
-        $checks = [
-            ['label' => 'Honor tidak melebihi batas', 'ok' => $summary['honor']['status'] === 'sesuai'],
-            ['label' => 'Anggaran buku memenuhi minimum', 'ok' => $summary['buku']['status'] === 'sesuai'],
-            ['label' => 'Sarpras tidak melebihi batas', 'ok' => $summary['sarpras']['status'] === 'sesuai'],
-            ['label' => 'Alokasi Tahap I ≥ 50%', 'ok' => $summary['tahap1']['status'] === 'sesuai'],
-            ['label' => 'Total anggaran tidak melebihi pagu', 'ok' => $summary['sudah_dianggarkan'] <= $summary['pagu_total']],
-        ];
+        // Kesiapan RKAS — satu sumber kebenaran (dipakai juga oleh halaman
+        // Kesiapan dan gerbang pengesahan). Daftar diperkaya (12 syarat) agar
+        // masalah data ikut terdeteksi, bukan hanya persentase JUKNIS.
+        $kesiapan = (new KesiapanRkasService($tahunAnggaran))->evaluasi();
+        $checks = $kesiapan['checks'];
+        $okCount = $kesiapan['ok_count'];
+        $score = $kesiapan['skor'];
         $hasTarget = $tahunAnggaran->target_barjas !== null || $tahunAnggaran->target_modal_mesin !== null || $tahunAnggaran->target_modal_aset !== null;
-        if ($hasTarget) {
-            $semuaSesuai = ($gelondongan['status_per_row']['barang_jasa'] ?? 'belum_diisi') === 'sesuai'
-                && ($gelondongan['status_per_row']['modal_mesin'] ?? 'belum_diisi') === 'sesuai'
-                && ($gelondongan['status_per_row']['modal_aset_lainnya'] ?? 'belum_diisi') === 'sesuai';
-            $checks[] = ['label' => '3 kategori RKA sesuai target Dinas', 'ok' => $semuaSesuai];
-        }
-        $okCount = collect($checks)->where('ok', true)->count();
-        $score = count($checks) > 0 ? round($okCount / count($checks) * 100) : 0;
 
         return view('dashboard.index', compact(
             'sekolah',
@@ -125,7 +117,8 @@ class DashboardController extends Controller
             'checks',
             'okCount',
             'score',
-            'hasTarget'
+            'hasTarget',
+            'kesiapan'
         ));
     }
 }

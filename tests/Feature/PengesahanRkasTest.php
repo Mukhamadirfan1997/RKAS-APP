@@ -38,6 +38,20 @@ class PengesahanRkasTest extends TestCase
             ->each(fn ($f) => File::delete($f->getPathname()));
     }
 
+    /**
+     * Data uji ini sengaja tidak memenuhi seluruh syarat kesiapan (sisa pagu
+     * belum Rp 0), sehingga pengesahan dilakukan lewat jalur "pengesahan
+     * dengan alasan" — persis seperti operator pada kondisi khusus.
+     */
+    private function sahkanDenganAlasan(array $extra = [])
+    {
+        return $this->post(route('pengaturan.pengesahan.sahkan'), array_merge([
+            'tahun' => $this->ta->tahun,
+            'konfirmasi_paksa' => 1,
+            'alasan_paksa' => 'Data uji: sisa pagu belum nol dan bukan kondisi produksi.',
+        ], $extra));
+    }
+
     private function payloadStore(): array
     {
         $prog = MasterProgram::first();
@@ -61,7 +75,7 @@ class PengesahanRkasTest extends TestCase
             ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'))
             ->count();
 
-        $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
+        $resp = $this->sahkanDenganAlasan();
         $resp->assertRedirect(route('pengaturan.pagu', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
 
@@ -79,6 +93,9 @@ class PengesahanRkasTest extends TestCase
         $this->assertArrayHasKey('pagu_total', $log->new_values);
         $this->assertArrayHasKey('jumlah_item', $log->new_values);
         $this->assertArrayHasKey('backup_file', $log->new_values);
+        $this->assertArrayHasKey('kesiapan', $log->new_values);
+        $this->assertTrue($log->new_values['kesiapan']['paksa']);
+        $this->assertNotEmpty($log->new_values['kesiapan']['belum_terpenuhi']);
 
         $files = collect(File::files(storage_path('app/backups')))
             ->filter(fn ($f) => str_starts_with($f->getFilename(), 'rkas-pengesahan-'.$this->ta->tahun.'-'))
@@ -110,7 +127,7 @@ class PengesahanRkasTest extends TestCase
     {
         // Pergeseran -> Disahkan harus berhasil (point 4)
         $this->ta->update(['status_pengesahan' => 'Pergeseran']);
-        $resp = $this->post(route('pengaturan.pengesahan.sahkan'));
+        $resp = $this->sahkanDenganAlasan();
         $resp->assertRedirect(route('pengaturan.pagu', ['tahun' => $this->ta->tahun]));
         $resp->assertSessionHas('success');
         $this->assertEquals('Disahkan', $this->ta->fresh()->status_pengesahan);

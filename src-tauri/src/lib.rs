@@ -466,6 +466,81 @@ fn jalankan_migrasi(app: &tauri::AppHandle, root: &std::path::Path) {
     }
 }
 
+/// Daftarkan proses anak (server PHP) ke Windows Job Object dengan
+/// `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`.
+///
+/// Tujuan: bila KARSA berhenti mendadak (crash, di-kill dari Task Manager, atau
+/// dimatikan installer saat memperbarui), kernel Windows ikut menghentikan
+/// `php.exe`. Tanpa ini server PHP bisa tertinggal sebagai proses yatim dan
+/// mengunci `php.exe`/DLL di folder instalasi sehingga pembaruan gagal dengan
+/// pesan "Error opening file for writing".
+#[cfg(windows)]
+fn daftarkan_ke_job_object(pid: u32) {
+    use std::sync::OnceLock;
+    use windows_sys::Win32::Foundation::CloseHandle;
+    use windows_sys::Win32::System::JobObjects::{
+        AssignProcessToJobObject, CreateJobObjectW, JobObjectExtendedLimitInformation,
+        SetInformationJobObject, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+    };
+    use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_SET_QUOTA, PROCESS_TERMINATE};
+
+    // Handle job sengaja disimpan (tidak ditutup) selama aplikasi hidup. Saat
+    // proses berakhir, Windows menutup semua handle → job ditutup → seluruh
+    // proses di dalamnya dihentikan.
+    static JOB: OnceLock<usize> = OnceLock::new();
+
+    let job = *JOB.get_or_init(|| unsafe {
+        let handle = CreateJobObjectW(std::ptr::null(), std::ptr::null());
+        if handle.is_null() {
+            eprintln!("KARSA: gagal membuat job object: {}", std::io::Error::last_os_error());
+            return 0;
+        }
+
+        let mut info: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = std::mem::zeroed();
+        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+
+        let ok = SetInformationJobObject(
+            handle,
+            JobObjectExtendedLimitInformation,
+            &info as *const _ as *const core::ffi::c_void,
+            std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
+        );
+        if ok == 0 {
+            eprintln!(
+                "KARSA: gagal mengatur job object: {}",
+                std::io::Error::last_os_error()
+            );
+            let _ = CloseHandle(handle);
+            return 0;
+        }
+
+        handle as usize
+    });
+
+    if job == 0 {
+        return;
+    }
+
+    unsafe {
+        let proses = OpenProcess(PROCESS_SET_QUOTA | PROCESS_TERMINATE, 0, pid);
+        if proses.is_null() {
+            eprintln!(
+                "KARSA: gagal membuka proses PHP ({pid}) untuk job object: {}",
+                std::io::Error::last_os_error()
+            );
+            return;
+        }
+        if AssignProcessToJobObject(job as _, proses) == 0 {
+            eprintln!(
+                "KARSA: gagal memasukkan proses PHP ke job object: {}",
+                std::io::Error::last_os_error()
+            );
+        }
+        let _ = CloseHandle(proses);
+    }
+}
+
 fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -> Child {
     let data_dir = app.path().app_data_dir().expect("cannot resolve app data dir");
 
@@ -493,8 +568,15 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null());
 
-    cmd.spawn()
-        .unwrap_or_else(|e| panic!("Gagal menjalankan PHP server ({e}). Pastikan PHP bisa dieksekusi."))
+    let child = cmd.spawn().unwrap_or_else(|e| {
+        panic!("Gagal menjalankan PHP server ({e}). Pastikan PHP bisa dieksekusi.")
+    });
+
+    // Server PHP harus ikut mati saat KARSA berhenti (lihat daftarkan_ke_job_object).
+    #[cfg(windows)]
+    daftarkan_ke_job_object(child.id());
+
+    child
 }
 
 /// Decode percent-encoding (untuk `filename*=UTF-8''...` pada Content-Disposition).

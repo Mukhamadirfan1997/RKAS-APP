@@ -30,3 +30,13 @@ reqwest = { version = "0.13", default-features = false, features = ["stream"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
 futures-util = "0.3"
 tauri-plugin-dialog = "2"
+
+# Windows Job Object: memastikan php.exe ikut mati saat KARSA berhenti,
+# sehingga folder instalasi tidak terkunci ketika aplikasi diperbarui.
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_JobObjects",
+    "Win32_System_Threading",
+] }

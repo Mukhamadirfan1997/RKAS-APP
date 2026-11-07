@@ -322,8 +322,8 @@
         </div>
         <div class="px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-700/50 text-[11px] text-slate-400 dark:text-slate-500">
             Mapping: <span class="font-mono">Barang &amp; Jasa = 6 jenis</span> (Barang, Barang Persediaan, Cetak, Jasa, Jasa Pemeliharaan, Perjalanan Dinas) ·
-            <span class="font-mono">Modal Mesin = Peralatan &amp; Mesin</span> ·
-            <span class="font-mono">Modal Aset Lainnya = Aset Tetap Lainnya + Modal Buku</span> — total 3 kolom = grand jumlah_koreksi. Selisih ≠ 0 saat Draft itu normal. Target dari Pengaturan → Pagu (nullable).
+            <span class="font-mono">Modal Mesin = kode 5.2.02*</span> (Peralatan &amp; Mesin) ·
+            <span class="font-mono">Modal Aset Lainnya = kode 5.2.05*</span> (Aset Tetap Lainnya, termasuk buku) — total 3 kolom = grand jumlah_koreksi. Selisih ≠ 0 saat Draft itu normal. Target dari Pengaturan → Pagu (nullable).
         </div>
     </div>
 </div>

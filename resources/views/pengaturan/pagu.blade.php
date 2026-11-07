@@ -32,7 +32,12 @@
             pagu_tahap2: {{ (int) old('pagu_tahap2', $tahunAnggaran->pagu_tahap2 ?? 0) }},
             target_barjas: @json(old('target_barjas', $tahunAnggaran->target_barjas)),
             target_modal_mesin: @json(old('target_modal_mesin', $tahunAnggaran->target_modal_mesin)),
-            target_modal_aset: @json(old('target_modal_aset', $tahunAnggaran->target_modal_aset))
+            target_modal_aset: @json(old('target_modal_aset', $tahunAnggaran->target_modal_aset)),
+            terkunci: @json(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan'),
+            get batasTahap() { return Number(this.pagu_total) / 2 },
+            get lewatBatas() { return Number(this.pagu_tahap1) > this.batasTahap || Number(this.pagu_tahap2) > this.batasTahap },
+            get persenTahap1() { return Number(this.pagu_total) > 0 ? Number(this.pagu_tahap1) / Number(this.pagu_total) * 100 : 0 },
+            get persenTahap2() { return Number(this.pagu_total) > 0 ? Number(this.pagu_tahap2) / Number(this.pagu_total) * 100 : 0 }
         }">
             @csrf
             <input type="hidden" name="tahun" value="{{ $tahunAnggaran->tahun }}">
@@ -52,25 +57,45 @@
                     <input type="text" x-bind:value="pagu_total.toLocaleString('id-ID')" @input="pagu_total = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="label">Pagu Tahap I (Jan&ndash;Jun)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap1" :value="pagu_tahap1">
-                        <input type="text" x-bind:value="pagu_tahap1.toLocaleString('id-ID')" @input="pagu_tahap1 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input">
+                        <input type="text" x-bind:value="pagu_tahap1.toLocaleString('id-ID')" @input="pagu_tahap1 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input"
+                               :class="Number(pagu_tahap1) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
+                    <p class="mt-1 text-[11px]" :class="Number(pagu_tahap1) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
+                        Maksimal 50% = Rp <span x-text="batasTahap.toLocaleString('id-ID')"></span>
+                        <span x-show="Number(pagu_tahap1) > batasTahap"> — melebihi batas!</span>
+                    </p>
                 </div>
                 <div>
                     <label class="label">Pagu Tahap II (Jul&ndash;Des)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap2" :value="pagu_tahap2">
-                        <input type="text" x-bind:value="pagu_tahap2.toLocaleString('id-ID')" @input="pagu_tahap2 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input">
+                        <input type="text" x-bind:value="pagu_tahap2.toLocaleString('id-ID')" @input="pagu_tahap2 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input"
+                               :class="Number(pagu_tahap2) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
+                    <p class="mt-1 text-[11px]" :class="Number(pagu_tahap2) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
+                        Maksimal 50% = Rp <span x-text="batasTahap.toLocaleString('id-ID')"></span>
+                        <span x-show="Number(pagu_tahap2) > batasTahap"> — melebihi batas!</span>
+                    </p>
                 </div>
             </div>
             <div class="rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                <div class="flex justify-between mb-1">
+                    <span>Pagu Tahap I:</span>
+                    <span class="font-bold" :class="Number(pagu_tahap1) > batasTahap ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200'"
+                          x-text="persenTahap1.toLocaleString('id-ID', {maximumFractionDigits: 2}) + '%' + (Number(pagu_tahap1) > batasTahap ? ' · melebihi 50%' : '')"></span>
+                </div>
+                <div class="flex justify-between mb-1">
+                    <span>Pagu Tahap II:</span>
+                    <span class="font-bold" :class="Number(pagu_tahap2) > batasTahap ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200'"
+                          x-text="persenTahap2.toLocaleString('id-ID', {maximumFractionDigits: 2}) + '%' + (Number(pagu_tahap2) > batasTahap ? ' · melebihi 50%' : '')"></span>
+                </div>
                 <div class="flex justify-between mb-1">
                     <span>Tahap I + Tahap II:</span>
                     <span class="font-bold text-slate-700 dark:text-slate-200" x-text="'Rp ' + (Number(pagu_tahap1) + Number(pagu_tahap2)).toLocaleString('id-ID')"></span>
@@ -129,20 +154,23 @@
                 </div>
             </div>
 
+            <div x-show="lewatBatas" x-cloak class="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-xs text-red-700 dark:text-red-400">
+                <span class="font-bold">Tidak bisa disimpan:</span> pagu tiap tahap maksimal <b>50%</b> dari Pagu Total 1 tahun (maksimal Rp <span x-text="batasTahap.toLocaleString('id-ID')"></span> per tahap). Kurangi nominal tahap tersebut, atau naikkan Pagu Total.
+            </div>
             @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan')
             <div class="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-xs text-red-700 dark:text-red-400">
                 <span class="font-bold">Terkunci:</span> Pagu tidak bisa diubah saat status Disahkan. Buka kembali di Status RKAS jika perlu revisi.
             </div>
             @endif
             <div class="flex justify-end pt-2">
-                <button type="submit" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Simpan Pagu</button>
+                <button type="submit" :disabled="terkunci || lewatBatas" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Simpan Pagu</button>
             </div>
         </form>
     </div>
 
     {{-- ============ Status RKAS (pengesahan & kunci data) ============ --}}
     @php $statusRkas = $tahunAnggaran->status_pengesahan ?? 'Draft'; @endphp
-    <div class="card overflow-hidden" x-data="{ showSahkan:false, showBuka:false }">
+    <div class="card overflow-hidden" x-data="{ showSahkan:false, showBuka:false, paksa:false, alasan:'' }">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3">
             <div>
                 <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Status RKAS — TA {{ $tahunAnggaran->tahun }}</h2>
@@ -155,6 +183,28 @@
                 @endif">{{ $statusRkas }}</span>
         </div>
         <div class="p-6 space-y-4">
+            @if(isset($kesiapan))
+                <div class="rounded-xl border px-4 py-3 text-sm
+                    {{ $kesiapan['siap']
+                        ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300'
+                        : 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300' }}">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <b>Kesiapan RKAS: {{ $kesiapan['skor'] }}%</b>
+                            ({{ $kesiapan['ok_count'] }}/{{ $kesiapan['total'] }} syarat) —
+                            {{ $kesiapan['siap'] ? 'semua syarat terpenuhi.' : count($kesiapan['gagal']).' syarat belum terpenuhi.' }}
+                        </div>
+                        <a href="{{ route('kesiapan.index', ['tahun' => $tahunAnggaran->tahun]) }}" class="text-[11px] font-bold underline shrink-0">Lihat detail &amp; perbaiki &rarr;</a>
+                    </div>
+                    @if(! $kesiapan['siap'])
+                        <ul class="mt-2 space-y-1 text-[11px]">
+                            @foreach($kesiapan['gagal'] as $gagal)
+                                <li>&bull; {{ $gagal }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endif
             @if($statusRkas === 'Draft')
                 <div class="rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                     RKAS masih <b>Draft</b> — data masih bisa ditambah/diedit/dihapus. Sahkan jika sudah final; sistem akan membuat backup otomatis <code class="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">rkas-pengesahan-{{ $tahunAnggaran->tahun }}-*.zip</code>.
@@ -186,12 +236,41 @@
             <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 ring-1 ring-slate-200 dark:ring-slate-700/60">
                 <h3 class="text-base font-extrabold text-slate-800 dark:text-white">Yakin ingin mengesahkan RKAS TA {{ $tahunAnggaran->tahun }}?</h3>
                 <p class="text-sm text-slate-600 dark:text-slate-300">Sistem akan membuat backup otomatis <span class="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">rkas-pengesahan-{{ $tahunAnggaran->tahun }}-*.zip</span>, dan data tidak bisa diedit lagi setelah ini.</p>
+
+                @if(isset($kesiapan) && ! $kesiapan['siap'])
+                    <div class="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-xs text-red-800 dark:text-red-300 space-y-1">
+                        <div class="font-bold">RKAS belum siap disahkan ({{ $kesiapan['skor'] }}%).</div>
+                        <ul class="space-y-0.5">
+                            @foreach($kesiapan['gagal'] as $gagal)
+                                <li>&bull; {{ $gagal }}</li>
+                            @endforeach
+                        </ul>
+                        <a href="{{ route('kesiapan.index', ['tahun' => $tahunAnggaran->tahun]) }}" class="inline-block font-bold underline">Buka halaman Kesiapan RKAS &rarr;</a>
+                    </div>
+                    <label class="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <input type="checkbox" x-model="paksa" class="mt-0.5 rounded border-slate-300 dark:border-slate-600">
+                        <span>Saya sudah memeriksa daftar di atas dan tetap ingin mengesahkan RKAS ini (kondisi khusus).</span>
+                    </label>
+                    <div x-show="paksa" x-cloak>
+                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Alasan pengesahan (wajib, minimal 10 karakter — dicatat di audit log)</label>
+                        <textarea x-model="alasan" rows="2" class="input w-full" placeholder="Contoh: sisa pagu dikembalikan ke kas daerah sesuai arahan Dinas."></textarea>
+                    </div>
+                @endif
+
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" @click="showSahkan = false" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300">Batal</button>
                     <form method="POST" action="{{ route('pengaturan.pengesahan.sahkan') }}">
                         @csrf
                         <input type="hidden" name="tahun" value="{{ $tahunAnggaran->tahun }}">
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Ya, Sahkan</button>
+                        @if(isset($kesiapan) && ! $kesiapan['siap'])
+                            <input type="hidden" name="konfirmasi_paksa" :value="paksa ? 1 : 0">
+                            <input type="hidden" name="alasan_paksa" :value="alasan">
+                            <button type="submit" x-bind:disabled="!paksa || alasan.trim().length < 10"
+                                x-bind:class="(!paksa || alasan.trim().length < 10) ? 'opacity-50 cursor-not-allowed' : ''"
+                                class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold">Tetap Sahkan</button>
+                        @else
+                            <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Ya, Sahkan</button>
+                        @endif
                     </form>
                 </div>
             </div>

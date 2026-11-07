@@ -10,10 +10,13 @@
     ];
     $statusLabel = ['sesuai' => 'SESUAI', 'melebihi' => 'MELEBIHI', 'kurang' => 'BELUM CUKUP'];
 
-    // Skor Kesiapan RKAS — dihitung di DashboardController (kondisional 5/6 item untuk gelondongan)
+    // Skor Kesiapan RKAS — dihitung di DashboardController (kondisional 6/7 item untuk gelondongan)
     // Fallback kalau view dirender tanpa controller (misal test lama)
     if (!isset($checks)) {
+        $batasTahapFallback = ((float) ($summary['pagu_total'] ?? 0)) / 2;
         $checks = [
+            ['label' => 'Pagu Tahap I & II masing-masing ≤ 50%', 'ok' => (float) ($tahunAnggaran->pagu_tahap1 ?? 0) <= $batasTahapFallback + 0.5
+                && (float) ($tahunAnggaran->pagu_tahap2 ?? 0) <= $batasTahapFallback + 0.5],
             ['label' => 'Honor tidak melebihi batas', 'ok' => $summary['honor']['status'] === 'sesuai'],
             ['label' => 'Anggaran buku memenuhi minimum', 'ok' => $summary['buku']['status'] === 'sesuai'],
             ['label' => 'Sarpras tidak melebihi batas', 'ok' => $summary['sarpras']['status'] === 'sesuai'],
@@ -162,7 +165,10 @@
         <div id="tour-dashboard-kesiapan" class="card p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Kesiapan RKAS</h3>
-                <span class="text-[11px] text-slate-400 dark:text-slate-500">{{ $okCount }}/{{ count($checks) }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">{{ $okCount }}/{{ count($checks) }}</span>
+                    <a href="{{ route('kesiapan.index', ['tahun' => $tahunAnggaran->tahun]) }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">Detail &rarr;</a>
+                </div>
             </div>
             <div class="flex items-center gap-4 mb-4">
                 <div class="relative w-20 h-20">
@@ -215,7 +221,7 @@
 
         <div class="card p-6">
             <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Proporsi Jenis Belanja</h3>
-            <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-5">9 Jenis resmi ARKAS terhadap total belanja.</p>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-5">Jenis belanja resmi ARKAS terhadap total belanja (hanya yang sudah terpakai).</p>
             <div class="space-y-4">
                 @forelse($proporsiJenis as $jenis => $nominal)
                     @php

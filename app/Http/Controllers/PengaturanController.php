@@ -7,7 +7,9 @@ use App\Models\PengaturanSekolah;
 use App\Models\RkasItem;
 use App\Models\TahunAnggaran;
 use App\Models\User;
+use App\Rules\MaksimalSetengahPagu;
 use App\Services\BackupService;
+use App\Services\KesiapanRkasService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -85,8 +87,9 @@ class PengaturanController extends Controller
         $tahunAnggaran = $this->resolveTahun($request, true) ?? new TahunAnggaran(['tahun' => 2026]);
         $daftarTahun = TahunAnggaran::orderBy('tahun', 'desc')->get();
         $user = auth()->user();
+        $kesiapan = (new KesiapanRkasService($tahunAnggaran))->evaluasi();
 
-        return view('pengaturan.pagu', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user'));
+        return view('pengaturan.pagu', compact('sekolah', 'tahunAnggaran', 'daftarTahun', 'user', 'kesiapan'));
     }
 
     public function indexStatus(Request $request)
@@ -171,15 +174,25 @@ class PengaturanController extends Controller
             return redirect()->back()->withErrors(['error' => "RKAS TA {$ta->tahun} sudah disahkan dan tidak bisa diedit. Buka kembali dari halaman Pengaturan jika perlu revisi."]);
         }
 
+        // Batas 50% per tahap dihitung dari pagu yang dikirim pada request ini.
+        // Kalau pagu_total bukan angka, nilainya null → aturan dilewati agar
+        // pesan error tetap satu (dari pagu_total).
+        $paguTotalInput = is_numeric($request->input('pagu_total'))
+            ? (float) $request->input('pagu_total')
+            : null;
+
         $validated = $request->validate([
             'pagu_total' => 'required|numeric|min:0',
-            'pagu_tahap1' => 'required|numeric|min:0',
-            'pagu_tahap2' => 'required|numeric|min:0',
+            'pagu_tahap1' => ['required', 'numeric', 'min:0', new MaksimalSetengahPagu($paguTotalInput, 'I')],
+            'pagu_tahap2' => ['required', 'numeric', 'min:0', new MaksimalSetengahPagu($paguTotalInput, 'II')],
             'target_barjas' => 'nullable|numeric|min:0',
             'target_modal_mesin' => 'nullable|numeric|min:0',
             'target_modal_aset' => 'nullable|numeric|min:0',
             'sumber_dana' => 'nullable|string|max:50',
-            'status_pengesahan' => 'nullable|string|max:50',
+            // Status pengesahan SENGAJA tidak bisa diubah lewat form pagu:
+            // satu-satunya jalur adalah Sahkan / Buka Kembali (yang membuat
+            // backup resmi + audit log). Kalau diizinkan di sini, status bisa
+            // "Disahkan" tanpa backup dan tanpa jejak audit.
         ]);
 
         if ($ta) {
@@ -202,6 +215,32 @@ class PengaturanController extends Controller
         }
         if (! in_array($ta->status_pengesahan, ['Draft', 'Pergeseran'], true)) {
             return redirect()->back()->withErrors(['error' => 'Hanya RKAS dengan status Draft atau Pergeseran yang bisa disahkan. Status saat ini: '.$ta->status_pengesahan]);
+        }
+
+        // Gerbang kesiapan: RKAS tidak boleh disahkan bila masih ada syarat yang
+        // gagal. Operator tetap bisa melanjutkan lewat "pengesahan dengan alasan"
+        // (wajib mengisi alasan) — keputusan itu tercatat di audit log sehingga
+        // tetap bisa dipertanggungjawabkan saat pemeriksaan Dinas.
+        $kesiapan = (new KesiapanRkasService($ta))->evaluasi();
+        $paksa = $request->boolean('konfirmasi_paksa');
+        $alasanPaksa = trim((string) $request->input('alasan_paksa', ''));
+
+        if (! $kesiapan['siap']) {
+            if (! $paksa) {
+                $gagal = implode('; ', $kesiapan['gagal']);
+
+                return redirect()->back()->withErrors([
+                    'error' => 'RKAS belum siap disahkan (skor '.$kesiapan['skor'].'%, '
+                        .$kesiapan['ok_count'].'/'.$kesiapan['total'].' syarat). Yang belum terpenuhi: '.$gagal
+                        .'. Perbaiki lewat halaman Kesiapan RKAS, atau sahkan dengan menuliskan alasan bila memang kondisi khusus.',
+                ]);
+            }
+
+            if (mb_strlen($alasanPaksa) < 10) {
+                return redirect()->back()->withErrors([
+                    'error' => 'Alasan pengesahan paksa wajib diisi minimal 10 karakter agar dapat diaudit.',
+                ]);
+            }
         }
 
         // Buat snapshot resmi sebelum mengubah status — jika gagal, batalkan pengesahan
@@ -227,17 +266,26 @@ class PengaturanController extends Controller
             'action' => 'rkas.sahkan',
             'auditable_type' => 'TahunAnggaran',
             'auditable_id' => $ta->id,
-            'description' => "Pengesahan RKAS TA {$ta->tahun} ({$oldStatus} → Disahkan)",
+            'description' => "Pengesahan RKAS TA {$ta->tahun} ({$oldStatus} → Disahkan)"
+                .($kesiapan['siap'] ? '' : ' — paksa dengan alasan: '.$alasanPaksa),
             'old_values' => ['status_pengesahan' => $oldStatus],
             'new_values' => [
                 'status_pengesahan' => 'Disahkan',
                 'pagu_total' => $ta->pagu_total,
                 'jumlah_item' => RkasItem::where('tahun_anggaran_id', $ta->id)->count(),
                 'backup_file' => $filename,
+                'kesiapan' => [
+                    'skor' => $kesiapan['skor'],
+                    'syarat_lulus' => $kesiapan['ok_count'].'/'.$kesiapan['total'],
+                    'paksa' => ! $kesiapan['siap'],
+                    'alasan' => $kesiapan['siap'] ? null : $alasanPaksa,
+                    'belum_terpenuhi' => $kesiapan['gagal'],
+                ],
             ],
         ]);
 
-        return redirect()->route('pengaturan.pagu', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.');
+        return redirect()->route('pengaturan.pagu', ['tahun' => $ta->tahun])->with('success', 'RKAS TA '.$ta->tahun.' berhasil disahkan. Backup resmi dibuat: '.$filename.' — data kini terkunci.'
+            .($kesiapan['siap'] ? '' : ' Catatan: pengesahan dilakukan meski ada '.count($kesiapan['gagal']).' syarat belum terpenuhi (alasan tercatat di audit log).'));
     }
 
     public function bukaKembali(Request $request)
@@ -269,12 +317,19 @@ class PengaturanController extends Controller
 
     public function storeTahun(Request $request)
     {
+        // Pagu efektif dipakai untuk menilai batas 50% per tahap. Bila kolom
+        // pagu_total dikosongkan, nilai bawaan 180.320.000 tetap berlaku
+        // (sama dengan nilai yang benar-benar disimpan di bawah).
+        $paguEfektif = $request->filled('pagu_total') && is_numeric($request->input('pagu_total'))
+            ? (float) $request->input('pagu_total')
+            : 180320000.0;
+
         $validated = $request->validate([
             'tahun' => 'required|integer|min:2020|max:2100|unique:tahun_anggaran,tahun',
             'sumber_dana' => 'nullable|string|max:50',
             'pagu_total' => 'nullable|numeric|min:0',
-            'pagu_tahap1' => 'nullable|numeric|min:0',
-            'pagu_tahap2' => 'nullable|numeric|min:0',
+            'pagu_tahap1' => ['nullable', 'numeric', 'min:0', new MaksimalSetengahPagu($paguEfektif, 'I')],
+            'pagu_tahap2' => ['nullable', 'numeric', 'min:0', new MaksimalSetengahPagu($paguEfektif, 'II')],
             'copy_from' => 'nullable|integer|exists:tahun_anggaran,tahun',
         ]);
 

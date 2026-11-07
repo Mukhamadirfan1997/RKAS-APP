@@ -12,10 +12,18 @@ return [
     | jenis_belanja.nama yang masuk kategori tersebut.
     |
     | - Belanja Barang dan Jasa        = 6 jenis (semua BARJAS non-modal)
-    | - Modal Mesin                    = 1 jenis (Peralatan & Mesin)
-    | - Modal Aset Tetap Lainnya       = 2 jenis (Aset Tetap Lainnya + Modal Buku)
+    | - Modal Mesin                    = 1 jenis (Peralatan & Mesin = kode 5.2.02*)
+    | - Modal Aset Tetap Lainnya       = 2 jenis (Aset Tetap Lainnya = kode 5.2.05*,
+    |                                    + Modal Buku untuk rekening lama/custom)
     |
     | 6 + 1 + 2 = 9 jenis_belanja resmi ARKAS — tidak ada sisa.
+    |
+    | Sejak 7 Nov 2026 jenis belanja diseragamkan menurut kode rekening
+    | (lihat JenisBelanjaResolver): 5.2.02* -> Peralatan & Mesin dan
+    | 5.2.05* -> Aset Tetap Lainnya. Karena itu 'Belanja Modal Buku' kini
+    | tidak dipakai rekening standar; tetap didaftarkan agar rekening
+    | lama/custom yang belum diseragamkan tidak hilang dari hitungan.
+    |
     | Item tanpa klasifikasi (rekening/jenis NULL) TIDAK masuk hitungan
     | gelondongan; mereka akan tampak sebagai selisih vs Pagu Total.
     |

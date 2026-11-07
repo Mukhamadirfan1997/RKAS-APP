@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KatalogUpdateController;
+use App\Http\Controllers\KesiapanController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
 use App\Http\Controllers\PanduanController;
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard', [DashboardController::class, 'index']); // alias tanpa nama (nama ganda memblokir route:cache)
     Route::get('/rkas', [RkasController::class, 'index'])->name('rkas.index');
+    Route::get('/kesiapan', [KesiapanController::class, 'index'])->name('kesiapan.index');
     Route::post('/rkas/store', [RkasController::class, 'store'])->middleware('cek.lisensi')->name('rkas.store');
     Route::get('/rkas/{id}/json', [RkasController::class, 'showJson'])->name('rkas.json');
     Route::post('/rkas/{id}/update', [RkasController::class, 'update'])->middleware('cek.lisensi')->name('rkas.update');

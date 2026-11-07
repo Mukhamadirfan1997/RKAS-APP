@@ -1929,62 +1929,62 @@
         {
             "kode": "5.2.02.05.01.0001",
             "nama": "Belanja Modal Mesin Ketik",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.01.0002",
             "nama": "Belanja Modal Mesin Hitung/Mesin Jumlah",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.01.0003",
             "nama": "Belanja Modal Alat Reproduksi (Penggandaan)",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.01.0004",
             "nama": "Belanja Modal Alat Penyimpan Perlengkapan Kantor",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.01.0005",
             "nama": "Belanja Modal Alat Kantor Lainnya",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0001",
             "nama": "Belanja Modal Mebel",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0002",
             "nama": "Belanja Modal Alat Pengukur Waktu",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0003",
             "nama": "Belanja Modal Alat Pembersih",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0004",
             "nama": "Belanja Modal Alat Pendingin",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0005",
             "nama": "Belanja Modal Alat Dapur",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0006",
             "nama": "Belanja Modal Alat Rumah Tangga Lainnya (Home Use)",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.05.02.0007",
             "nama": "Belanja Modal Alat Pemadam Kebakaran",
-            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
+            "jenis_belanja": "Belanja Modal Peralatan & Mesin"
         },
         {
             "kode": "5.2.02.06.01.0001",
@@ -2274,117 +2274,117 @@
         {
             "kode": "5.2.05.01.01.0001",
             "nama": "Belanja Modal Buku Umum",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0002",
             "nama": "Belanja Modal Buku Filsafat",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0003",
             "nama": "Belanja Modal Buku Agama",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0004",
             "nama": "Belanja Modal Buku Ilmu Sosial",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0005",
             "nama": "Belanja Modal Buku Ilmu Bahasa",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0006",
             "nama": "Belanja Modal Buku Matematika dan Pengetahuan Alam",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0007",
             "nama": "Belanja Modal Buku Ilmu Pengetahuan Praktis",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0008",
             "nama": "Belanja Modal Buku Arsitektur, Kesenian, dan Olahraga",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0009",
             "nama": "Belanja Modal Buku Geografi, Biografi, dan Sejarah",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.01.0010",
             "nama": "Belanja Modal Serial",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.02.0001",
             "nama": "Belanja Modal Audio Visual",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.02.0002",
             "nama": "Belanja Modal Bentuk Mikro (Microform)",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.03.0001",
             "nama": "Belanja Modal Bahan Kartografi",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.03.0002",
             "nama": "Belanja Modal Naskah (Manuskrip)/Asli",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.03.0003",
             "nama": "Belanja Modal Lukisan dan Ukiran",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.01.04.0001",
             "nama": "Belanja Modal Karya Musik",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.01.0001",
             "nama": "Belanja Modal Alat Musik",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.01.0002",
             "nama": "Belanja Modal Lukisan",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.01.0003",
             "nama": "Belanja Modal Alat Peraga Kesenian",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.02.0001",
             "nama": "Belanja Modal Pahatan",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.02.0002",
             "nama": "Belanja Modal Maket, Miniatur, Replika, Foto Dokumen, dan Benda Bersejarah",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.02.02.0003",
             "nama": "Belanja Modal Barang Kerajinan",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         },
         {
             "kode": "5.2.05.08.01.0005",
             "nama": "Belanja Modal Software",
-            "jenis_belanja": "Belanja Modal Buku"
+            "jenis_belanja": "Belanja Modal Aset Tetap Lainnya"
         }
     ]
 }
