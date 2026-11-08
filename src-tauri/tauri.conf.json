@@ -42,6 +42,7 @@
       "../routes": "./routes/",
       "../vendor": "./vendor/",
       "../artisan": "./artisan",
+      "../composer.json": "./composer.json",
       "bundle-env/.env": "./.env",
       "php": "./php/"
     },
