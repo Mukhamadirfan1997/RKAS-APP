@@ -52,9 +52,17 @@ if (!existsSync(sigPath)) {
 const signature = readFileSync(sigPath, 'utf8').trim();
 const url = `https://github.com/${repo}/releases/download/v${versi}/${nama}`;
 
+// Catatan rilis untuk dialog pembaruan: pakai `--catatan "..."` bila diberikan,
+// kalau tidak pakai teks ringkas yang tidak mengklaim fitur tertentu (dulu teks
+// di sini di-hardcode dan jadi menyesatkan saat dipakai versi berikutnya).
+const argCatatan = process.argv.indexOf('--catatan');
+const catatan = argCatatan > -1 && process.argv[argCatatan + 1]
+    ? String(process.argv[argCatatan + 1]).trim()
+    : `KARSA v${versi} - pembaruan aplikasi. Rincian perubahan lihat catatan rilis di GitHub.`;
+
 const data = {
     version: versi,
-    notes: `KARSA v${versi} — pembaruan otomatis (pasang & buka ulang sendiri) dan perbaikan dialog simpan berkas.`,
+    notes: catatan,
     pub_date: new Date().toISOString(),
     platforms: {
         'windows-x86_64': { signature, url },
