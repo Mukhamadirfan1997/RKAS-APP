@@ -34,6 +34,38 @@
             target_modal_mesin: @json(old('target_modal_mesin', $tahunAnggaran->target_modal_mesin)),
             target_modal_aset: @json(old('target_modal_aset', $tahunAnggaran->target_modal_aset)),
             terkunci: @json(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan'),
+            // Penanda: operator sudah mengubah pagu tahap secara manual.
+            tahap_manual: false,
+            init() {
+                const t = Number(this.pagu_total), a = Number(this.pagu_tahap1), b = Number(this.pagu_tahap2);
+                if (a === 0 && b === 0) {
+                    // Belum pernah diisi: ikuti otomatis 50% : 50%.
+                    this.tahap_manual = false;
+                    this.bagiOtomatis();
+                } else {
+                    // Data lama yang sudah pas 50/50 dibiarkan mode otomatis;
+                    // pembagian lain (mis. 40/60) dianggap sudah diatur manual.
+                    this.tahap_manual = !(t > 0 && (a + b) === t && a === Math.floor(t / 2));
+                }
+            },
+            bagiOtomatis() {
+                const t = Math.max(0, Math.floor(Number(this.pagu_total) / 2));
+                this.pagu_tahap1 = t;
+                this.pagu_tahap2 = Math.max(0, Number(this.pagu_total) - t);
+            },
+            ubahTotal(v) {
+                this.pagu_total = v;
+                // Jangan timpa pembagian yang sudah diatur manual oleh operator.
+                if (!this.tahap_manual) this.bagiOtomatis();
+            },
+            ubahTahap(n, v) {
+                this.tahap_manual = true;
+                if (n === 1) { this.pagu_tahap1 = v } else { this.pagu_tahap2 = v }
+            },
+            kembaliOtomatis() {
+                this.tahap_manual = false;
+                this.bagiOtomatis();
+            },
             get batasTahap() { return Number(this.pagu_total) / 2 },
             get lewatBatas() { return Number(this.pagu_tahap1) > this.batasTahap || Number(this.pagu_tahap2) > this.batasTahap },
             get persenTahap1() { return Number(this.pagu_total) > 0 ? Number(this.pagu_tahap1) / Number(this.pagu_total) * 100 : 0 },
@@ -54,8 +86,15 @@
                 <div class="flex items-center gap-1">
                     <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
                     <input type="hidden" name="pagu_total" :value="pagu_total">
-                    <input type="text" x-bind:value="pagu_total.toLocaleString('id-ID')" @input="pagu_total = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input">
+                    <input type="text" x-bind:value="pagu_total.toLocaleString('id-ID')" @input="ubahTotal(Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input">
                 </div>
+                <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Setelah pagu 1 tahun diisi, pagu tiap tahap otomatis dibagi 50% : 50% &mdash; tetap bisa Anda ubah manual.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] text-slate-400 dark:text-slate-500">Jatah tiap tahap maksimal 50% dari pagu 1 tahun.</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
+                      :class="tahap_manual ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30'"
+                      x-text="tahap_manual ? 'Diatur manual' : 'Otomatis 50% : 50%'"></span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -63,7 +102,7 @@
                     <div class="flex items-center gap-1">
                         <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap1" :value="pagu_tahap1">
-                        <input type="text" x-bind:value="pagu_tahap1.toLocaleString('id-ID')" @input="pagu_tahap1 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input"
+                        <input type="text" x-bind:value="pagu_tahap1.toLocaleString('id-ID')" @input="ubahTahap(1, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input"
                                :class="Number(pagu_tahap1) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
                     <p class="mt-1 text-[11px]" :class="Number(pagu_tahap1) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
@@ -76,7 +115,7 @@
                     <div class="flex items-center gap-1">
                         <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap2" :value="pagu_tahap2">
-                        <input type="text" x-bind:value="pagu_tahap2.toLocaleString('id-ID')" @input="pagu_tahap2 = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0" placeholder="0" class="input"
+                        <input type="text" x-bind:value="pagu_tahap2.toLocaleString('id-ID')" @input="ubahTahap(2, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input"
                                :class="Number(pagu_tahap2) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
                     <p class="mt-1 text-[11px]" :class="Number(pagu_tahap2) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
@@ -84,6 +123,11 @@
                         <span x-show="Number(pagu_tahap2) > batasTahap"> — melebihi batas!</span>
                     </p>
                 </div>
+            </div>
+            <div x-show="tahap_manual" x-cloak class="flex justify-end">
+                <button type="button" @click="kembaliOtomatis()" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    &#8635; Bagi ulang otomatis 50% : 50%
+                </button>
             </div>
             <div class="rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
                 <div class="flex justify-between mb-1">

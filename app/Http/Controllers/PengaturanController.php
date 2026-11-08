@@ -181,6 +181,26 @@ class PengaturanController extends Controller
             ? (float) $request->input('pagu_total')
             : null;
 
+        // Pagu per tahap dihitung otomatis 50% : 50% bila operator membiarkannya
+        // kosong (mis. hanya mengisi pagu 1 tahun). Nilai yang sudah diisi
+        // manual TIDAK ditimpa, sehingga operator tetap bisa mengatur sendiri.
+        $isBlank = fn ($v) => $v === null || $v === '';
+        $tahap1Input = $request->input('pagu_tahap1');
+        $tahap2Input = $request->input('pagu_tahap2');
+        if ($paguTotalInput !== null) {
+            if ($isBlank($tahap1Input) && $isBlank($tahap2Input)) {
+                $setengah = floor($paguTotalInput / 2);
+                $request->merge([
+                    'pagu_tahap1' => $setengah,
+                    'pagu_tahap2' => $paguTotalInput - $setengah,
+                ]);
+            } elseif ($isBlank($tahap1Input) && is_numeric($tahap2Input)) {
+                $request->merge(['pagu_tahap1' => max(0, $paguTotalInput - (float) $tahap2Input)]);
+            } elseif ($isBlank($tahap2Input) && is_numeric($tahap1Input)) {
+                $request->merge(['pagu_tahap2' => max(0, $paguTotalInput - (float) $tahap1Input)]);
+            }
+        }
+
         $validated = $request->validate([
             'pagu_total' => 'required|numeric|min:0',
             'pagu_tahap1' => ['required', 'numeric', 'min:0', new MaksimalSetengahPagu($paguTotalInput, 'I')],

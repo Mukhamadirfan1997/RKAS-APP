@@ -20,7 +20,8 @@
             ['label' => 'Honor tidak melebihi batas', 'ok' => $summary['honor']['status'] === 'sesuai'],
             ['label' => 'Anggaran buku memenuhi minimum', 'ok' => $summary['buku']['status'] === 'sesuai'],
             ['label' => 'Sarpras tidak melebihi batas', 'ok' => $summary['sarpras']['status'] === 'sesuai'],
-            ['label' => 'Alokasi Tahap I ≥ 50%', 'ok' => $summary['tahap1']['status'] === 'sesuai'],
+            ['label' => 'Alokasi Tahap I tepat 50%', 'ok' => $summary['tahap1']['status'] === 'sesuai'],
+            ['label' => 'Alokasi Tahap II maksimal 50%', 'ok' => ($summary['tahap2']['status'] ?? 'sesuai') === 'sesuai'],
             ['label' => 'Total anggaran tidak melebihi pagu', 'ok' => $summary['sudah_dianggarkan'] <= $summary['pagu_total']],
         ];
         $okCount = collect($checks)->where('ok', true)->count();
@@ -75,10 +76,10 @@
                 <span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">Status: {{ ucfirst($summary['status_sekolah'] ?? 'negeri') }} &middot; Honor maks {{ $summary['honor']['batas_persen'] ?? 20 }}%</span>
             </p>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="try{if(window.__karsaStartDashboardTour) window.__karsaStartDashboardTour(); else { const t=document.querySelector('meta[name=&quot;csrf-token&quot;]')?.content||''; fetch('/tur/reset-semua',{method:'POST',headers:{'X-CSRF-TOKEN':t,'Accept':'application/json'},credentials:'same-origin'}).finally(()=>location.reload()); }}catch(e){}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
+        <div class="flex items-center gap-2 flex-wrap lg:flex-nowrap">
+            <button type="button" onclick="try{if(window.__karsaStartDashboardTour) window.__karsaStartDashboardTour(); else { const t=document.querySelector('meta[name=&quot;csrf-token&quot;]')?.content||''; fetch('/tur/reset-semua',{method:'POST',headers:{'X-CSRF-TOKEN':t,'Accept':'application/json'},credentials:'same-origin'}).finally(()=>location.reload()); }}catch(e){}" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                Tur Panduan
+                Tur
             </button>
             <a id="tour-dashboard-lembar" href="{{ route('rkas.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
@@ -102,8 +103,7 @@
         </div>
         <div class="min-w-0 flex-1">
             <div class="text-sm font-bold text-slate-800 dark:text-white"><span x-text="g"></span>, {{ Auth::user()->name ?? 'Operator RKAS' }} 👋</div>
-            <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5"><span class="font-display font-extrabold">KARSA</span> — Kertas Kerja RKAS <span class="font-normal text-slate-500 dark:text-slate-400">• Rencana Kegiatan &amp; Anggaran Sekolah TA {{ $tahunAnggaran->tahun ?? 2026 }} • Aplikasi desktop offline pengganti Excel untuk menyusun RKAS secara mandiri — rujukan sebelum isi ARKAS</span></div>
-            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ $sekolah->nama_sekolah }} (NPSN {{ $sekolah->npsn }}) • {{ $tahunAnggaran->sumber_dana }} • <span class="inline-flex items-center gap-1">Status: {{ ucfirst($summary['status_sekolah'] ?? 'negeri') }}</span></div>
+            <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5"><span class="font-display font-extrabold">KARSA</span> — Kertas Kerja RKAS <span class="font-normal text-slate-500 dark:text-slate-400">• Aplikasi desktop offline pengganti Excel untuk menyusun RKAS secara mandiri — rujukan sebelum isi ARKAS</span></div>
         </div>
     </div>
 
@@ -113,19 +113,32 @@
             ['label' => 'Honor Belanja', 'hint' => 'maks {p}% dari pagu', 'key' => 'honor', 'bar' => $summary['honor']['persen'] / max($summary['honor']['batas_persen'],1) * 100, 'color' => 'bg-blue-500'],
             ['label' => 'Anggaran Buku', 'hint' => 'min {p}% dari pagu', 'key' => 'buku', 'bar' => $summary['buku']['persen'] / max($summary['buku']['batas_persen'],1) * 100, 'color' => 'bg-indigo-500'],
             ['label' => 'Sarpras', 'hint' => 'maks {p}% dari pagu', 'key' => 'sarpras', 'bar' => $summary['sarpras']['persen'] / max($summary['sarpras']['batas_persen'],1) * 100, 'color' => 'bg-violet-500'],
-            ['label' => 'Tahap I', 'hint' => 'min {p}% dari pagu', 'key' => 'tahap1', 'bar' => $summary['tahap1']['persen'] / max($summary['tahap1']['batas_persen'],1) * 100, 'color' => 'bg-emerald-500'],
+            ['label' => 'Tahap I', 'hint' => 'tepat {p}% dari pagu', 'key' => 'tahap1', 'bar' => $summary['tahap1']['persen'] / max($summary['tahap1']['batas_maks_persen'] ?? $summary['tahap1']['batas_persen'],1) * 100, 'color' => 'bg-emerald-500'],
         ] as $comp)
-            @php $d = $summary[$comp['key']]; $hint = str_replace('{p}', $d['batas_persen'], $comp['hint']); @endphp
+            @php
+                $d = $summary[$comp['key']];
+                $hint = str_replace('{p}', $d['batas_persen'] ?? $d['batas_maks_persen'] ?? 50, $comp['hint']);
+                $barColor = match ($d['status']) {
+                    'melebihi' => 'bg-red-500',
+                    'kurang' => 'bg-amber-500',
+                    default => $comp['color'],
+                };
+            @endphp
             <div class="card p-5">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center justify-between gap-2 mb-3">
                     <span class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ $comp['label'] }}</span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusBg[$d['status']] ?? 'bg-slate-50 text-slate-600 border-slate-200' }}">{{ $statusLabel[$d['status']] ?? $d['status'] }}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap {{ $statusBg[$d['status']] ?? 'bg-slate-50 text-slate-600 border-slate-200' }}">{{ $statusLabel[$d['status']] ?? $d['status'] }}</span>
                 </div>
                 <div class="text-2xl font-extrabold text-slate-800 dark:text-white">Rp {{ number_format($d['total'], 0, ',', '.') }}</div>
-                <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ $d['persen'] }}% &middot; {{ $hint }}</div>
+                <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ number_format($d['persen'], 2, ',', '.') }}% &middot; {{ $hint }}</div>
                 <div class="mt-3 h-2 rounded-full bg-slate-100 dark:bg-slate-700/60 overflow-hidden">
-                    <div class="h-full rounded-full {{ $comp['color'] }} transition-all" style="width: {{ min($comp['bar'], 100) }}%"></div>
+                    <div class="h-full rounded-full {{ $barColor }} transition-all" style="width: {{ min($comp['bar'], 100) }}%"></div>
                 </div>
+                @if($comp['key'] === 'tahap1' && ($d['status'] ?? '') === 'melebihi')
+                    <div class="mt-2 text-[10px] font-semibold text-red-600 dark:text-red-400">
+                        Kelebihan Rp {{ number_format($d['kelebihan'] ?? 0, 0, ',', '.') }} dari jatah — pindahkan ke Juli–Desember
+                    </div>
+                @endif
             </div>
         @endforeach
     </div>
@@ -140,7 +153,24 @@
                     Pagu Total
                 </div>
                 <div class="text-xl font-extrabold text-slate-800 dark:text-white mt-3">Rp {{ number_format($summary['pagu_total'], 0, ',', '.') }}</div>
-                <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Tahap I Rp {{ number_format($tahunAnggaran->pagu_tahap1 ?? 0, 0, ',', '.') }} · Tahap II Rp {{ number_format($tahunAnggaran->pagu_tahap2 ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 space-y-1.5">
+                    @foreach([
+                        ['Tahap I', 'Jan–Jun', $summary['tahap1']],
+                        ['Tahap II', 'Jul–Des', $summary['tahap2']],
+                    ] as [$namaTahap, $rentang, $t])
+                        <div class="rounded-lg bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1.5">
+                            <div class="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-wide">
+                                <span class="text-slate-500 dark:text-slate-400">{{ $namaTahap }} <span class="font-normal normal-case tracking-normal">{{ $rentang }}</span></span>
+                                <span class="{{ $t['status'] === 'melebihi' ? 'text-red-600 dark:text-red-400' : ($t['status'] === 'kurang' ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400') }}">{{ number_format($t['persen'], 2, ',', '.') }}%</span>
+                            </div>
+                            <div class="mt-0.5 text-[11px] leading-tight">
+                                <span class="font-bold {{ $t['status'] === 'melebihi' ? 'text-red-600 dark:text-red-400' : ($t['status'] === 'kurang' ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-slate-200') }}">Rp {{ number_format($t['total'], 0, ',', '.') }}</span>
+                                <span class="text-slate-400 dark:text-slate-500">/ {{ number_format($t['batas_maks_nominal'], 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="mt-2 text-[10px] text-slate-400 dark:text-slate-500">Jatah tiap tahap 50% dari pagu 1 tahun.</div>
             </div>
             <div class="card p-5 flex flex-col">
                 <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -158,6 +188,9 @@
                 </div>
                 <div class="text-xl font-extrabold mt-3 {{ $sisa < 0 ? 'text-red-600 dark:text-red-400' : ($sisa === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600 dark:text-emerald-400') }}">Rp {{ number_format(abs($sisa), 0, ',', '.') }}</div>
                 <div class="text-[11px] mt-1 {{ $sisa < 0 ? 'text-red-500' : 'text-slate-400 dark:text-slate-500' }}">{{ $sisa < 0 ? 'Melebihi pagu — kurangi anggaran' : ($sisa === 0 ? 'Pas — siap untuk pengesahan ✓' : 'Belum dianggarkan — harus Rp 0 sebelum pengesahan') }}</div>
+                <div class="mt-3 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 overflow-hidden" title="Terpakai {{ $sudahPct }}% dari pagu">
+                    <div class="h-full {{ $sisa < 0 ? 'bg-red-500' : 'bg-emerald-500' }}" style="width: {{ min($sudahPct, 100) }}%"></div>
+                </div>
             </div>
         </div>
 
@@ -187,20 +220,26 @@
                     <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $score >= 100 ? 'Semua syarat kepatuhan terpenuhi.' : ('Selesaikan ' . (count($checks) - $okCount) . ' langkah lagi.' ) }}</div>
                 </div>
             </div>
-            <ul class="space-y-2">
-                @foreach($checks as $c)
-                    <li class="flex items-center gap-2.5 text-xs {{ $c['ok'] ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500' }}">
-                        <span class="flex items-center justify-center w-5 h-5 rounded-full shrink-0 {{ $c['ok'] ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700/60 dark:text-slate-500' }}">
-                            @if($c['ok'])
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            @else
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
-                            @endif
-                        </span>
-                        {{ $c['label'] }}
-                    </li>
-                @endforeach
-            </ul>
+            @php $gagalCek = collect($checks)->where('ok', false); @endphp
+            @if($gagalCek->isEmpty())
+                <div class="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Semua {{ count($checks) }} syarat terpenuhi — siap disahkan.
+                </div>
+            @else
+                <div class="text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-2">Belum terpenuhi ({{ $gagalCek->count() }})</div>
+                <ul class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    @foreach($gagalCek as $c)
+                        <li class="flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+                            <span class="mt-0.5 flex items-center justify-center w-4 h-4 rounded-full shrink-0 bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </span>
+                            <span class="leading-snug">{{ $c['label'] }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+                <div class="mt-3 text-[11px] text-slate-400 dark:text-slate-500">{{ $okCount }} syarat sudah terpenuhi &mdash; buka Detail untuk perbaikan per temuan.</div>
+            @endif
         </div>
     </div>
 
@@ -270,13 +309,16 @@
                         ['Buku', $summary['buku']],
                         ['Sarpras', $summary['sarpras']],
                         ['Alokasi Tahap I', $summary['tahap1']],
+                        ['Alokasi Tahap II', $summary['tahap2']],
                     ] as [$label, $data])
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
                             <td class="px-6 py-3.5 font-semibold text-slate-700 dark:text-slate-200">{{ $label }}</td>
                             <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-200">Rp {{ number_format($data['total'], 0, ',', '.') }}</td>
-                            <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-300">{{ $data['persen'] }}%</td>
-                            <td class="px-4 py-3.5 text-right text-slate-500 dark:text-slate-400">{{ $data['arah_persen'] ?? $data['batas_persen'] }}%</td>
-                            <td class="px-4 py-3.5 text-right {{ ($data['sisa'] ?? 0) >= 0 ? 'text-slate-500 dark:text-slate-400' : 'text-red-600 dark:text-red-400' }}">Rp {{ number_format(abs($data['sisa'] ?? 0), 0, ',', '.') }}</td>
+                            <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-300">{{ number_format($data['persen'], 2, ',', '.') }}%</td>
+                            <td class="px-4 py-3.5 text-right text-slate-500 dark:text-slate-400">{{ $data['batas_persen'] ?? $data['batas_maks_persen'] ?? 0 }}%</td>
+                            <td class="px-4 py-3.5 text-right {{ ($data['sisa'] ?? 0) < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-500 dark:text-slate-400' }}">
+                                @if(($data['sisa'] ?? 0) < 0) Lebih @endif Rp {{ number_format(abs($data['sisa'] ?? 0), 0, ',', '.') }}
+                            </td>
                             <td class="px-4 py-3.5 text-center">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusBg[$data['status']] ?? 'bg-slate-50 text-slate-600 border-slate-200' }}">{{ $statusLabel[$data['status']] ?? strtoupper($data['status']) }}</span>
                             </td>

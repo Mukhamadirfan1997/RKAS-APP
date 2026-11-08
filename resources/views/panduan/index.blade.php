@@ -65,7 +65,7 @@
                     <ol class="list-decimal pl-5 space-y-1.5">
                         <li>Buka <strong>Pengaturan → Tahun Anggaran</strong>. Klik <em>Tambah Tahun</em> (mis. 2026), isi sumber dana BOSP REGULER, lalu klik <em>Aktifkan</em> pada tahun yang akan dipakai.</li>
                         <li>Masih di Pengaturan, buka <strong>Pengaturan → Profil Sekolah</strong>. Isi NPSN, nama sekolah, kepala sekolah, bendahara, alamat lengkap, dan pilih <em>Status Sekolah</em> (Negeri/Swasta) — ini menentukan batas honor 20% atau 40%.</li>
-                        <li>Buka <strong>Pengaturan → Pagu</strong>. Isi Pagu Total 1 tahun, lalu Pagu Tahap I (biasanya 50%) dan Tahap II otomatis sisa. Klik Simpan.</li>
+                        <li>Buka <strong>Pengaturan → Pagu</strong>. Isi Pagu Total 1 tahun — pagu Tahap I &amp; Tahap II otomatis dibagi 50% : 50% (bisa Anda ubah manual). Klik Simpan.</li>
                     </ol>
                     <div class="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg px-3 py-2.5 text-xs">
                         <strong>Tips:</strong> Kalau Pagu atau Tahun masih kosong, hitungan di Dashboard akan 0. Isi dulu sebelum menyusun RKAS.
@@ -187,7 +187,7 @@
                 <div class="pt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     <p>Buka <strong>Monitoring JUKNIS</strong> untuk cek kepatuhan:</p>
                     <ul class="list-disc pl-5 space-y-1.5">
-                        <li><strong>JUKNIS (persentase dari pagu):</strong> Honor ≤20% (negeri) / ≤40% (swasta), Buku ≥10%, Sarpras ≤20%, Tahap I ≥50%. Warna hijau = sesuai, merah/kuning = perlu sesuaikan.</li>
+                        <li><strong>JUKNIS (persentase dari pagu):</strong> Honor ≤20% (negeri) / ≤40% (swasta), Buku ≥10%, Sarpras ≤20%, Tahap I tepat 50% (minimal 50% dan tidak boleh melebihi jatah 50%). Warna hijau = sesuai, merah/kuning = perlu sesuaikan.</li>
                         <li><strong>RKA Gelondongan (nominal per kategori):</strong> 3 kategori — Barang Jasa, Modal Mesin, Modal Aset. Isi <em>Target</em> di <strong>Pengaturan → Pagu</strong> sesuai file PAK/RKA dari Dinas. Monitoring menampilkan Target vs Realisasi & selisih.</li>
                     </ul>
                     <p>Kalau ada yang belum sesuai, kembali ke Lembar Kerja dan sesuaikan volume/harga, lalu cek lagi di Monitoring.</p>

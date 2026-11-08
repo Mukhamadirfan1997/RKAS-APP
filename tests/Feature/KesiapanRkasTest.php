@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Kesiapan RKAS: 12 syarat (pagu, JUKNIS, kelengkapan & mutu data item) +
+ * Kesiapan RKAS: 13 syarat (pagu, JUKNIS, kelengkapan & mutu data item) +
  * gerbang pengesahan + halaman drill-down.
  */
 class KesiapanRkasTest extends TestCase
@@ -283,5 +283,95 @@ class KesiapanRkasTest extends TestCase
 
         $this->assertFalse($cek['ok']);
         $this->assertStringContainsString('Item Tanpa Rekening', collect($cek['masalah'])->pluck('judul')->implode(' | '));
+    }
+
+    /**
+     * Aturan pengguna (08 Nov 2026): setiap tahap hanya dijatah 50% dari pagu
+     * 1 tahun. Rencana 52% di Tahap I HARUS ditolak — bukan dianggap "sesuai"
+     * seperti aturan lama yang hanya memeriksa batas minimal.
+     */
+    public function test_alokasi_tahap_satu_melebihi_50_persen_tidak_centang(): void
+    {
+        RkasItem::query()->delete();
+        $this->ta->update([
+            'pagu_total' => 10000000,
+            'pagu_tahap1' => 5000000,
+            'pagu_tahap2' => 5000000,
+            'target_barjas' => null,
+            'target_modal_mesin' => null,
+            'target_modal_aset' => null,
+        ]);
+
+        $program = MasterProgram::where('kode', '04.06.05')->firstOrFail();
+        $rekening = MasterKodeRekening::where('kode', '5.1.02.01.01.0024')->firstOrFail();
+
+        // Total tetap Rp 10.000.000 (sisa pagu Rp 0) tetapi Tahap I 52%.
+        $this->buatItem($program, $rekening, 'Belanja Alat Tulis Semester Satu', 100000, [
+            1 => 5200000,
+            7 => 4800000,
+        ]);
+
+        $hasil = (new KesiapanRkasService($this->ta->fresh()))->evaluasi();
+        $tahap1 = collect($hasil['checks'])->firstWhere('kunci', 'juknis_tahap1');
+        $tahap2 = collect($hasil['checks'])->firstWhere('kunci', 'juknis_tahap2');
+
+        $this->assertFalse($tahap1['ok'], 'Tahap I 52% tidak boleh dianggap sesuai');
+        $this->assertStringContainsString('Tahap I (Jan–Jun) tepat 50%', $tahap1['label']);
+        $this->assertStringContainsString('52%', $tahap1['ringkas']);
+        $this->assertStringContainsString('melebihi jatah 50%', collect($tahap1['masalah'])->pluck('judul')->implode(' | '));
+        $this->assertStringContainsString('200.000', collect($tahap1['masalah'])->pluck('detail')->implode(' | '));
+        $this->assertTrue($tahap2['ok'], 'Tahap II 48% masih dalam jatah');
+        $this->assertFalse($hasil['siap']);
+        $this->assertContains('Alokasi Tahap I (Jan–Jun) tepat 50% dari pagu', $hasil['gagal']);
+    }
+
+    public function test_pengesahan_ditolak_saat_tahap_satu_melebihi_jatah_50_persen(): void
+    {
+        RkasItem::query()->delete();
+        $this->ta->update([
+            'pagu_total' => 10000000,
+            'pagu_tahap1' => 5000000,
+            'pagu_tahap2' => 5000000,
+        ]);
+
+        $program = MasterProgram::where('kode', '04.06.05')->firstOrFail();
+        $rekening = MasterKodeRekening::where('kode', '5.1.02.01.01.0024')->firstOrFail();
+        $this->buatItem($program, $rekening, 'Belanja Alat Tulis Semester Satu', 100000, [
+            1 => 5121000,
+            7 => 4879000,
+        ]);
+
+        $resp = $this->post(route('pengaturan.pengesahan.sahkan'), []);
+
+        $resp->assertSessionHasErrors('error');
+        $pesan = session('errors')->first('error');
+        $this->assertStringContainsString('belum siap disahkan', $pesan);
+        $this->assertStringContainsString('Tahap I', $pesan);
+        $this->assertSame('Draft', $this->ta->fresh()->status_pengesahan);
+    }
+
+    public function test_alokasi_tahap_dua_melebihi_50_persen_terdeteksi(): void
+    {
+        RkasItem::query()->delete();
+        $this->ta->update([
+            'pagu_total' => 10000000,
+            'pagu_tahap1' => 5000000,
+            'pagu_tahap2' => 5000000,
+        ]);
+
+        $program = MasterProgram::where('kode', '04.06.05')->firstOrFail();
+        $rekening = MasterKodeRekening::where('kode', '5.1.02.01.01.0024')->firstOrFail();
+        $this->buatItem($program, $rekening, 'Belanja Semester Dua', 100000, [
+            1 => 4000000,
+            7 => 6000000,
+        ]);
+
+        $hasil = (new KesiapanRkasService($this->ta->fresh()))->evaluasi();
+        $tahap2 = collect($hasil['checks'])->firstWhere('kunci', 'juknis_tahap2');
+
+        $this->assertFalse($tahap2['ok']);
+        $this->assertStringContainsString('Tahap II (Jul–Des) maksimal 50%', $tahap2['label']);
+        $this->assertStringContainsString('60%', $tahap2['ringkas']);
+        $this->assertStringContainsString('melebihi jatah 50%', collect($tahap2['masalah'])->pluck('judul')->implode(' | '));
     }
 }

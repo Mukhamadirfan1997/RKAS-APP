@@ -189,20 +189,62 @@ class KesiapanRkasService
             ]]
         );
 
+        // 8. Jatah 50% per tahap. JUKNIS menuntut alokasi Tahap I minimal 50%,
+        //    sementara penyaluran hanya menyediakan 50% kas per tahap — jadi
+        //    rencana Tahap I TIDAK boleh melebihi 50% (bukan hanya "minimal").
         $tahap1Juknis = $summary['tahap1'];
-        $checks[] = $this->cek(
-            'juknis_tahap1',
-            'Alokasi Tahap I (Jan–Jun) minimal 50%',
-            $tahap1Juknis['status'] === 'sesuai',
-            $this->rupiah($tahap1Juknis['total']).' ('.$this->angka($tahap1Juknis['persen']).'%) · minimal '.$this->rupiah($tahap1Juknis['batas_nominal']),
-            route('monitoring.juknis', ['tahun' => $this->tahun->tahun]),
-            $tahap1Juknis['status'] === 'sesuai' ? [] : [[
-                'judul' => 'Serapan Tahap I kurang dari 50%',
+        $masalahTahap1 = [];
+        if ($tahap1Juknis['status'] === 'kurang') {
+            $masalahTahap1[] = [
+                'judul' => 'Alokasi Tahap I kurang dari 50%',
                 'detail' => 'Baru '.$this->rupiah($tahap1Juknis['total']).' ('.$this->angka($tahap1Juknis['persen'])
                     .'%), minimal '.$this->rupiah($tahap1Juknis['batas_nominal']).'.',
-                'tautan' => route('monitoring.juknis', ['tahun' => $this->tahun->tahun]),
-                'aksi' => 'Lihat monitoring',
-            ]]
+                'tautan' => route('rkas.index', ['tahun' => $this->tahun->tahun]),
+                'aksi' => 'Buka lembar kerja',
+            ];
+        } elseif ($tahap1Juknis['status'] === 'melebihi') {
+            $masalahTahap1[] = [
+                'judul' => 'Alokasi Tahap I melebihi jatah 50%',
+                'detail' => $this->rupiah($tahap1Juknis['total']).' ('.$this->angka($tahap1Juknis['persen'])
+                    .'%) melebihi jatah Tahap I '.$this->rupiah($tahap1Juknis['batas_maks_nominal'])
+                    .' — kelebihan '.$this->rupiah($tahap1Juknis['kelebihan'])
+                    .'. Pindahkan item/kegiatan tersebut ke bulan Juli–Desember (Tahap II).',
+                'tautan' => route('rkas.index', ['tahun' => $this->tahun->tahun]),
+                'aksi' => 'Atur alokasi bulan',
+            ];
+        }
+        $checks[] = $this->cek(
+            'juknis_tahap1',
+            'Alokasi Tahap I (Jan–Jun) tepat 50% dari pagu',
+            $tahap1Juknis['status'] === 'sesuai',
+            $this->rupiah($tahap1Juknis['total']).' ('.$this->angka($tahap1Juknis['persen']).'%) · jatah '
+                .$this->rupiah($tahap1Juknis['batas_maks_nominal']),
+            route('rkas.index', ['tahun' => $this->tahun->tahun]),
+            $masalahTahap1
+        );
+
+        // 8b. Tahap II juga hanya dijatah 50% — mencegah rencana semester 2
+        //     melampaui dana yang cair pada Tahap II.
+        $tahap2Juknis = $summary['tahap2'];
+        $masalahTahap2 = [];
+        if ($tahap2Juknis['status'] === 'melebihi') {
+            $masalahTahap2[] = [
+                'judul' => 'Alokasi Tahap II melebihi jatah 50%',
+                'detail' => $this->rupiah($tahap2Juknis['total']).' ('.$this->angka($tahap2Juknis['persen'])
+                    .'%) melebihi jatah Tahap II '.$this->rupiah($tahap2Juknis['batas_maks_nominal'])
+                    .' — kelebihan '.$this->rupiah($tahap2Juknis['kelebihan']).'.',
+                'tautan' => route('rkas.index', ['tahun' => $this->tahun->tahun]),
+                'aksi' => 'Atur alokasi bulan',
+            ];
+        }
+        $checks[] = $this->cek(
+            'juknis_tahap2',
+            'Alokasi Tahap II (Jul–Des) maksimal 50% dari pagu',
+            $tahap2Juknis['status'] === 'sesuai',
+            $this->rupiah($tahap2Juknis['total']).' ('.$this->angka($tahap2Juknis['persen']).'%) · jatah '
+                .$this->rupiah($tahap2Juknis['batas_maks_nominal']),
+            route('rkas.index', ['tahun' => $this->tahun->tahun]),
+            $masalahTahap2
         );
 
         // 9. Setiap item wajib punya kegiatan (program) & kode rekening.

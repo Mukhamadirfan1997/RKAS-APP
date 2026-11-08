@@ -21,6 +21,8 @@ class JuknisValidator
 
     protected float $tahap1Total = 0;
 
+    protected float $tahap2Total = 0;
+
     protected string $statusSekolah = 'negeri';
 
     public function __construct(?TahunAnggaran $tahun = null)
@@ -59,6 +61,10 @@ class JuknisValidator
         $this->tahap1Total = (float) RkasItemBulan::whereHas('item', function ($q) use ($tahun) {
             $q->where('tahun_anggaran_id', $tahun->id);
         })->whereBetween('bulan', [1, 6])->sum('jumlah');
+
+        $this->tahap2Total = (float) RkasItemBulan::whereHas('item', function ($q) use ($tahun) {
+            $q->where('tahun_anggaran_id', $tahun->id);
+        })->whereBetween('bulan', [7, 12])->sum('jumlah');
     }
 
     public function pctOfPagu(float $value): float
@@ -128,16 +134,55 @@ class JuknisValidator
 
     public function tahap1(): array
     {
-        $batas = (float) config('juknis.tahap1.batas_persen');
+        $min = (float) config('juknis.tahap1.batas_persen');
+        $maks = (float) (config('juknis.tahap1.batas_maks_persen') ?? 50);
         $pct = $this->pctOfPagu($this->tahap1Total);
+        $batasMin = $this->paguTotal * $min / 100;
+        $batasMaks = $this->paguTotal * $maks / 100;
+
+        // Dua sisi: JUKNIS menuntut minimal 50%, penyaluran hanya menyediakan
+        // 50% kas di Tahap I — jadi rencana Tahap I tidak boleh lebih dari 50%.
+        $status = 'sesuai';
+        if ($this->tahap1Total < $batasMin - 0.5) {
+            $status = 'kurang';
+        }
+        if ($batasMaks > 0 && $this->tahap1Total > $batasMaks + 0.5) {
+            $status = 'melebihi';
+        }
 
         return [
             'total' => $this->tahap1Total,
             'persen' => $pct,
-            'batas_persen' => $batas,
-            'batas_nominal' => $this->paguTotal * $batas / 100,
-            'status' => $pct >= $batas ? 'sesuai' : 'kurang',
-            'sisa' => ($this->paguTotal * $batas / 100) - $this->tahap1Total,
+            'batas_persen' => $min,
+            'batas_nominal' => $batasMin,
+            'batas_maks_persen' => $maks,
+            'batas_maks_nominal' => $batasMaks,
+            'status' => $status,
+            'sisa' => $batasMin - $this->tahap1Total,
+            'kurang' => max(0, $batasMin - $this->tahap1Total),
+            'kelebihan' => max(0, $this->tahap1Total - $batasMaks),
+        ];
+    }
+
+    /**
+     * Alokasi Tahap II (Juli–Desember). Hanya punya batas atas: jatah penyaluran
+     * Tahap II maksimal 50% dari pagu 1 tahun.
+     */
+    public function tahap2(): array
+    {
+        $maks = (float) (config('juknis.tahap2.batas_maks_persen') ?? 50);
+        $pct = $this->pctOfPagu($this->tahap2Total);
+        $batasMaks = $this->paguTotal * $maks / 100;
+        $melebihi = $batasMaks > 0 && $this->tahap2Total > $batasMaks + 0.5;
+
+        return [
+            'total' => $this->tahap2Total,
+            'persen' => $pct,
+            'batas_maks_persen' => $maks,
+            'batas_maks_nominal' => $batasMaks,
+            'status' => $melebihi ? 'melebihi' : 'sesuai',
+            'sisa' => $batasMaks - $this->tahap2Total,
+            'kelebihan' => max(0, $this->tahap2Total - $batasMaks),
         ];
     }
 
@@ -153,6 +198,7 @@ class JuknisValidator
             'buku' => $this->buku(),
             'sarpras' => $this->sarpras(),
             'tahap1' => $this->tahap1(),
+            'tahap2' => $this->tahap2(),
             'total_kategori' => $total,
         ];
     }

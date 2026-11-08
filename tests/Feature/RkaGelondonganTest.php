@@ -273,24 +273,24 @@ class RkaGelondonganTest extends TestCase
         $response->assertSee('Realisasi', false);
     }
 
-    public function test_dashboard_checklist_12_item_jika_target_null(): void
+    public function test_dashboard_checklist_13_item_jika_target_null(): void
     {
         $user = User::first();
         $this->actingAs($user);
         $this->ta->update(['target_barjas' => null, 'target_modal_mesin' => null, 'target_modal_aset' => null]);
         $response = $this->get(route('dashboard.index'));
         $response->assertOk();
-        // 12 syarat kesiapan (pagu, JUKNIS, kelengkapan & mutu data item), tanpa gelondongan
+        // 13 syarat kesiapan (pagu, JUKNIS, kepatuhan tahap I & II, kelengkapan & mutu data item), tanpa gelondongan
         $response->assertDontSee('3 kategori RKA sesuai target Dinas', false);
         $checks = $response->viewData('checks');
-        $this->assertCount(12, $checks, 'Jika target semua null, checklist 12 item');
-        $response->assertSee('/12', false);
+        $this->assertCount(13, $checks, 'Jika target semua null, checklist 13 item');
+        $response->assertSee('/13', false);
         $this->ta->refresh();
         $hasTarget = $this->ta->target_barjas !== null || $this->ta->target_modal_mesin !== null || $this->ta->target_modal_aset !== null;
         $this->assertFalse($hasTarget);
     }
 
-    public function test_dashboard_checklist_13_item_jika_target_ada(): void
+    public function test_dashboard_checklist_14_item_jika_target_ada(): void
     {
         $user = User::first();
         $this->actingAs($user);
@@ -303,11 +303,13 @@ class RkaGelondonganTest extends TestCase
 
         $response = $this->get(route('dashboard.index'));
         $response->assertOk();
-        $response->assertSee('3 kategori RKA sesuai target Dinas', false);
-        // Denominator jadi 13
+        // Kartu Kesiapan di dashboard hanya menampilkan syarat yang BELUM
+        // terpenuhi, jadi label syarat yang sudah centang tidak dicetak di sana.
+        $response->assertSee('Kesiapan RKAS');
+        // Denominator jadi 14
         $checks = $response->viewData('checks');
-        $this->assertCount(13, $checks, 'Jika target ada, checklist jadi 13 item');
-        $response->assertSee('/13', false);
+        $this->assertCount(14, $checks, 'Jika target ada, checklist jadi 14 item');
+        $response->assertSee('/14', false);
         // Item gelondongan harus centang (ok=true)
         $gelCheck = collect($checks)->firstWhere('label', '3 kategori RKA sesuai target Dinas');
         $this->assertNotNull($gelCheck);

@@ -55,7 +55,23 @@ return [
         'rekening' => ['5.1.02.03'],
         'keywords' => [],
     ],
+    /*
+    | PENYALURAN DUA TAHAP — jatah tiap tahap 50% dari pagu 1 tahun.
+    |
+    | BOSP disalurkan dua tahap: Tahap I (Januari–Juni) dan Tahap II
+    | (Juli–Desember). Masing-masing tahap mendapat jatah 50% dari pagu satu
+    | tahun, sehingga BELANJA yang direncanakan pada bulan-bulan tahap tersebut
+    | tidak boleh melebihi jatah kasnya:
+    |   - Tahap I : minimal 50% (JUKNIS) DAN maksimal 50% -> praktis tepat 50%.
+    |   - Tahap II: maksimal 50%.
+    | Sebelum 08 Nov 2026 hanya batas minimal yang diperiksa, sehingga rencana
+    | 51,21% di Tahap I tetap dianggap "SESUAI" padahal melebihi dana yang cair.
+    */
     'tahap1' => [
-        'batas_persen' => 50,
+        'batas_persen' => 50,       // batas minimal (JUKNIS BOSP)
+        'batas_maks_persen' => 50,  // batas maksimal (jatah penyaluran Tahap I)
+    ],
+    'tahap2' => [
+        'batas_maks_persen' => 50,  // jatah penyaluran Tahap II
     ],
 ];

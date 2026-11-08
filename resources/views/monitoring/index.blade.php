@@ -45,7 +45,7 @@
                 ['key' => 'honor', 'label' => 'Honor Belanja Pegawai', 'desc' => 'batas maksimal', 'batasLabel' => 'maks'],
                 ['key' => 'buku', 'label' => 'Anggaran Buku', 'desc' => 'batas minimal', 'batasLabel' => 'min'],
                 ['key' => 'sarpras', 'label' => 'Sarana & Prasarana', 'desc' => 'batas maksimal', 'batasLabel' => 'maks'],
-                ['key' => 'tahap1', 'label' => 'Alokasi Tahap I (Jan–Jun)', 'desc' => 'minimal', 'batasLabel' => 'min'],
+                ['key' => 'tahap1', 'label' => 'Alokasi Tahap I (Jan–Jun)', 'desc' => 'tepat', 'batasLabel' => 'min'],
             ] as $c)
                 @php $d = $summary[$c['key']]; $pct = (float)($d['persen'] ?? 0); $batas = (float)($d['batas_persen'] ?? 0); $status = $d['status'] ?? 'sesuai'; @endphp
                 <div class="card p-5">
@@ -54,7 +54,7 @@
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusBadge[$status] }}">{{ $statusLabel[$status] }}</span>
                     </div>
                     <div class="text-xl font-extrabold text-slate-800 dark:text-white">Rp {{ number_format($d['total'] ?? 0, 0, ',', '.') }}</div>
-                    <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ $pct }}% · {{ $c['desc'] }} {{ $batas }}% (Rp {{ number_format($d['batas_nominal'] ?? 0, 0, ',', '.') }})</div>
+                    <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ number_format($pct, 2, ',', '.') }}% · {{ $c['desc'] }} {{ number_format($batas, 0) }}% (Rp {{ number_format($d['batas_nominal'] ?? 0, 0, ',', '.') }})</div>
                     <!-- Progress terhadap pagu -->
                     <div class="mt-3 relative h-2 rounded-full bg-slate-100 dark:bg-slate-700/50 overflow-hidden">
                         <div class="absolute inset-y-0 rounded-full {{ $barColor[$status] }}" style="width: {{ min(100, $pct) }}%"></div>
@@ -77,6 +77,18 @@
                         </span>
                         <span>{{ $batas }}%</span>
                     </div>
+                    @if($c['key'] === 'tahap1')
+                        @php $t2 = $summary['tahap2'] ?? null; @endphp
+                        @if($t2)
+                            <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+                                <span class="text-slate-500 dark:text-slate-400">Tahap II (Jul–Des)</span>
+                                <span class="font-semibold {{ $t2['status'] === 'melebihi' ? 'text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300' }}">
+                                    Rp {{ number_format($t2['total'] ?? 0, 0, ',', '.') }} ({{ number_format((float) ($t2['persen'] ?? 0), 2, ',', '.') }}%)
+                                    &middot; jatah {{ $t2['batas_maks_persen'] ?? 50 }}%
+                                </span>
+                            </div>
+                        @endif
+                    @endif
                 </div>
             @endforeach
         </div>

@@ -128,7 +128,7 @@
 
     <p class="text-[11px] text-slate-400 dark:text-slate-500">
         Penilaian memakai aturan JUKNIS BOSP (Permendikdasmen No. 8/2026): buku &ge; 10%, honor &le; 20% (negeri) / 40% (swasta),
-        sarpras &le; 20%, Tahap I &ge; 50%, serta pagu per tahap maksimal 50% dari pagu 1 tahun.
+        sarpras &le; 20%, Tahap I tepat 50% (tidak boleh kurang &amp; tidak boleh lebih), serta pagu per tahap maksimal 50% dari pagu 1 tahun.
     </p>
 </div>
 @endsection

@@ -39,3 +39,6 @@ Thumbs.db
 
 # Artefak rilis (dibuat ulang tiap build oleh scripts/buat-latest-json.mjs)
 /latest.json
+
+# Berkas kerja lokal (uji manual, catatan rilis sementara)
+/scratch/

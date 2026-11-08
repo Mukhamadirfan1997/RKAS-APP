@@ -149,4 +149,49 @@ class PaguTahapTest extends TestCase
             'Status pengesahan hanya boleh berubah lewat tombol Sahkan / Buka Kembali (ada backup + audit)'
         );
     }
+
+    public function test_pagu_tahap_dihitung_otomatis_50_50_jika_dikosongkan(): void
+    {
+        $resp = $this->post(route('pengaturan.update-pagu'), [
+            'tahun' => $this->ta->tahun,
+            'pagu_total' => 184000000,
+            'pagu_tahap1' => '',
+            'pagu_tahap2' => '',
+        ]);
+
+        $resp->assertSessionHas('success');
+
+        $ta = $this->ta->fresh();
+        $this->assertSame(92000000, (int) $ta->pagu_tahap1, 'Tahap I otomatis 50% dari pagu 1 tahun');
+        $this->assertSame(92000000, (int) $ta->pagu_tahap2, 'Tahap II otomatis 50% dari pagu 1 tahun');
+    }
+
+    public function test_pagu_tahap_manual_operator_tidak_ditimpa_otomatis(): void
+    {
+        $resp = $this->post(route('pengaturan.update-pagu'), [
+            'tahun' => $this->ta->tahun,
+            'pagu_total' => 100000000,
+            'pagu_tahap1' => 40000000,
+            'pagu_tahap2' => 50000000,
+        ]);
+
+        $resp->assertSessionHas('success');
+
+        $ta = $this->ta->fresh();
+        $this->assertSame(40000000, (int) $ta->pagu_tahap1, 'Isian manual operator tidak ditimpa');
+        $this->assertSame(50000000, (int) $ta->pagu_tahap2);
+    }
+
+    public function test_tahap_kedua_diisi_dari_sisa_jika_hanya_tahap_satu_diisi(): void
+    {
+        $resp = $this->post(route('pengaturan.update-pagu'), [
+            'tahun' => $this->ta->tahun,
+            'pagu_total' => 100000000,
+            'pagu_tahap1' => 50000000,
+            'pagu_tahap2' => '',
+        ]);
+
+        $resp->assertSessionHas('success');
+        $this->assertSame(50000000, (int) $this->ta->fresh()->pagu_tahap2);
+    }
 }
