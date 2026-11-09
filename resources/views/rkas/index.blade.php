@@ -109,7 +109,10 @@
 
     @php
         $tahap1Total = \App\Models\RkasItemBulan::whereHas('item', fn($q) => $q->where('tahun_anggaran_id', $tahunAnggaran->id))->whereBetween('bulan', [1, 6])->sum('jumlah');
-        $tahap1Pct = $tahunAnggaran->pagu_total > 0 ? round($tahap1Total / $tahunAnggaran->pagu_total * 100) : 0;
+        $tahap1Pct = $tahunAnggaran->pagu_total > 0 ? round($tahap1Total / $tahunAnggaran->pagu_total * 100, 2) : 0;
+        $jatahTahap1 = ($tahunAnggaran->pagu_total ?? 0) * 0.5;
+        $isLebihTahap1 = $tahap1Total > $jatahTahap1;
+        $isPasTahap1 = abs($tahap1Total - $jatahTahap1) < 1;
     @endphp
     <div class="grid grid-cols-2 {{ $selectedBulan > 0 ? 'lg:grid-cols-5' : 'lg:grid-cols-4' }} gap-4">
         <div class="card p-5">
@@ -124,13 +127,29 @@
         </div>
         <div class="card p-5">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Belum Dianggarkan <span class="normal-case">&middot; Sisa Pagu</span></div>
-            <div class="text-lg md:text-xl font-extrabold {{ $sisaPagu >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600' }} mt-1">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $sisaPagu >= 0 ? 'Siap untuk tambahan kegiatan (harus Rp 0 sebelum pengesahan)' : 'Melebihi pagu total' }}</div>
+            <div class="text-lg md:text-xl font-extrabold {{ $sisaPagu === 0 ? 'text-emerald-600 dark:text-emerald-400' : ($sisaPagu > 0 ? 'text-amber-600' : 'text-red-600') }} mt-1">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                @if($sisaPagu === 0)
+                    Anggaran pas 100% (siap pengesahan)
+                @elseif($sisaPagu > 0)
+                    Tersisa Rp {{ number_format($sisaPagu, 0, ',', '.') }} (harus Rp 0 sebelum pengesahan)
+                @else
+                    Melebihi pagu total (-Rp {{ number_format(abs($sisaPagu), 0, ',', '.') }})
+                @endif
+            </div>
         </div>
         <div class="card p-5">
-            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Capaian Tahap I (min 50%)</div>
-            <div class="text-lg md:text-xl font-extrabold {{ $tahap1Pct >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600' }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
-            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $tahap1Pct }}% dari pagu &middot; {{ $tahap1Pct >= 50 ? 'memenuhi minimal 50%' : 'belum mencapai minimal 50%' }}</div>
+            <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Alokasi Tahap I (Jatah 50%)</div>
+            <div class="text-lg md:text-xl font-extrabold {{ $isLebihTahap1 ? 'text-rose-600' : ($isPasTahap1 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600') }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                @if($isLebihTahap1)
+                    {{ $tahap1Pct }}% dari pagu &middot; <span class="font-bold text-rose-600 dark:text-rose-400">melebihi jatah 50% (+Rp {{ number_format($tahap1Total - $jatahTahap1, 0, ',', '.') }})</span>
+                @elseif($isPasTahap1)
+                    {{ $tahap1Pct }}% dari pagu &middot; tepat 50% jatah Tahap I
+                @else
+                    {{ $tahap1Pct }}% dari pagu &middot; belum mencapai 50%
+                @endif
+            </div>
         </div>
         @if($selectedBulan > 0)
             @php
@@ -206,13 +225,13 @@
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
                         <th class="px-3 py-3 text-center font-semibold w-10">No</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[160px] max-w-[200px]">Program Kegiatan</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[160px] max-w-[200px]">Program / Standar</th>
                         <th class="px-3 py-3 text-left font-semibold min-w-[200px] max-w-[260px]">Kegiatan</th>
                         <th class="px-3 py-3 text-left font-semibold min-w-[190px]">Rekening Belanja</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[220px]">Uraian</th>
+                        <th class="px-3 py-3 text-left font-semibold min-w-[220px]">Uraian Barang / Jasa</th>
                         <th class="px-3 py-3 text-right font-semibold min-w-[110px]">Volume</th>
                         <th class="px-3 py-3 text-right font-semibold min-w-[130px]" title="Kontrol: harga tidak boleh melebihi batas atas SSH. Lebih murah dari acuan tetap OK.">Harga Satuan</th>
-                        <th class="px-3 py-3 text-right font-semibold min-w-[140px]">Total</th>
+                        <th class="px-3 py-3 text-right font-semibold min-w-[140px]">Total Anggaran</th>
                         <th class="px-3 py-3 text-center font-semibold w-14">Aksi</th>
                     </tr>
                 </thead>
@@ -413,7 +432,7 @@
                             <div class="text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-slate-500">Harga Satuan</div>
                             <div class="text-sm font-bold text-slate-800 dark:text-white mt-1" x-text="'Rp ' + form.harga_satuan.toLocaleString('id-ID')"></div>
                             <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-1">Satuan: <span class="font-semibold" x-text="form.satuan || '-'"></span></div>
-                            <div class="text-[11px] text-slate-400 mt-1" x-show="form.harga_satuan_arkas > 0" x-text="'Acuan ARKAS: Rp ' + form.harga_satuan_arkas.toLocaleString('id-ID')"></div>
+                            <div class="text-[11px] text-slate-400 mt-1" x-show="form.harga_satuan_arkas > 0" x-text="'Harga Acuan: Rp ' + form.harga_satuan_arkas.toLocaleString('id-ID')"></div>
                             <div class="text-[11px] text-slate-400 mt-1" x-show="form.harga_min > 0 || form.harga_max > 0" x-text="'SSH: Rp ' + form.harga_min.toLocaleString('id-ID') + ' — Rp ' + form.harga_max.toLocaleString('id-ID')"></div>
                             <div x-show="form.koreksi !== 0" class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1" x-text="'Koreksi: Rp ' + form.koreksi.toLocaleString('id-ID') + ' → Total: ' + totalAll()"></div>
                         </div>
@@ -680,7 +699,7 @@
                     <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700/60 gap-3">
                         <div class="text-[11px]" x-show="error" x-cloak style="color:#dc2626" x-text="error"></div>
                         <div class="flex items-center gap-2 ml-auto">
-                            <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50" x-text="mode === 'view' ? 'Tutup' : 'Tutup'"></button>
+                            <button @click="close()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">Tutup</button>
                             <template x-if="mode !== 'view' && step===1">
                                 <button @click="nextStep()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20">Lanjut ke Detail →</button>
                             </template>

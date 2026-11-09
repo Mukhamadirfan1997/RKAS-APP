@@ -44,9 +44,9 @@
         </button>
     </form>
 
-    <div class="mt-5 pt-3 border-t border-slate-100 text-center">
+    <div class="mt-4 pt-2.5 border-t border-slate-100 text-center">
         <p class="text-[11px] text-slate-500 leading-relaxed">
-            Akun operator hanya dibuat saat registrasi pertama di komputer ini &mdash; aplikasi tidak menyimpan akun bawaan.
+            Akun operator dibuat saat registrasi awal di komputer ini &mdash; data tersimpan lokal.
         </p>
     </div>
 @endsection

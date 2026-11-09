@@ -18,10 +18,10 @@
         }
     </style>
 </head>
-<body class="min-h-full flex items-center justify-center login-bg p-4 relative overflow-hidden select-none">
+<body class="min-h-full flex flex-col items-center login-bg p-4 relative overflow-y-auto select-none py-4 sm:py-8">
 
     <!-- Background Constellation Network -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
         <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1440 900">
             <defs>
                 <radialGradient id="node-gold" cx="50%" cy="50%" r="50%">
@@ -76,19 +76,19 @@
         </svg>
     </div>
 
-    <div class="w-full @yield('lebar', 'max-w-[380px]') z-10 py-6 flex flex-col items-center">
+    <div class="w-full @yield('lebar', 'max-w-[380px]') z-10 my-auto py-3 sm:py-6 flex flex-col items-center">
 
-        <div class="bg-white rounded-md shadow-2xl p-2 mb-3 flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28">
+        <div class="bg-white rounded-md shadow-2xl p-2 mb-2 sm:mb-3 flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24">
             <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
         </div>
 
-        <div class="text-center mb-5">
-            <h1 class="text-white font-display font-extrabold text-2xl sm:text-3xl tracking-wider uppercase">KARSA</h1>
+        <div class="text-center mb-3 sm:mb-4">
+            <h1 class="text-white font-display font-extrabold text-xl sm:text-2xl tracking-wider uppercase">KARSA</h1>
             <p class="text-blue-100/90 text-xs font-semibold tracking-[0.14em] uppercase mt-0.5">Kertas Kerja RKAS</p>
             <p class="text-blue-100/70 text-[11px] font-normal mt-0.5">@yield('subjudul', 'Rencana Kegiatan & Anggaran Sekolah')</p>
         </div>
 
-        <div class="w-full bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-slate-100">
+        <div class="w-full bg-white rounded-2xl shadow-2xl p-5 sm:p-7 border border-slate-100">
             @if(session('status'))
                 <div class="mb-4 px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">{{ session('status') }}</div>
             @endif
