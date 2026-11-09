@@ -36,7 +36,7 @@
         <div class="flex items-center gap-2 flex-wrap">
             @php $pdfBulanAktif = $selectedBulan > 0 ? $selectedBulan : (int) date('n'); @endphp
             <div id="tour-rkas-cetak" class="relative" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false">
-                <button type="button" @click="open=!open" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                <button type="button" @click="open=!open" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Cetak/Unduh
                     <svg class="w-3.5 h-3.5 text-slate-400" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -76,12 +76,12 @@
                 </div>
             </div>
             @if($tahunAnggaran->status_pengesahan !== 'Disahkan')
-            <button type="button" id="btn-open-modal" data-tour="tambah-anggaran" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
+            <button type="button" id="btn-open-modal" data-tour="tambah-anggaran" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Anggaran
             </button>
             @else
-            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 text-sm font-semibold border border-slate-200 dark:border-slate-600 cursor-not-allowed" title="RKAS terkunci — buka kembali di Pengaturan untuk revisi">
+            <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 text-sm font-semibold border border-slate-200 dark:border-slate-600 cursor-not-allowed" title="RKAS terkunci — buka kembali di Pengaturan untuk revisi">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Terkunci
             </span>
@@ -115,17 +115,17 @@
         $isPasTahap1 = abs($tahap1Total - $jatahTahap1) < 1;
     @endphp
     <div class="grid grid-cols-2 {{ $selectedBulan > 0 ? 'lg:grid-cols-5' : 'lg:grid-cols-4' }} gap-4">
-        <div class="card p-5">
+        <div class="card p-4">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Pagu Total</div>
             <div class="text-lg md:text-xl font-extrabold text-slate-800 dark:text-white mt-1">Rp {{ number_format($tahunAnggaran->pagu_total, 0, ',', '.') }}</div>
             <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Tahap I: Rp {{ number_format($tahunAnggaran->pagu_tahap1, 0, ',', '.') }} &middot; Tahap II: Rp {{ number_format($tahunAnggaran->pagu_tahap2, 0, ',', '.') }}</div>
         </div>
-        <div class="card p-5">
+        <div class="card p-4">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Sudah Dianggarkan</div>
             <div class="text-lg md:text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">Rp {{ number_format($totalSudahDianggarkan, 0, ',', '.') }}</div>
             <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $items->total() }} item belanja @if($items->hasPages())· hal {{ $items->currentPage() }} / {{ $items->lastPage() }} @endif</div>
         </div>
-        <div class="card p-5">
+        <div class="card p-4">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Belum Dianggarkan <span class="normal-case">&middot; Sisa Pagu</span></div>
             <div class="text-lg md:text-xl font-extrabold {{ $sisaPagu === 0 ? 'text-emerald-600 dark:text-emerald-400' : ($sisaPagu > 0 ? 'text-amber-600' : 'text-red-600') }} mt-1">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</div>
             <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
@@ -138,7 +138,7 @@
                 @endif
             </div>
         </div>
-        <div class="card p-5">
+        <div class="card p-4">
             <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Alokasi Tahap I (Jatah 50%)</div>
             <div class="text-lg md:text-xl font-extrabold {{ $isLebihTahap1 ? 'text-rose-600' : ($isPasTahap1 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600') }} mt-1">Rp {{ number_format($tahap1Total, 0, ',', '.') }}</div>
             <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
@@ -157,7 +157,7 @@
                     ? round(($totalBulanTerpilih ?? 0) / $tahunAnggaran->pagu_total * 100, 2)
                     : 0;
             @endphp
-            <div class="card p-5 ring-2 ring-blue-500/40 dark:ring-blue-400/30">
+            <div class="card p-4 ring-2 ring-blue-500/40 dark:ring-blue-400/30">
                 <div class="text-[11px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">Total Bulan {{ $bulanIndonesia[$selectedBulan] }}</div>
                 <div class="text-lg md:text-xl font-extrabold text-blue-700 dark:text-blue-300 mt-1">Rp {{ number_format($totalBulanTerpilih ?? 0, 0, ',', '.') }}</div>
                 <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $pctBulan }}% dari pagu &middot; {{ $items->total() }} item dianggarkan bulan ini</div>
@@ -191,11 +191,22 @@
                 @if(request('tahun'))<input type="hidden" name="tahun" value="{{ request('tahun') }}">@endif
                 <input type="hidden" name="bulan" id="rkas-form-bulan" value="{{ $selectedBulan }}">
 
-                {{-- Filter Bulan --}}
-                <div class="flex gap-1.5 overflow-x-auto pb-1 items-center">
-                    <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = 0" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
+                {{-- Filter Bulan: dropdown ringkas di layar < 1280 px, pill cepat di layar lebar --}}
+                <div class="flex items-center gap-2 xl:hidden">
+                    <label for="rkas-bulan-pilih" class="text-[11px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500">Bulan</label>
+                    <select id="rkas-bulan-pilih" title="Saring rincian anggaran per bulan"
+                        onchange="document.getElementById('rkas-form-bulan').value = this.value; this.form.submit();"
+                        class="text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <option value="0" @if($selectedBulan === 0) selected @endif>Semua bulan (1 tahun)</option>
+                        @for($b = 1; $b <= 12; $b++)
+                            <option value="{{ $b }}" @if($selectedBulan === $b) selected @endif>{{ $bulanIndonesia[$b] }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="hidden xl:flex gap-1.5 items-center">
+                    <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = 0" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === 0 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">Semua</button>
                     @for($b = 1; $b <= 12; $b++)
-                        <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = {{ $b }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === $b ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">{{ substr($bulanIndonesia[$b], 0, 3) }}</button>
+                        <button type="submit" onclick="document.getElementById('rkas-form-bulan').value = {{ $b }}" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors {{ $selectedBulan === $b ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50' }}">{{ substr($bulanIndonesia[$b], 0, 3) }}</button>
                     @endfor
                 </div>
 
@@ -224,15 +235,14 @@
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wide">
-                        <th class="px-3 py-3 text-center font-semibold w-10">No</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[160px] max-w-[200px]">Program / Standar</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[200px] max-w-[260px]">Kegiatan</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[190px]">Rekening Belanja</th>
-                        <th class="px-3 py-3 text-left font-semibold min-w-[220px]">Uraian Barang / Jasa</th>
-                        <th class="px-3 py-3 text-right font-semibold min-w-[110px]">Volume</th>
-                        <th class="px-3 py-3 text-right font-semibold min-w-[130px]" title="Kontrol: harga tidak boleh melebihi batas atas SSH. Lebih murah dari acuan tetap OK.">Harga Satuan</th>
-                        <th class="px-3 py-3 text-right font-semibold min-w-[140px]">Total Anggaran</th>
-                        <th class="px-3 py-3 text-center font-semibold w-14">Aksi</th>
+                        <th class="px-2.5 py-2.5 text-center font-semibold w-10">No</th>
+                        <th class="px-2.5 py-2.5 text-left font-semibold min-w-[185px] max-w-[240px]">Program / Kegiatan</th>
+                        <th class="px-2.5 py-2.5 text-left font-semibold min-w-[150px] max-w-[190px]">Rekening Belanja</th>
+                        <th class="px-2.5 py-2.5 text-left font-semibold min-w-[175px]">Uraian Barang / Jasa</th>
+                        <th class="px-2.5 py-2.5 text-right font-semibold min-w-[78px]">Volume</th>
+                        <th class="px-2.5 py-2.5 text-right font-semibold min-w-[100px]" title="Kontrol: harga tidak boleh melebihi batas atas SSH. Lebih murah dari acuan tetap OK.">Harga Satuan</th>
+                        <th class="px-2.5 py-2.5 text-right font-semibold min-w-[112px]">Total Anggaran</th>
+                        <th class="px-2.5 py-2.5 text-center font-semibold w-12">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
@@ -242,23 +252,19 @@
                             $jmlRow = $selectedBulan > 0 ? ($item->jumlah_bulan ?? 0) : $item->jumlah_koreksi;
                         @endphp
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
-                            <td class="px-3 py-3 text-center">
+                            <td class="px-2.5 py-2.5 text-center">
                                 <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</div>
                             </td>
-                            {{-- Program Kegiatan (Standar) — truncate ellipsis --}}
-                            <td class="px-3 py-3">
-                                <div class="text-xs font-medium text-slate-700 dark:text-slate-200 truncate max-w-[180px]" title="{{ $item->program->program ?? $item->program->nama ?? '-' }}">{{ $item->program->program ?? $item->program->nama ?? '-' }}</div>
-                                <div class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[180px]" title="{{ $item->program->sub_program ?? '' }}">{{ $item->program->sub_program ?? '' }}</div>
+                            {{-- Program/Standar + Kegiatan digabung satu kolom agar tabel muat di layar 14" --}}
+                            <td class="px-2.5 py-2.5">
+                                <div class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[230px]" title="{{ $item->program->program ?? $item->program->nama ?? '-' }}">{{ $item->program->program ?? $item->program->nama ?? '-' }}</div>
+                                <div class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[230px]" title="[{{ $item->program->kode ?? '' }}] {{ $item->program->nama ?? '' }}">[{{ $item->program->kode ?? '-' }}] {{ $item->program->nama ?? '-' }}</div>
                             </td>
-                            {{-- Kegiatan --}}
-                            <td class="px-3 py-3">
-                                <div class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[240px]" title="[{{ $item->program->kode ?? '' }}] {{ $item->program->nama ?? '' }}">[{{ $item->program->kode ?? '-' }}] {{ $item->program->nama ?? '-' }}</div>
-                            </td>
-                            <td class="px-3 py-3">
+                            <td class="px-2.5 py-2.5">
                                 <div class="text-xs text-slate-700 dark:text-slate-200 font-medium truncate max-w-[180px]" title="{{ $item->kodeRekening->nama ?? '-' }}">{{ $item->kodeRekening->nama ?? '-' }}</div>
-                                <div class="text-[10px] text-slate-400 dark:text-slate-500" title="{{ $item->kodeRekening->kode ?? '' }}">{{ $item->kodeRekening->kode ?? '' }} <span class="text-slate-300">·</span> {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
+                                <div class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[180px]" title="{{ $item->kodeRekening->kode ?? '' }}">{{ $item->kodeRekening->kode ?? '' }} <span class="text-slate-300">·</span> {{ $item->kodeRekening->jenisBelanja->nama ?? '' }}</div>
                             </td>
-                            <td class="px-3 py-3">
+                            <td class="px-2.5 py-2.5">
                                 <div class="text-xs text-slate-800 dark:text-slate-100 font-medium leading-snug">{{ $item->uraian }}</div>
                                 @if($item->keterangan_kustom)
                                     <div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20">
@@ -266,13 +272,13 @@
                                     </div>
                                 @endif
                             </td>
-                            <td class="px-3 py-3 text-right text-slate-700 dark:text-slate-200">
+                            <td class="px-2.5 py-2.5 text-right text-slate-700 dark:text-slate-200">
                                 <div class="text-xs font-semibold">{{ rtrim(rtrim(number_format($volRow, 2, ',', '.'), '0'), ',') }} <span class="text-[11px] font-normal text-slate-500">{{ $item->satuan }}</span></div>
                                 @if($selectedBulan > 0 && (float)$item->volume !== (float)$volRow)
                                     <div class="text-[10px] text-slate-400 dark:text-slate-500">1 Thn: {{ rtrim(rtrim(number_format($item->volume, 2, ',', '.'), '0'), ',') }} {{ $item->satuan }}</div>
                                 @endif
                             </td>
-                            <td class="px-3 py-3 text-right text-slate-700 dark:text-slate-200">
+                            <td class="px-2.5 py-2.5 text-right text-slate-700 dark:text-slate-200">
                                 <div class="text-xs font-medium">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
                                 <div class="flex items-center justify-end gap-1.5 mt-0.5">
                                     @if($item->kontrol === 'OK')
@@ -286,7 +292,7 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-3 py-3 text-right font-bold text-slate-800 dark:text-white">
+                            <td class="px-2.5 py-2.5 text-right font-bold text-slate-800 dark:text-white">
                                 <div class="text-xs">Rp {{ number_format($jmlRow, 0, ',', '.') }}</div>
                                 @if((float)$item->koreksi !== 0.0 && $selectedBulan === 0)
                                     <div class="text-[10px] font-normal text-amber-600 dark:text-amber-400">(Koreksi: {{ $item->koreksi > 0 ? '+' : '' }}Rp {{ number_format($item->koreksi, 0, ',', '.') }})</div>
@@ -295,7 +301,7 @@
                                     <div class="text-[10px] font-normal text-slate-400 dark:text-slate-500">1 Thn: Rp {{ number_format($item->jumlah_koreksi, 0, ',', '.') }}</div>
                                 @endif
                             </td>
-                            <td class="px-3 py-3 text-center">
+                            <td class="px-2.5 py-2.5 text-center">
                                 <div class="relative inline-block" x-data="{ open:false }" @click.outside="open=false" @keydown.escape.window="open=false" @if($loop->first) id="tour-rkas-aksi" @endif>
                                     <button type="button" @click="open=!open" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700/50 transition-colors" title="Aksi">⋯</button>
                                     <div x-show="open" x-cloak x-transition.opacity class="absolute right-0 mt-1 w-44 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-20 overflow-hidden text-left">
@@ -323,7 +329,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
+                            <td colspan="8" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
                                 @if($q !== '')
                                     <div class="text-sm font-semibold text-slate-700 dark:text-slate-200">Tidak ada anggaran yang cocok</div>
                                     <div class="text-xs mt-1 text-slate-500 dark:text-slate-400">Tidak ditemukan data yang sesuai dengan kata kunci &ldquo;<span class="font-bold text-slate-700 dark:text-slate-200">{{ $q }}</span>&rdquo;.</div>
@@ -342,11 +348,11 @@
                 @if($items->total() > 0)
                 <tfoot class="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/60 text-sm">
                     <tr>
-                        <td colspan="7" class="px-4 py-4 text-right font-bold text-slate-600 dark:text-slate-300">
+                        <td colspan="6" class="px-4 py-3.5 text-right font-bold text-slate-600 dark:text-slate-300">
                             Total {{ ($selectedBulan > 0 || $q !== '') ? 'Hasil Filter' : 'Keseluruhan' }}
                             <span class="font-normal text-[11px] text-slate-400">({{ $items->total() }} item, semua halaman)</span>
                         </td>
-                        <td colspan="2" class="px-4 py-4 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">
+                        <td colspan="2" class="px-4 py-3.5 text-right font-extrabold text-blue-700 dark:text-blue-400 text-base">
                             Rp {{ number_format($totalFiltered ?? ($totalSudahKoreksi ?? $totalSudahDianggarkan), 0, ',', '.') }}
                         </td>
                     </tr>

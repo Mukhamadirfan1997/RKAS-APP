@@ -42,7 +42,7 @@
 
         <!-- Sidebar -->
         <aside
-            class="fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-white border-r border-slate-200 dark:bg-slate-800/95 dark:border-slate-700/60
+            class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-white border-r border-slate-200 dark:bg-slate-800/95 dark:border-slate-700/60
                    transition-all duration-300
                    lg:static lg:z-auto
                    {{-- collapsed on desktop --}}
@@ -101,7 +101,7 @@
             @include('layouts.partials.katalog-kosong-banner')
 
             <!-- Content -->
-            <main class="flex-1 overflow-y-auto px-4 lg:px-8 py-6">
+            <main class="flex-1 overflow-y-auto px-3 sm:px-4 lg:px-5 2xl:px-8 py-4 lg:py-6">
                 {{ $slot ?? '' }}
                 @yield('content')
             </main>
@@ -120,6 +120,12 @@
                     this.dark = localStorage.getItem('rkas-theme') === 'dark'
                         || (!localStorage.getItem('rkas-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
                     this.applyTheme();
+                    // Sidebar: tampilan seragam di semua ukuran layar — mulai
+                    // terlipat (80 px) agar lembar kerja dapat lebar penuh di
+                    // laptop 14" maupun 15". Operator bisa membuka lewat tombol
+                    // ☰ dan pilihannya diingat.
+                    const tersimpan = localStorage.getItem('karsa-sidebar');
+                    this.collapsed = tersimpan ? tersimpan === 'collapsed' : true;
                 },
                 applyTheme() {
                     document.documentElement.classList.toggle('dark', this.dark);
@@ -134,6 +140,7 @@
                         this.mobileOpen = !this.mobileOpen;
                     } else {
                         this.collapsed = !this.collapsed;
+                        localStorage.setItem('karsa-sidebar', this.collapsed ? 'collapsed' : 'expanded');
                     }
                 },
             };

@@ -9,17 +9,17 @@
 <header class="flex items-center justify-between gap-3 px-4 lg:px-6 h-16 bg-white dark:bg-slate-800/95 border-b border-slate-200 dark:border-slate-700/60 shrink-0">
     <div class="flex items-center gap-3 min-w-0">
         @if(!($hideSidebarToggle ?? false))
-        <button type="button" @click="toggleSidebar" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-300" title="Lipat sidebar">
+        <button type="button" @click="toggleSidebar" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-300" :title="collapsed ? 'Buka sidebar (menu)' : 'Lipat sidebar'">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
         @endif
 
         @if($labelHalaman)
-            <span class="hidden md:inline text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{{ $labelHalaman }}</span>
+            <span class="hidden xl:inline text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{{ $labelHalaman }}</span>
         @endif
 
         <div class="hidden sm:flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">
+            <span class="hidden 2xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Mode Desktop Offline
             </span>
@@ -37,16 +37,19 @@
     </div>
 
     <div class="hidden lg:flex items-center gap-2" x-data="karsaClock" x-init="init()">
-        <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300">
+        {{-- Layar sedang (1280–1535 px): cukup jam saja --}}
+        <div class="flex 2xl:hidden items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-bold tabular-nums text-slate-600 dark:text-slate-300" title="Waktu sekarang">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span x-text="time.slice(0,5)">--:--</span>
+        </div>
+        {{-- Layar lebar (≥1536 px): jam + tanggal --}}
+        <div class="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300">
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span class="tabular-nums" x-text="time">--:--:--</span>
             <span class="w-px h-4 bg-slate-300 dark:bg-slate-600"></span>
             <span class="font-normal text-slate-500 dark:text-slate-400" x-text="date"></span>
         </div>
-        <div class="flex lg:hidden items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-xs font-bold tabular-nums text-slate-600 dark:text-slate-300">
-            <span x-text="time.slice(0,5)"></span>
-        </div>
-        <div class="hidden xl:flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+        <div class="hidden 2xl:flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
             <span class="w-2 h-2 rounded-full" :class="breakColor"></span>
             <span x-text="breakHint"></span>
         </div>

@@ -235,8 +235,12 @@
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <b>Kesiapan RKAS: {{ $kesiapan['skor'] }}%</b>
-                            ({{ $kesiapan['ok_count'] }}/{{ $kesiapan['total'] }} syarat) —
-                            {{ $kesiapan['siap'] ? 'semua syarat terpenuhi.' : count($kesiapan['gagal']).' syarat belum terpenuhi.' }}
+                            @if(! empty($kesiapan['belum_ada_item']))
+                                &mdash; belum ada uraian anggaran; tambahkan dulu di Lembar Kerja.
+                            @else
+                                ({{ $kesiapan['ok_count'] }}/{{ $kesiapan['total'] }} syarat) &mdash;
+                                {{ $kesiapan['siap'] ? 'semua syarat terpenuhi.' : count($kesiapan['gagal']).' syarat belum terpenuhi.' }}
+                            @endif
                         </div>
                         <a href="{{ route('kesiapan.index', ['tahun' => $tahunAnggaran->tahun]) }}" class="text-[11px] font-bold underline shrink-0">Lihat detail &amp; perbaiki &rarr;</a>
                     </div>
@@ -246,6 +250,9 @@
                                 <li>&bull; {{ $gagal }}</li>
                             @endforeach
                         </ul>
+                        @if(count($kesiapan['belum_dinilai'] ?? []) > 0)
+                            <div class="mt-1 text-[11px] opacity-80">{{ count($kesiapan['belum_dinilai']) }} syarat lain belum bisa dinilai karena datanya belum ada.</div>
+                        @endif
                     @endif
                 </div>
             @endif

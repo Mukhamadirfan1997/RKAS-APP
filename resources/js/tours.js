@@ -110,18 +110,9 @@ function initDashboardTour() {
             element: '#tour-dashboard-kesiapan',
             popover: {
                 title: 'Kesiapan RKAS',
-                description: 'Skor kesiapan merangkum semua syarat. 100% artinya siap disahkan.',
+                description: 'Skor kesiapan merangkum semua syarat. 100% artinya siap disahkan. Selama belum ada uraian anggaran, skor tetap 0% — tambah anggaran dari menu Lembar Kerja.',
                 side: 'left',
                 align: 'start',
-            },
-        },
-        {
-            element: '#tour-dashboard-lembar',
-            popover: {
-                title: 'Buka Lembar Kerja (4/4)',
-                description: 'Klik di sini untuk mulai menyusun atau mengedit rincian anggaran. Tur berikutnya: Lembar Kerja.',
-                side: 'left',
-                align: 'center',
             },
         },
     ];

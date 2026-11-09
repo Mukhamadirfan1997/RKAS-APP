@@ -248,11 +248,17 @@ class PengaturanController extends Controller
         if (! $kesiapan['siap']) {
             if (! $paksa) {
                 $gagal = implode('; ', $kesiapan['gagal']);
+                $catatanBelum = $kesiapan['belum_ada_item']
+                    ? ' Belum ada uraian anggaran di lembar kerja.'
+                    : (count($kesiapan['belum_dinilai']) > 0
+                        ? ' '.count($kesiapan['belum_dinilai']).' syarat lain menunggu data.'
+                        : '');
 
                 return redirect()->back()->withErrors([
                     'error' => 'RKAS belum siap disahkan (skor '.$kesiapan['skor'].'%, '
-                        .$kesiapan['ok_count'].'/'.$kesiapan['total'].' syarat). Yang belum terpenuhi: '.$gagal
-                        .'. Perbaiki lewat halaman Kesiapan RKAS, atau sahkan dengan menuliskan alasan bila memang kondisi khusus.',
+                        .$kesiapan['ok_count'].'/'.$kesiapan['total'].' syarat). Yang belum terpenuhi: '.$gagal.'.'
+                        .$catatanBelum
+                        .' Perbaiki lewat halaman Kesiapan RKAS, atau sahkan dengan menuliskan alasan bila memang kondisi khusus.',
                 ]);
             }
 
@@ -300,6 +306,7 @@ class PengaturanController extends Controller
                     'paksa' => ! $kesiapan['siap'],
                     'alasan' => $kesiapan['siap'] ? null : $alasanPaksa,
                     'belum_terpenuhi' => $kesiapan['gagal'],
+                    'belum_dinilai' => $kesiapan['belum_dinilai'],
                 ],
             ],
         ]);

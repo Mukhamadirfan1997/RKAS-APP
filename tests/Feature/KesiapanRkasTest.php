@@ -374,4 +374,45 @@ class KesiapanRkasTest extends TestCase
         $this->assertStringContainsString('60%', $tahap2['ringkas']);
         $this->assertStringContainsString('melebihi jatah 50%', collect($tahap2['masalah'])->pluck('judul')->implode(' | '));
     }
+
+    /**
+     * Instalasi baru: pagu Rp 0 dan belum ada satu pun uraian anggaran.
+     * Sebelum 09 Nov 2026 kondisi ini menampilkan 85% (11/13) karena
+     * pemeriksaan kosong dianggap "lulus otomatis" — sangat menyesatkan.
+     */
+    public function test_instalasi_baru_tanpa_pagu_dan_tanpa_item_skor_nol_persen(): void
+    {
+        RkasItem::query()->delete();
+        $this->ta->update([
+            'pagu_total' => 0,
+            'pagu_tahap1' => 0,
+            'pagu_tahap2' => 0,
+            'target_barjas' => null,
+            'target_modal_mesin' => null,
+            'target_modal_aset' => null,
+        ]);
+
+        $hasil = (new KesiapanRkasService($this->ta->fresh()))->evaluasi();
+
+        $this->assertSame(0, $hasil['skor'], 'Tanpa pagu & tanpa item, skor harus 0%');
+        $this->assertFalse($hasil['siap']);
+        $this->assertTrue($hasil['belum_ada_item']);
+
+        // Hanya syarat pagu yang bisa dinilai; sisanya "belum bisa dinilai".
+        $dinilai = collect($hasil['checks'])->where('dinilai', true);
+        $this->assertSame(1, $dinilai->count(), 'Hanya "Pagu Total sudah diisi" yang bisa dinilai');
+        $this->assertSame($dinilai->count(), $hasil['total']);
+        $this->assertCount(12, $hasil['belum_dinilai'], '12 syarat menunggu data');
+        $this->assertSame(['Pagu Total 1 tahun sudah diisi'], $hasil['gagal']);
+
+        // Dashboard & halaman kesiapan tidak boleh mencetak skor tinggi.
+        $this->get(route('dashboard.index'))
+            ->assertOk()
+            ->assertSee('Belum ada anggaran diinput')
+            ->assertDontSee('Siap untuk pengesahan');
+        $this->get(route('kesiapan.index', ['tahun' => $this->ta->tahun]))
+            ->assertOk()
+            ->assertSee('belum bisa dinilai')
+            ->assertSee('0%');
+    }
 }

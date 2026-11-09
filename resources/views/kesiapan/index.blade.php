@@ -42,8 +42,17 @@
                 <div class="text-base font-extrabold {{ $kesiapan['siap'] ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' }} mt-1">
                     {{ $kesiapan['siap'] ? 'Siap disahkan' : 'Belum siap disahkan' }}
                 </div>
-                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $kesiapan['ok_count'] }} dari {{ $kesiapan['total'] }} syarat terpenuhi</div>
-                @if(! $kesiapan['siap'])
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    @if($kesiapan['belum_ada_item'])
+                        Belum ada uraian anggaran diinput &mdash; skor 0% sampai anggaran mulai disusun.
+                    @else
+                        {{ $kesiapan['ok_count'] }} dari {{ $kesiapan['total'] }} syarat terpenuhi
+                    @endif
+                </div>
+                @if(! empty($kesiapan['belum_dinilai']))
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ count($kesiapan['belum_dinilai']) }} syarat belum bisa dinilai (data belum lengkap)</div>
+                @endif
+                @if(! $kesiapan['siap'] && count($kesiapan['masalah']) > 0)
                     <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ count($kesiapan['masalah']) }} temuan perlu diperbaiki</div>
                 @endif
             </div>
@@ -86,10 +95,16 @@
     {{-- Daftar pemeriksaan --}}
     <div class="space-y-3">
         @foreach($kesiapan['checks'] as $check)
+            @php $dinilai = $check['dinilai'] ?? true; @endphp
             <div class="card overflow-hidden">
                 <div class="px-5 py-4 flex items-start gap-3">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full shrink-0 mt-0.5 {{ $check['ok'] ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400' }}">
-                        @if($check['ok'])
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full shrink-0 mt-0.5
+                        @if(! $dinilai) bg-slate-100 text-slate-400 dark:bg-slate-700/50 dark:text-slate-400
+                        @elseif($check['ok']) bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400
+                        @else bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 @endif">
+                        @if(! $dinilai)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3"/></svg>
+                        @elseif($check['ok'])
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         @else
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -97,7 +112,10 @@
                     </span>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-baseline justify-between gap-2">
-                            <div class="text-sm font-bold {{ $check['ok'] ? 'text-slate-700 dark:text-slate-200' : 'text-red-700 dark:text-red-400' }}">{{ $check['label'] }}</div>
+                            <div class="text-sm font-bold
+                                @if(! $dinilai) text-slate-500 dark:text-slate-400
+                                @elseif($check['ok']) text-slate-700 dark:text-slate-200
+                                @else text-red-700 dark:text-red-400 @endif">{{ $check['label'] }}</div>
                             <a href="{{ $check['tautan'] }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0">Buka halaman terkait &rarr;</a>
                         </div>
                         <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $check['ringkas'] }}</div>

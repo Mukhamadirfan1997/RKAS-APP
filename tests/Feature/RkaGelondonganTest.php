@@ -284,7 +284,13 @@ class RkaGelondonganTest extends TestCase
         $response->assertDontSee('3 kategori RKA sesuai target Dinas', false);
         $checks = $response->viewData('checks');
         $this->assertCount(13, $checks, 'Jika target semua null, checklist 13 item');
-        $response->assertSee('/13', false);
+
+        // Belum ada item anggaran pada test ini, sehingga 9 syarat (5 JUKNIS +
+        // 4 mutu item) belum bisa dinilai dan tidak ikut penyebut skor.
+        $kesiapan = $response->viewData('kesiapan');
+        $this->assertSame(4, $kesiapan['total'], 'Tanpa item: hanya 4 syarat pagu yang bisa dinilai');
+        $this->assertTrue($kesiapan['belum_ada_item']);
+        $response->assertSee('/'.$kesiapan['total'], false);
         $this->ta->refresh();
         $hasTarget = $this->ta->target_barjas !== null || $this->ta->target_modal_mesin !== null || $this->ta->target_modal_aset !== null;
         $this->assertFalse($hasTarget);

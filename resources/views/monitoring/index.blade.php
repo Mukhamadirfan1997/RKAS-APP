@@ -9,6 +9,8 @@
     ];
     $statusLabel = ['sesuai' => 'SESUAI', 'melebihi' => 'MELEBIHI', 'kurang' => 'KURANG'];
     $barColor = ['sesuai' => 'bg-emerald-500', 'melebihi' => 'bg-red-500', 'kurang' => 'bg-amber-500'];
+    // Persentase JUKNIS hanya bermakna bila pagu sudah diisi dan sudah ada anggaran.
+    $juknisBisaDinilai = (float) ($summary['pagu_total'] ?? 0) > 0 && (float) ($summary['sudah_dianggarkan'] ?? 0) > 0;
 @endphp
 
 <div class="space-y-6" x-data="{ tab: 'ringkasan' }">
@@ -51,21 +53,29 @@
                 <div class="card p-5">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ $c['label'] }}</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusBadge[$status] }}">{{ $statusLabel[$status] }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $juknisBisaDinilai ? $statusBadge[$status] : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600' }}">{{ $juknisBisaDinilai ? $statusLabel[$status] : 'BELUM DINILAI' }}</span>
                     </div>
                     <div class="text-xl font-extrabold text-slate-800 dark:text-white">Rp {{ number_format($d['total'] ?? 0, 0, ',', '.') }}</div>
-                    <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ number_format($pct, 2, ',', '.') }}% · {{ $c['desc'] }} {{ number_format($batas, 0) }}% (Rp {{ number_format($d['batas_nominal'] ?? 0, 0, ',', '.') }})</div>
+                    <div class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                        @if($juknisBisaDinilai)
+                            {{ number_format($pct, 2, ',', '.') }}% · {{ $c['desc'] }} {{ number_format($batas, 0) }}% (Rp {{ number_format($d['batas_nominal'] ?? 0, 0, ',', '.') }})
+                        @else
+                            Belum ada anggaran — persentase belum bisa dihitung
+                        @endif
+                    </div>
                     <!-- Progress terhadap pagu -->
                     <div class="mt-3 relative h-2 rounded-full bg-slate-100 dark:bg-slate-700/50 overflow-hidden">
-                        <div class="absolute inset-y-0 rounded-full {{ $barColor[$status] }}" style="width: {{ min(100, $pct) }}%"></div>
+                        <div class="absolute inset-y-0 rounded-full {{ $barColor[$status] }}" style="width: {{ $juknisBisaDinilai ? min(100, $pct) : 0 }}%"></div>
                         @if($batas > 0 && $batas < 100)
                             <div class="absolute inset-y-0 w-0.5 bg-slate-800/60 dark:bg-white/70" style="left: {{ min(100, $batas) }}%" title="Batas {{ $batas }}%"></div>
                         @endif
                     </div>
                     <div class="mt-1 flex justify-between text-[10px] text-slate-400">
                         <span>0%</span>
-                        <span class="font-semibold {{ $status === 'melebihi' ? 'text-red-500' : ($status === 'kurang' ? 'text-amber-500' : 'text-emerald-500') }}">
-                            @if($status === 'melebihi')
+                        <span class="font-semibold {{ ! $juknisBisaDinilai ? 'text-slate-400 dark:text-slate-500' : ($status === 'melebihi' ? 'text-red-500' : ($status === 'kurang' ? 'text-amber-500' : 'text-emerald-500')) }}">
+                            @if(! $juknisBisaDinilai)
+                                Belum dinilai
+                            @elseif($status === 'melebihi')
                                 Kelebihan Rp {{ number_format(abs($d['sisa'] ?? 0), 0, ',', '.') }}
                             @elseif($status === 'kurang' && $c['key'] !== 'tahap1')
                                 Kurang Rp {{ number_format($d['sisa'] ?? 0, 0, ',', '.') }}

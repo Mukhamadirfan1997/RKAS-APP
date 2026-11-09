@@ -62,6 +62,19 @@ class KesiapanRkasService
 
         $checks = [];
 
+        // Sebagian syarat tidak bermakna bila datanya belum ada. Syarat semacam
+        // itu ditandai "belum bisa dinilai" dan TIDAK ikut dihitung pada skor —
+        // supaya instalasi baru (pagu Rp 0, belum ada item) tidak menampilkan
+        // skor tinggi yang menyesatkan.
+        $dinilaiPagu = $this->paguTotal > 0;
+        $dinilaiItem = $items->isNotEmpty();
+        $alasanPagu = 'isi Pagu Total 1 tahun dulu';
+        $alasanItem = 'belum ada uraian anggaran di lembar kerja';
+        // Syarat JUKNIS berbicara tentang persentase terhadap pagu DAN isi
+        // anggaran — keduanya harus ada agar penilaian bermakna.
+        $dinilaiJuknis = $dinilaiPagu && $dinilaiItem;
+        $alasanJuknis = $dinilaiPagu ? $alasanItem : $alasanPagu;
+
         // 1. Pagu dasar harus terisi — tanpa pagu, semua persentase JUKNIS
         //    tidak bermakna dan RKAS tidak mungkin dinilai.
         $checks[] = $this->cek(
@@ -99,7 +112,9 @@ class KesiapanRkasService
             $masalahTahap === [],
             'Tahap I '.$this->rupiah($tahap1).' · Tahap II '.$this->rupiah($tahap2),
             route('pengaturan.pagu', ['tahun' => $this->tahun->tahun]),
-            $masalahTahap
+            $masalahTahap,
+            $dinilaiPagu,
+            $alasanPagu
         );
 
         // 3. Pagu Tahap I + Tahap II harus tepat sama dengan pagu 1 tahun.
@@ -117,7 +132,9 @@ class KesiapanRkasService
                     .' = '.$this->rupiah($tahap1 + $tahap2).', seharusnya '.$this->rupiah($this->paguTotal).'.',
                 'tautan' => route('pengaturan.pagu', ['tahun' => $this->tahun->tahun]),
                 'aksi' => 'Perbaiki pagu',
-            ]]
+            ]],
+            $dinilaiPagu,
+            $alasanPagu
         );
 
         // 4. Seluruh pagu harus teranggarkan tepat (sisa Rp 0, tidak kurang/lebih).
@@ -135,9 +152,11 @@ class KesiapanRkasService
             'sisa_pagu',
             'Seluruh pagu teranggarkan (sisa Rp 0)',
             $this->paguTotal > 0 && abs($sisa) < 0.5,
-            'Sisa '.$this->rupiah($sisa),
+            $this->paguTotal > 0 ? 'Sisa '.$this->rupiah($sisa) : 'Pagu Total masih Rp 0',
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $masalahSisa
+            $masalahSisa,
+            $dinilaiPagu,
+            $alasanPagu
         );
 
         // 5–8. Kepatuhan JUKNIS (Permendikdasmen No. 8/2026).
@@ -154,7 +173,9 @@ class KesiapanRkasService
                     .$this->rupiah($honor['total'] - $honor['batas_nominal']).' agar sesuai.',
                 'tautan' => route('monitoring.juknis', ['tahun' => $this->tahun->tahun]),
                 'aksi' => 'Lihat monitoring',
-            ]]
+            ]],
+            $dinilaiJuknis,
+            $alasanJuknis
         );
 
         $buku = $summary['buku'];
@@ -170,7 +191,9 @@ class KesiapanRkasService
                     .$this->rupiah($buku['batas_nominal']).' — tambah '.$this->rupiah(max(0, $buku['sisa'])).'.',
                 'tautan' => route('monitoring.juknis', ['tahun' => $this->tahun->tahun]),
                 'aksi' => 'Lihat monitoring',
-            ]]
+            ]],
+            $dinilaiJuknis,
+            $alasanJuknis
         );
 
         $sarpras = $summary['sarpras'];
@@ -186,7 +209,9 @@ class KesiapanRkasService
                     .$this->rupiah($sarpras['total'] - $sarpras['batas_nominal']).'.',
                 'tautan' => route('monitoring.juknis', ['tahun' => $this->tahun->tahun]),
                 'aksi' => 'Lihat monitoring',
-            ]]
+            ]],
+            $dinilaiJuknis,
+            $alasanJuknis
         );
 
         // 8. Jatah 50% per tahap. JUKNIS menuntut alokasi Tahap I minimal 50%,
@@ -220,7 +245,9 @@ class KesiapanRkasService
             $this->rupiah($tahap1Juknis['total']).' ('.$this->angka($tahap1Juknis['persen']).'%) · jatah '
                 .$this->rupiah($tahap1Juknis['batas_maks_nominal']),
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $masalahTahap1
+            $masalahTahap1,
+            $dinilaiJuknis,
+            $alasanJuknis
         );
 
         // 8b. Tahap II juga hanya dijatah 50% — mencegah rencana semester 2
@@ -244,7 +271,9 @@ class KesiapanRkasService
             $this->rupiah($tahap2Juknis['total']).' ('.$this->angka($tahap2Juknis['persen']).'%) · jatah '
                 .$this->rupiah($tahap2Juknis['batas_maks_nominal']),
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $masalahTahap2
+            $masalahTahap2,
+            $dinilaiJuknis,
+            $alasanJuknis
         );
 
         // 9. Setiap item wajib punya kegiatan (program) & kode rekening.
@@ -261,7 +290,9 @@ class KesiapanRkasService
             $tanpaKegiatan->isEmpty(),
             $tanpaKegiatan->isEmpty() ? 'Semua '.$items->count().' item lengkap' : $tanpaKegiatan->count().' item belum lengkap',
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $this->batasi($masalahKegiatan, $tanpaKegiatan->count())
+            $this->batasi($masalahKegiatan, $tanpaKegiatan->count()),
+            $dinilaiItem,
+            $alasanItem
         );
 
         // 10. Tidak ada item bernilai Rp 0 / tanpa alokasi bulan.
@@ -283,7 +314,9 @@ class KesiapanRkasService
             $kosong->isEmpty(),
             $kosong->isEmpty() ? 'Semua item bernilai & beralokasi' : $kosong->count().' item bernilai Rp 0 / tanpa volume',
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $this->batasi($masalahKosong, $kosong->count())
+            $this->batasi($masalahKosong, $kosong->count()),
+            $dinilaiItem,
+            $alasanItem
         );
 
         // 11. Tidak ada harga di atas batas atas SSH (KONTROL MELEBIHI).
@@ -300,7 +333,9 @@ class KesiapanRkasService
             $melebihi->isEmpty(),
             $melebihi->isEmpty() ? 'Semua harga dalam batas SSH' : $melebihi->count().' item melebihi batas atas SSH',
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            $this->batasi($masalahSsh, $melebihi->count())
+            $this->batasi($masalahSsh, $melebihi->count()),
+            $dinilaiItem,
+            $alasanItem
         );
 
         // 12. Tidak ada uraian kosong atau baris kembar (tak bisa dibedakan).
@@ -343,7 +378,9 @@ class KesiapanRkasService
             $masalahUraian === [],
             $masalahUraian === [] ? 'Uraian lengkap & tidak ada kembaran' : count($masalahUraian).' temuan uraian',
             route('rkas.index', ['tahun' => $this->tahun->tahun]),
-            array_slice($masalahUraian, 0, self::BATAS_MASALAH)
+            array_slice($masalahUraian, 0, self::BATAS_MASALAH),
+            $dinilaiItem,
+            $alasanItem
         );
 
         // 13. RKA Gelondongan — hanya dinilai bila sekolah mengisi target Dinas.
@@ -378,8 +415,14 @@ class KesiapanRkasService
             );
         }
 
-        $total = count($checks);
-        $okCount = collect($checks)->where('ok', true)->count();
+        // Skor hanya dihitung dari syarat yang memang bisa dinilai. Bila belum
+        // ada satu pun item anggaran, kesiapan = 0% (bukan warisan "lulus
+        // otomatis" dari pemeriksaan yang kosong).
+        $dinilai = collect($checks)->where('dinilai', true)->values();
+        $belumDinilai = collect($checks)->where('dinilai', false)->values();
+        $total = $dinilai->count();
+        $okCount = $dinilai->where('ok', true)->count();
+        $skor = $dinilaiItem && $total > 0 ? (int) round($okCount / $total * 100) : 0;
 
         return [
             'tahun' => (int) $this->tahun->tahun,
@@ -387,13 +430,15 @@ class KesiapanRkasService
             'sudah_dianggarkan' => $sudah,
             'sisa' => $sisa,
             'jumlah_item' => $items->count(),
+            'belum_ada_item' => $items->isEmpty(),
             'checks' => $checks,
             'ok_count' => $okCount,
             'total' => $total,
-            'skor' => $total > 0 ? (int) round($okCount / $total * 100) : 0,
-            'siap' => $total > 0 && $okCount === $total,
-            'gagal' => collect($checks)->where('ok', false)->pluck('label')->values()->all(),
-            'masalah' => collect($checks)
+            'skor' => $skor,
+            'siap' => $dinilaiItem && $total > 0 && $okCount === $total && $belumDinilai->isEmpty(),
+            'gagal' => $dinilai->where('ok', false)->pluck('label')->values()->all(),
+            'belum_dinilai' => $belumDinilai->pluck('label')->values()->all(),
+            'masalah' => $dinilai
                 ->where('ok', false)
                 ->flatMap(fn (array $c) => $c['masalah'])
                 ->values()
@@ -434,14 +479,28 @@ class KesiapanRkasService
 
     /**
      * @param  array<int, array<string, mixed>>  $masalah
+     * @param  bool  $dinilai  false = syarat belum relevan (data belum ada) → tidak ikut skor
      * @return array<string, mixed>
      */
-    protected function cek(string $kunci, string $label, bool $ok, string $ringkas, string $tautan, array $masalah = []): array
+    protected function cek(string $kunci, string $label, bool $ok, string $ringkas, string $tautan, array $masalah = [], bool $dinilai = true, string $alasanBelum = ''): array
     {
+        if (! $dinilai) {
+            return [
+                'kunci' => $kunci,
+                'label' => $label,
+                'ok' => false,
+                'dinilai' => false,
+                'ringkas' => 'Belum bisa dinilai — '.$alasanBelum,
+                'tautan' => $tautan,
+                'masalah' => [],
+            ];
+        }
+
         return [
             'kunci' => $kunci,
             'label' => $label,
             'ok' => $ok,
+            'dinilai' => true,
             'ringkas' => $ringkas,
             'tautan' => $tautan,
             // array_values wajib: hasil Collection::map() mewarisi indeks asli,

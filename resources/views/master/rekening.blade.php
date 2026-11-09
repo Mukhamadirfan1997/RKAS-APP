@@ -24,7 +24,7 @@
     </div>
 
     <div class="flex flex-wrap gap-3">
-        <div class="card px-4 py-3 flex items-center gap-6 text-xs overflow-x-auto">
+        <div class="card px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
             <span class="font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">Sebaran Jenis (total):</span>
             @foreach($jenisBelanjas as $jb)
                 <span class="whitespace-nowrap"><span class="text-slate-500">{{ $jb->nama }}</span> <b class="text-slate-700 dark:text-slate-200">{{ \App\Models\MasterKodeRekening::where('jenis_belanja_id',$jb->id)->count() }}</b></span>
