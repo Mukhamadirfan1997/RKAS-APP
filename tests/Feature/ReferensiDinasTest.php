@@ -53,7 +53,7 @@ class ReferensiDinasTest extends TestCase
         // Nama program harus memakai istilah DB yang sudah dinormalisasi,
         // bukan istilah mentah dari file dinas.
         $penerimaan = MasterProgram::where('kode', '03.01.06')->first();
-        $this->assertSame('Penerimaan Peserta Didik Baru', $penerimaan->sub_program);
+        $this->assertSame('Penerimaan Murid Baru', $penerimaan->sub_program);
         $this->assertSame('Pengembangan Standar Proses', $penerimaan->program);
 
         $lms = MasterProgram::where('kode', '05.03.03')->first();
@@ -61,9 +61,31 @@ class ReferensiDinasTest extends TestCase
         $this->assertSame('Pengembangan Sarana dan Prasarana Sekolah', $lms->program);
 
         // Tidak boleh ada sisa ejaan mentah file dinas.
-        $this->assertSame(0, MasterProgram::where('sub_program', 'Penerimaan Murid baru')->count());
         $this->assertSame(0, MasterProgram::where('sub_program', 'Pelaksanaan  Administrasi Kegiatan Sekolah')->count());
         $this->assertSame(0, MasterProgram::where('sub_program', 'Pelaksanaan Kegiatan Asesmen/Evaluasi Pembelajaran')->count());
+    }
+
+    /**
+     * Istilah resmi terbaru: SPMB (Sistem Penerimaan Murid Baru), bukan PPDB.
+     * Temuan pengguna 11 Nov 2026: menu Master Data masih menampilkan PPDB.
+     */
+    public function test_istilah_penerimaan_murid_baru_memakai_spmb(): void
+    {
+        $spmb = MasterProgram::where('kode', '03.01.01')->first();
+
+        $this->assertNotNull($spmb);
+        $this->assertSame('Pelaksanaan Pendaftaran Murid Baru (SPMB)', $spmb->nama);
+        $this->assertSame('Penerimaan Murid Baru', $spmb->sub_program);
+
+        // Tidak boleh ada sisa istilah lama di seluruh master kegiatan.
+        $this->assertSame(0, MasterProgram::where('nama', 'like', '%PPDB%')->count());
+        $this->assertSame(0, MasterProgram::where('sub_program', 'Penerimaan Peserta Didik Baru')->count());
+
+        // Enam kegiatan penerimaan murid baru wajib ikut memakai sub program baru.
+        $this->assertSame(
+            6,
+            MasterProgram::where('sub_program', 'Penerimaan Murid Baru')->count()
+        );
     }
 
     public function test_rekening_modal_baru_terhubung_ke_jenis_belanja(): void

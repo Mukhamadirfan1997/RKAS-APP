@@ -61,23 +61,23 @@
         },
         {
             "kode": "03.01.01",
-            "nama": "Pelaksanaan Pendaftaran Peserta Didik Baru (PPDB)",
+            "nama": "Pelaksanaan Pendaftaran Murid Baru (SPMB)",
             "program": "Pengembangan Standar Proses",
-            "sub_program": "Penerimaan Peserta Didik Baru",
+            "sub_program": "Penerimaan Murid Baru",
             "level": 4
         },
         {
             "kode": "03.01.02",
             "nama": "Pendataan ulang bagi Peserta Didik lama",
             "program": "Pengembangan Standar Proses",
-            "sub_program": "Penerimaan Peserta Didik Baru",
+            "sub_program": "Penerimaan Murid Baru",
             "level": 4
         },
         {
             "kode": "03.01.03",
             "nama": "Pelaksanaan kegiatan orientasi siswa baru yang bersifat akademik dan pengenalan lingkungan tanpa kekerasan",
             "program": "Pengembangan Standar Proses",
-            "sub_program": "Penerimaan Peserta Didik Baru",
+            "sub_program": "Penerimaan Murid Baru",
             "level": 4
         },
         {
