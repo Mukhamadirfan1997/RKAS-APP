@@ -81,7 +81,7 @@
             </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap lg:flex-nowrap">
-            <button type="button" onclick="try{if(window.__karsaStartDashboardTour) window.__karsaStartDashboardTour(); else { const t=document.querySelector('meta[name=&quot;csrf-token&quot;]')?.content||''; fetch('/tur/reset-semua',{method:'POST',headers:{'X-CSRF-TOKEN':t,'Accept':'application/json'},credentials:'same-origin'}).finally(()=>location.reload()); }}catch(e){}" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
+            <button type="button" onclick="try{window.karsaMulaiTur('dashboard')}catch(e){}" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors" title="Mulai tur panduan dashboard">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Tur
             </button>
@@ -95,7 +95,7 @@
     <!-- Sapaan — kenalkan aplikasi (logo tidak mengganggu) -->
     <div class="card p-5 flex items-center gap-4" x-data="{ g: '' }" x-init="const h=new Date().getHours(); g=h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam'">
         <div class="shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-1.5 shadow-sm flex items-center justify-center">
-            <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+            <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA" class="w-full h-full object-contain">
         </div>
         <div class="min-w-0 flex-1">
             <div class="text-sm font-bold text-slate-800 dark:text-white"><span x-text="g"></span>, {{ Auth::user()->name ?? 'Operator RKAS' }} 👋</div>

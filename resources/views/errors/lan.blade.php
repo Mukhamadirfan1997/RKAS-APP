@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $judulAlasan }} — KARSA</title>
-    <link rel="icon" href="{{ asset('icons/logo.png') }}">
+    <link rel="icon" href="{{ asset('icons/logo-96.png') }}">
     <style>
         :root { color-scheme: light; }
         * { box-sizing: border-box; }
@@ -44,7 +44,7 @@
 <body>
     <main class="kartu {{ $alasan }}">
         <div class="logo">
-            <img src="{{ asset('icons/logo.png') }}" alt="KARSA">
+            <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA">
             <span>KARSA</span>
         </div>
 

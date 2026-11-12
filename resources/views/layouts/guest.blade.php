@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('judul', 'Masuk') - KARSA</title>
-    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/logo-96.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -79,7 +79,7 @@
     <div class="w-full @yield('lebar', 'max-w-[380px]') z-10 my-auto py-3 sm:py-6 flex flex-col items-center">
 
         <div class="bg-white rounded-md shadow-2xl p-2 mb-2 sm:mb-3 flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24">
-            <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+            <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA" class="w-full h-full object-contain">
         </div>
 
         <div class="text-center mb-3 sm:mb-4">

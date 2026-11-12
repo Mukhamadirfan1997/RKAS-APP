@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'KARSA - Kertas Kerja RKAS' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/logo-96.png') }}">
 
     {{-- Font Inter & Outfit di-host lokal (aplikasi offline, tanpa Google Fonts) --}}
 
@@ -52,7 +52,7 @@
             <!-- Brand -->
             <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-200 dark:border-slate-700/60">
                 <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-700 p-0.5 shadow-md shadow-blue-600/10 shrink-0 border border-slate-200/60 dark:border-slate-600 overflow-hidden">
-                    <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+                    <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA" class="w-full h-full object-contain">
                 </div>
                 <div x-show="!collapsed" x-cloak class="min-w-0">
                     <div class="font-display font-extrabold text-slate-800 dark:text-white text-base tracking-wide leading-tight truncate">KARSA</div>

@@ -610,15 +610,9 @@ fn daftarkan_ke_job_object(pid: u32) {
 fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -> Child {
     let data_dir = app.path().app_data_dir().expect("cannot resolve app data dir");
 
-    let server_router = root
-        .join("vendor")
-        .join("laravel")
-        .join("framework")
-        .join("src")
-        .join("Illuminate")
-        .join("Foundation")
-        .join("resources")
-        .join("server.php");
+    // Router milik proyek (bukan bawaan framework): menambahkan Cache-Control,
+    // ETag/304, dan gzip untuk berkas statis. Lihat server.php di root proyek.
+    let server_router = root.join("server.php");
 
     let mut cmd = perintah_php(app, root);
     cmd.arg("-d")

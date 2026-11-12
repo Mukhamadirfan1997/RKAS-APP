@@ -10,7 +10,7 @@
     <div class="card p-6 lg:p-8">
         <div class="flex items-start gap-4">
             <div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-1.5 shadow-md shrink-0 flex items-center justify-center">
-                <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="w-full h-full object-contain">
+                <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA" class="w-full h-full object-contain">
             </div>
             <div class="min-w-0 flex-1">
                 <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight font-display">KARSA — Kertas Anggaran Sekolah</h1>

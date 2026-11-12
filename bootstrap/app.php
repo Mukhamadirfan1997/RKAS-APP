@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\BatasiAksesLan;
 use App\Http\Middleware\CekLisensi;
+use App\Http\Middleware\KompresiResponse;
 use App\Services\BackupService;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //   alamatnya termasuk subnet adapter fisik komputer ini.
         // Lihat App\Http\Middleware\BatasiAksesLan.
         $middleware->append(BatasiAksesLan::class);
+
+        // Kompresi gzip respons dinamis (HTML & JSON). Dipasang setelah penjaga
+        // akses agar halaman 403 LAN tetap ringkas. Lihat KompresiResponse.
+        $middleware->append(KompresiResponse::class);
 
         $middleware->alias([
             'cek.lisensi' => CekLisensi::class,

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'KARSA - Kertas Kerja RKAS' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('icons/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/logo-96.png') }}">
     {{-- Font Inter & Outfit di-host lokal (aplikasi offline) --}}
     @auth
     <script>

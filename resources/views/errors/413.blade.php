@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Berkas Terlalu Besar — KARSA</title>
-    <link rel="icon" href="{{ asset('icons/logo.png') }}">
+    <link rel="icon" href="{{ asset('icons/logo-96.png') }}">
     <style>
         :root { color-scheme: light dark; }
         * { box-sizing: border-box; }
@@ -46,7 +46,7 @@
 </head>
 <body>
     <main class="card">
-        <img src="{{ asset('icons/logo.png') }}" alt="KARSA" class="logo">
+        <img src="{{ asset('icons/logo-192.png') }}" alt="KARSA" class="logo">
         <div class="badge">Berkas terlalu besar</div>
         <h1>Unggahan melebihi batas server ({{ $maksMb }} MB)</h1>
         <p>{{ $pesan }}</p>

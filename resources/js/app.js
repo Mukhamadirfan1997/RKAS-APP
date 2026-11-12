@@ -1,6 +1,8 @@
-import './bootstrap';
 import Alpine from 'alpinejs';
-import { initTours } from './tours.js';
+// Catatan: axios (bootstrap.js bawaan Laravel) sudah dihapus — tidak ada satu pun
+// pemakaian `axios` di aplikasi ini (semua AJAX memakai fetch), sehingga ~68 KB
+// JavaScript terbuang dari bundel. Tur (driver.js, ~25 KB) dimuat malas: hanya
+// diunduh ketika tur benar-benar akan tampil atau tombol "Tur" ditekan.
 
 window.Alpine = Alpine;
 
@@ -173,8 +175,63 @@ Alpine.data('breakReminder', () => ({
 
 Alpine.start();
 
+/*
+ * Modul tur (driver.js) dimuat MALAS (lazy) agar halaman tidak mengunduh ~25 KB
+ * JavaScript + CSS tur pada setiap kunjungan. Modul hanya diambil ketika:
+ *   1. tur otomatis akan tampil (belum pernah dilihat), atau
+ *   2. pengguna menekan tombol "Tur" / "Mulai Tur Ulang".
+ * Dengan begitu Lighthouse "unused JavaScript" turun tanpa mengubah perilaku.
+ */
+function turAkanTampil() {
+    const sudah = window.karsaToursSeen || {};
+    const jalur = window.location.pathname;
+    if (jalur === '/' || jalur.startsWith('/dashboard')) return !sudah.dashboard;
+    if (jalur === '/rkas' || jalur === '/rkas/') return !sudah.rkas;
+    if (jalur.startsWith('/monitoring')) return !sudah.monitoring;
+    return false;
+}
+
+let janjiTur = null;
+
+function muatModulTur() {
+    if (!janjiTur) {
+        janjiTur = import('./tours.js')
+            .then((modul) => {
+                try { modul.initTours(); } catch (e) { /* tur opsional, jangan ganggu aplikasi */ }
+                return modul;
+            })
+            .catch(() => null);
+    }
+    return janjiTur;
+}
+
+// Dipakai tombol "Tur" (Dashboard) dan "Mulai Tur Ulang" (Tentang).
+function kunciTur(nama) {
+    const dasar = nama || 'dashboard';
+    return '__karsaStart' + dasar.charAt(0).toUpperCase() + dasar.slice(1) + 'Tour';
+}
+
+window.karsaMulaiTur = async function (nama) {
+    const kunci = kunciTur(nama);
+    if (typeof window[kunci] === 'function') { window[kunci](); return; }
+
+    await muatModulTur();
+    if (typeof window[kunci] === 'function') { window[kunci](); return; }
+
+    // Cadangan: mulai ulang dari awal (perilaku lama).
+    const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    try {
+        await fetch('/tur/reset-semua', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+            credentials: 'same-origin',
+        });
+    } catch (e) { /* abaikan */ }
+    window.location.reload();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    try { initTours(); } catch {}
+    if (turAkanTampil()) muatModulTur();
 });
 
 /*

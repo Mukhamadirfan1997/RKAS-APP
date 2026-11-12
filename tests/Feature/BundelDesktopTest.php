@@ -65,7 +65,7 @@ class BundelDesktopTest extends TestCase
             '../public', '../resources/views',
             '../resources/database-seed.sqlite',
             '../routes', '../vendor', '../artisan', '../composer.json',
-            '../CHANGELOG.md',
+            '../CHANGELOG.md', '../server.php',
         ];
 
         foreach ($wajib as $kunci) {
