@@ -188,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /\/rkas\/pdf/,
         /\/rkas\/export/,
         /\/update\/download-file\//,
+        /\/tentang\/changelog(\?|$)/,
     ];
 
     const tauriInternals = (typeof window !== 'undefined' && window.__TAURI_INTERNALS__)

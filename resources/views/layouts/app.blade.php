@@ -76,21 +76,6 @@
                     @endforeach
                 </div>
             </nav>
-
-            <!-- Footer / user (tombol Keluar ada di menu topbar, satu pintu) -->
-            <div class="px-3 py-4 border-t border-slate-200 dark:border-slate-700/60">
-                @auth
-                    <div class="flex items-center gap-3 px-3">
-                        <div class="flex items-center justify-center w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 font-bold text-sm shrink-0">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </div>
-                        <div x-show="!collapsed" x-cloak class="min-w-0 flex-1">
-                            <div class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{{ Auth::user()->name }}</div>
-                            <a href="{{ route('pengaturan.akun') }}" class="text-[11px] font-semibold text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">Akun &amp; kata sandi</a>
-                        </div>
-                    </div>
-                @endauth
-            </div>
         </aside>
 
         <!-- Main -->

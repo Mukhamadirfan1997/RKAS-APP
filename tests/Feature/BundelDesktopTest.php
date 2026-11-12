@@ -39,6 +39,22 @@ class BundelDesktopTest extends TestCase
         $this->assertSame('./composer.json', $resources['../composer.json']);
     }
 
+    public function test_changelog_ikut_dibundel_agar_riwayat_versi_tampil(): void
+    {
+        $resources = $this->konfigurasi()['bundle']['resources'] ?? [];
+
+        // Regresi nyata: CHANGELOG.md tidak pernah ikut bundel, sehingga di
+        // aplikasi terpasang halaman Tentang menampilkan "Belum ada riwayat
+        // versi." walau bagian Riwayat Versi sudah ada sejak 0.2.0.
+        $this->assertArrayHasKey(
+            '../CHANGELOG.md',
+            $resources,
+            'CHANGELOG.md wajib ada di bundle.resources: tanpa berkas ini halaman Tentang menampilkan "Belum ada riwayat versi." di aplikasi terpasang.'
+        );
+        $this->assertSame('./CHANGELOG.md', $resources['../CHANGELOG.md']);
+        $this->assertFileExists(base_path('CHANGELOG.md'));
+    }
+
     public function test_berkas_penting_runtime_ikut_dibundel(): void
     {
         $resources = $this->konfigurasi()['bundle']['resources'] ?? [];
@@ -49,6 +65,7 @@ class BundelDesktopTest extends TestCase
             '../public', '../resources/views',
             '../resources/database-seed.sqlite',
             '../routes', '../vendor', '../artisan', '../composer.json',
+            '../CHANGELOG.md',
         ];
 
         foreach ($wajib as $kunci) {

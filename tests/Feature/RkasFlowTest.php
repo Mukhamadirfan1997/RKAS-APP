@@ -448,4 +448,15 @@ class RkasFlowTest extends TestCase
         $this->assertEquals('Dashboard', $sidebarItems[0]['label']);
         $this->assertEquals('Lembar Kerja', $sidebarItems[1]['label']);
     }
+
+    public function test_sidebar_tidak_menampilkan_blok_akun_dan_kata_sandi()
+    {
+        $resp = $this->get('/rkas');
+        $resp->assertStatus(200);
+
+        // Kaki sidebar (nama pengguna + "Akun & kata sandi") sudah dihapus.
+        // Akses akun tetap tersedia satu pintu lewat dropdown pada topbar.
+        $resp->assertDontSee('Akun &amp; kata sandi', false);
+        $resp->assertSee('Akun &amp; Kata Sandi', false);
+    }
 }

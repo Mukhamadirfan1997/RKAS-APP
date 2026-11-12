@@ -45,6 +45,11 @@ if ($version === null || $version === '') {
 return [
     'version' => $version,
 
+    // Lokasi berkas riwayat versi yang dibaca halaman Tentang.
+    // Dibuat bisa diarahkan (env) agar perilaku "berkas tidak ada" tetap
+    // bisa diuji tanpa menyentuh CHANGELOG.md asli.
+    'changelog_path' => env('KARSA_CHANGELOG_PATH') ?: base_path('CHANGELOG.md'),
+
     // --- Akses LAN (lihat app/Services/JaringanService.php) ---
     // Daftar kata kunci nama adapter yang TIDAK dianggap jaringan fisik.
     // Klien yang datang lewat adapter ini (VPN/tunnel/virtual) selalu ditolak,

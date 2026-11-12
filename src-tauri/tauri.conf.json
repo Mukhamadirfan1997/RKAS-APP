@@ -43,6 +43,7 @@
       "../vendor": "./vendor/",
       "../artisan": "./artisan",
       "../composer.json": "./composer.json",
+      "../CHANGELOG.md": "./CHANGELOG.md",
       "bundle-env/.env": "./.env",
       "php": "./php/"
     },

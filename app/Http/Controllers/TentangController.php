@@ -20,10 +20,20 @@ class TentangController extends Controller
         // logika baca file di sini — agar production & dev konsisten.
         $version = config('karsa.version');
 
-        // Changelog — baca CHANGELOG.md root, fallback kosong
-        $changelogPath = base_path('CHANGELOG.md');
-        $changelogRaw = is_file($changelogPath) ? (string) file_get_contents($changelogPath) : '';
+        // Changelog — dibaca dari berkas SETIAP halaman dibuka (tidak di-cache),
+        // sehingga isi halaman selalu mengikuti CHANGELOG.md yang terpasang.
+        // Lokasi berkas dibuat bisa diatur lewat config agar perilaku
+        // "berkas tidak ada" tetap bisa diuji.
+        //
+        // Yang DITAMPILKAN hanya beberapa pembaruan terakhir (lihat
+        // JUMLAH_RIWAYAT_TAMPIL) supaya halaman Tentang tidak memanjang.
+        // Riwayat lengkap tetap utuh di CHANGELOG.md dan bisa diunduh lewat
+        // route tentang.changelog.
+        $changelogLengkap = $this->bacaChangelog();
+        $changelogTotal = $this->hitungVersi($changelogLengkap);
+        $changelogRaw = $this->potongChangelog($changelogLengkap, self::JUMLAH_RIWAYAT_TAMPIL);
         $changelogHtml = $this->renderMarkdownSimple($changelogRaw);
+        $changelogDitampilkan = $this->hitungVersi($changelogRaw);
 
         // --- Informasi server internal (port dinamis) ---
         // Port TIDAK boleh disimpan di config: src-tauri/src/lib.rs memilih port
@@ -54,8 +64,9 @@ class TentangController extends Controller
         return view('tentang.index', compact(
             'sekolah',
             'version',
-            'changelogRaw',
             'changelogHtml',
+            'changelogTotal',
+            'changelogDitampilkan',
             'alamatServer',
             'portServer',
             'hostServer',
@@ -66,6 +77,73 @@ class TentangController extends Controller
             'hostBinding',
             'dariKomputerUtama'
         ));
+    }
+
+    /**
+     * Banyaknya pembaruan yang ditampilkan di halaman Tentang.
+     * Sisanya tetap tersimpan di CHANGELOG.md dan bisa diunduh.
+     */
+    private const JUMLAH_RIWAYAT_TAMPIL = 3;
+
+    /**
+     * Hitung jumlah entri versi (`## [x.y.z]`) pada teks changelog.
+     */
+    private function hitungVersi(string $md): int
+    {
+        return (int) preg_match_all('/^##\s+\[[^\]]+\]/m', $md);
+    }
+
+    /**
+     * Ambil hanya N pembaruan terakhir dari changelog, beserta judul
+     * (baris sebelum entri versi pertama) sebagai pengantar.
+     */
+    private function potongChangelog(string $md, int $maks): string
+    {
+        if (trim($md) === '') {
+            return '';
+        }
+
+        $bagian = preg_split('/(?=^##\s+\[)/m', $md, -1, PREG_SPLIT_NO_EMPTY);
+        if ($bagian === false || $bagian === []) {
+            return $md;
+        }
+
+        // preg_split di atas: elemen pertama = judul + pengantar (tanpa entri versi).
+        $judul = str_starts_with(ltrim($bagian[0]), '## [') ? '' : array_shift($bagian);
+        $entri = array_slice($bagian, 0, max(1, $maks));
+
+        return rtrim(trim((string) $judul)."\n\n".implode('', $entri));
+    }
+
+    /**
+     * Berkas mentah CHANGELOG.md — dipakai tautan "Unduh CHANGELOG.md".
+     *
+     * Dikirim sebagai lampiran (attachment) supaya tidak menimpa tampilan
+     * aplikasi di WebView2; pada mode desktop, tautan ini dipetakan oleh
+     * resources/js/app.js ke dialog "Simpan Berkas KARSA".
+     */
+    public function changelogMentah()
+    {
+        $isi = $this->bacaChangelog();
+        if (trim($isi) === '') {
+            abort(404, 'Berkas CHANGELOG.md tidak ditemukan pada instalasi ini.');
+        }
+
+        return response($isi, 200, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="CHANGELOG.md"',
+        ]);
+    }
+
+    /**
+     * Baca berkas riwayat versi. String kosong = berkas tidak ada / kosong,
+     * yang oleh renderMarkdownSimple ditampilkan sebagai pesan ramah.
+     */
+    private function bacaChangelog(): string
+    {
+        $path = (string) config('karsa.changelog_path');
+
+        return $path !== '' && is_file($path) ? (string) file_get_contents($path) : '';
     }
 
     /**

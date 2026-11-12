@@ -269,17 +269,32 @@
 
     <!-- Riwayat Versi -->
     <div class="card p-6">
-        <div class="flex items-center justify-between gap-2">
-            <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Riwayat Versi</h2>
-            <a href="{{ route('tentang.index') }}" class="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">CHANGELOG.md</a>
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200">Riwayat Versi</h2>
+                <span class="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 text-[11px] font-bold text-blue-700 dark:text-blue-300">Anda di v{{ $version ?? '—' }}</span>
+            </div>
+            {{-- Tautan lama mengarah ke route('tentang.index') sehingga hanya me-reload
+                 halaman. Sekarang menuju berkas mentah yang benar-benar bisa diunduh. --}}
+            <a href="{{ route('tentang.changelog') }}" class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                Unduh CHANGELOG.md
+            </a>
         </div>
         <div class="mt-4 prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2">
             {!! $changelogHtml !!}
         </div>
-        <details class="mt-4">
-            <summary class="text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">Lihat file mentah CHANGELOG.md</summary>
-            <pre class="mt-3 bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-auto whitespace-pre-wrap break-words">{{ $changelogRaw }}</pre>
-        </details>
+        {{-- Hanya beberapa pembaruan terakhir yang ditampilkan agar halaman tidak
+             memanjang. Riwayat lengkap tetap ada di berkas CHANGELOG.md yang bisa
+             diunduh lewat tautan di atas. --}}
+        <p class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 text-[11px] text-slate-400 dark:text-slate-500">
+            @if (($changelogTotal ?? 0) > ($changelogDitampilkan ?? 0))
+                Menampilkan {{ $changelogDitampilkan }} dari {{ $changelogTotal }} pembaruan terbaru.
+                Riwayat lengkap ada di berkas <span class="font-semibold">CHANGELOG.md</span> — klik tombol <span class="font-semibold">Unduh CHANGELOG.md</span> di atas.
+            @else
+                Menampilkan seluruh riwayat yang tercatat.
+            @endif
+        </p>
     </div>
 </div>
 

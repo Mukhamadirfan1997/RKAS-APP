@@ -113,6 +113,8 @@ Route::middleware('auth')->group(function () {
 
     // Tentang & Panduan
     Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');
+    // Unduh berkas mentah riwayat versi (pengganti tautan lama yang hanya me-reload halaman)
+    Route::get('/tentang/changelog', [TentangController::class, 'changelogMentah'])->name('tentang.changelog');
 
     // Akses LAN (pengaturan jaringan lokal)
     Route::get('/jaringan/status', [LanController::class, 'status'])->name('jaringan.status');
