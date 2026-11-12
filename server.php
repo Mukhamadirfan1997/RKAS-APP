@@ -121,8 +121,12 @@ function sajikan_berkas(string $berkas, string $uri): void
     $terimaGzip = stripos((string) ($_SERVER['HTTP_ACCEPT_ENCODING'] ?? ''), 'gzip') !== false;
 
     if ($teks && $terimaGzip && $ukuran > 1024 && function_exists('gzencode')) {
+        // Tingkat 4, BUKAN 9: pada CPU sekolah yang lambat, tingkat 4 sudah
+        // memangkas CSS 105 KB menjadi ±19 KB (18%) dengan waktu ±1,4-3 ms,
+        // sedangkan tingkat 6 hanya 3-5% lebih kecil tetapi 1,3-1,8x lebih
+        // mahal. Samakan dengan App\Http\Middleware\KompresiResponse.
         $isi = (string) file_get_contents($berkas);
-        $gzip = gzencode($isi, 6);
+        $gzip = gzencode($isi, 4);
 
         if ($gzip !== false && strlen($gzip) < strlen($isi)) {
             header('Content-Encoding: gzip');

@@ -39,7 +39,9 @@ class KompresiResponse
             return $response;
         }
 
-        $gzip = gzencode($isi, 6);
+        // Tingkat 4 (lihat alasan di server.php): hemat CPU tanpa kehilangan
+        // ukuran berarti — 1,3-1,8x lebih cepat, hasil hanya 3-5% lebih besar.
+        $gzip = gzencode($isi, 4);
         if ($gzip === false || strlen($gzip) >= strlen($isi)) {
             return $response;
         }
