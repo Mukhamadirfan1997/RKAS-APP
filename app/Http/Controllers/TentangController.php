@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\PengaturanSekolah;
+use App\Services\JaringanService;
 
 class TentangController extends Controller
 {
-    public function index()
+    public function index(JaringanService $jaringan)
     {
         $sekolah = PengaturanSekolah::first() ?? new PengaturanSekolah([
             'nama_sekolah' => null,
@@ -24,7 +25,47 @@ class TentangController extends Controller
         $changelogRaw = is_file($changelogPath) ? (string) file_get_contents($changelogPath) : '';
         $changelogHtml = $this->renderMarkdownSimple($changelogRaw);
 
-        return view('tentang.index', compact('sekolah', 'version', 'changelogRaw', 'changelogHtml'));
+        // --- Informasi server internal (port dinamis) ---
+        // Port TIDAK boleh disimpan di config: src-tauri/src/lib.rs memilih port
+        // bebas setiap aplikasi dibuka (find_free_port), sehingga nilai tersimpan
+        // akan cepat kedaluwarsa. Satu-satunya sumber akurat adalah request yang
+        // sedang dilayani (Host header dari WebView2 atau browser).
+        $request = request();
+        $alamatServer = $request->getSchemeAndHttpHost();
+        $portServer = (int) $request->getPort();
+        $hostServer = $request->getHost();
+        // lib.rs hanya menyuntik KARSA_DATA_DIR pada aplikasi terpasang (Tauri).
+        $modeDesktop = trim((string) getenv('KARSA_DATA_DIR')) !== '';
+        $versiPhp = PHP_VERSION;
+        $versiLaravel = app()->version();
+
+        // --- Akses Jaringan (LAN) ---
+        // Semua angka dihitung ulang setiap halaman dibuka: IP LAN mengikuti
+        // DHCP, jumlah klien mengikuti sesi yang masih aktif.
+        $lan = $jaringan->ringkasan($portServer);
+        // Host binding sebenarnya (dari lib.rs) — bukan tebakan dari Host header.
+        $hostBinding = trim((string) getenv('KARSA_LISTEN_HOST'));
+        if ($hostBinding === '') {
+            $hostBinding = '0.0.0.0';
+        }
+        // Pengaturan hanya boleh diubah dari komputer utama (klien LAN tidak bisa).
+        $dariKomputerUtama = $jaringan->ipLokal($request->ip());
+
+        return view('tentang.index', compact(
+            'sekolah',
+            'version',
+            'changelogRaw',
+            'changelogHtml',
+            'alamatServer',
+            'portServer',
+            'hostServer',
+            'modeDesktop',
+            'versiPhp',
+            'versiLaravel',
+            'lan',
+            'hostBinding',
+            'dariKomputerUtama'
+        ));
     }
 
     /**

@@ -14,3 +14,8 @@ commands.allow = ["perbarui_sekarang"]
 identifier = "allow-status-update"
 description = "Izinkan pembacaan progres unduhan/pemasangan pembaruan."
 commands.allow = ["status_update"]
+
+[[permission]]
+identifier = "allow-atur-firewall-lan"
+description = "Izinkan pembuatan/penghapusan aturan Windows Firewall khusus akses LAN KARSA (hanya php.exe KARSA, profil Private/Domain)."
+commands.allow = ["atur_firewall_lan"]

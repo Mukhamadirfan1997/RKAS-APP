@@ -44,6 +44,56 @@ if ($version === null || $version === '') {
 
 return [
     'version' => $version,
+
+    // --- Akses LAN (lihat app/Services/JaringanService.php) ---
+    // Daftar kata kunci nama adapter yang TIDAK dianggap jaringan fisik.
+    // Klien yang datang lewat adapter ini (VPN/tunnel/virtual) selalu ditolak,
+    // walaupun alamatnya juga alamat privat RFC1918.
+    'lan' => [
+        // Lokasi berkas status akses LAN. `null` = storage/app/lan.json.
+        'berkas' => null,
+
+        'adapter_ditolak' => [
+            'loopback',
+            'wi-fi direct',
+            'wifi direct',
+            'virtual',
+            'vmware',
+            'virtualbox',
+            'hyper-v',
+            'vethernet',
+            'docker',
+            'wsl',
+            'tap-',
+            'tap adapter',
+            'tap-windows',
+            'tunnel',
+            'vpn',
+            'tailscale',
+            'zerotier',
+            'wireguard',
+            'openvpn',
+            'bluetooth',
+            'teredo',
+            'isatap',
+            'npcap',
+            'hamachi',
+            'radmin',
+            'sangfor',
+            'fortinet',
+            'anyconnect',
+            'sonicwall',
+            'globalprotect',
+            'pulse secure',
+            'nordlynx',
+            'proton',
+            'mullvad',
+            'softether',
+            'pptp',
+            'l2tp',
+        ],
+    ],
+
     'kontak' => [
         'whatsapp_display' => '085156830304',
         'whatsapp_link' => 'https://wa.me/6285156830304',

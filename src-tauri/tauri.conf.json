@@ -6,7 +6,7 @@
   "build": {
     "frontendDist": "../public",
     "devUrl": "http://127.0.0.1:9200",
-    "beforeDevCommand": "php artisan serve --host=127.0.0.1 --port=9200",
+    "beforeDevCommand": "php artisan serve --host=0.0.0.0 --port=9200",
     "beforeBuildCommand": "npm run build"
   },
   "app": {

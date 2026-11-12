@@ -55,13 +55,79 @@ impl PhpServerState {
                 let _ = child.kill();
                 let _ = child.wait();
             }
+            *guard = None;
+        }
+    }
+
+    /// Pasang proses server baru; proses lama (kalau ada) dimatikan lebih dulu
+    /// agar tidak pernah ada dua server PHP hidup bersamaan.
+    fn set(&self, child: Child) {
+        self.shutdown();
+        if let Ok(mut guard) = self.0.lock() {
+            *guard = Some(child);
         }
     }
 }
 
+/// Jalankan server PHP dengan port dinamis, lengkap dengan fallback aman.
+///
+/// Port bisa saja dipakai proses lain di antara `find_free_port()` dan saat PHP
+/// benar-benar listen, jadi bila server tidak siap dalam batas waktu kita coba
+/// port berikutnya. Bila semua percobaan gagal, port terakhir tetap dikembalikan
+/// supaya jendela aplikasi tetap terbuka dan pengguna melihat pesan error yang
+/// jelas (bukan jendela kosong tanpa penjelasan).
+fn mulai_server_php(app: &tauri::App, handle: &tauri::AppHandle, root: &std::path::Path) -> u16 {
+    // `manage` hanya boleh sekali per tipe; retry memakai state yang sama.
+    app.manage(PhpServerState(Mutex::new(None)));
+    let state = app.state::<PhpServerState>();
+
+    let mut port_terakhir = 0u16;
+
+    for percobaan in 1..=PERCOBAAN_SERVER {
+        let port = find_free_port();
+        port_terakhir = port;
+        state.set(spawn_php_server(handle, root, port));
+
+        if wait_ready(port) {
+            let baris = format!("Server PHP siap di http://{HOST_BINDING}:{port}");
+            log::info!("{}", baris);
+            catat_migrasi(handle, &baris);
+            return port;
+        }
+
+        eprintln!(
+            "KARSA: server PHP tidak siap di port {port} (percobaan {percobaan}/{PERCOBAAN_SERVER})"
+        );
+        state.shutdown();
+    }
+
+    let baris = format!(
+        "GAGAL menjalankan server PHP setelah {PERCOBAAN_SERVER} percobaan (port terakhir {port_terakhir})"
+    );
+    eprintln!("KARSA: {baris}");
+    catat_migrasi(handle, &baris);
+
+    port_terakhir
+}
+
+/// Host binding server internal.
+///
+/// `0.0.0.0` = menerima dari semua antarmuka (termasuk LAN), tetapi akses dari
+/// komputer lain tetap dikendalikan dua lapis: Windows Firewall (garis pertama)
+/// dan middleware Laravel `BatasiAksesLan` (garis kedua). Localhost tetap bisa
+/// diakses karena 127.0.0.1 selalu termasuk.
+const HOST_BINDING: &str = "0.0.0.0";
+
+/// Jumlah percobaan memulai server PHP sebelum menyerah.
+const PERCOBAAN_SERVER: u8 = 3;
+
 /// Cari port bebas agar tidak bentrok dengan server lain.
+///
+/// Bind ke `0.0.0.0` (bukan 127.0.0.1) supaya port yang diuji benar-benar sama
+/// dengan alamat yang nanti dipakai server. Kalau diuji di loopback saja, port
+/// bisa "kelihatan bebas" padahal sudah dipakai proses lain di antarmuka LAN.
 fn find_free_port() -> u16 {
-    TcpListener::bind(("127.0.0.1", 0))
+    TcpListener::bind((HOST_BINDING, 0))
         .expect("cannot bind to a free port")
         .local_addr()
         .expect("cannot resolve local address")
@@ -561,8 +627,13 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
         .arg(format!("error_log={}", data_dir.join("storage").join("logs").join("php-server-error.log").display()))
         .arg("-d")
         .arg("log_errors=1")
+        // Sumber pasti untuk halaman Tentang Aplikasi: host & port yang BENAR
+        // dipakai proses ini. Laravel membacanya lewat config/karsa.php
+        // (KARSA_LISTEN_HOST / KARSA_HTTP_PORT), bukan menebak dari request.
+        .env("KARSA_LISTEN_HOST", HOST_BINDING)
+        .env("KARSA_HTTP_PORT", port.to_string())
         .arg("-S")
-        .arg(format!("127.0.0.1:{port}"))
+        .arg(format!("{HOST_BINDING}:{port}"))
         .arg(native_path(&server_router))
         .current_dir(root.join("public"))
         .stdout(std::process::Stdio::null())
@@ -577,6 +648,94 @@ fn spawn_php_server(app: &tauri::AppHandle, root: &std::path::Path, port: u16) -
     daftarkan_ke_job_object(child.id());
 
     child
+}
+
+/// Nama aturan Windows Firewall milik KARSA.
+const NAMA_ATURAN_FIREWALL: &str = "KARSA LAN Server";
+
+/// Aktifkan / matikan aturan Windows Firewall untuk akses LAN.
+///
+/// Aturan sengaja SEMPIT:
+/// - hanya berlaku untuk `php.exe` milik KARSA (bukan semua program di komputer),
+/// - hanya protokol TCP arah masuk,
+/// - hanya profil Private + Domain (jaringan Public tidak pernah dibuka),
+/// - tanpa port forwarding, tanpa akses internet.
+///
+/// Membuat aturan firewall butuh hak administrator, jadi perintah ini meminta
+/// UAC satu kali. Bila pengguna membatalkan UAC, dikembalikan pesan yang jelas
+/// (bukan kode error teknis mentah).
+#[tauri::command]
+fn atur_firewall_lan(app: tauri::AppHandle, aktifkan: bool) -> Result<String, String> {
+    let php = php_binary(&app);
+    if !php.is_file() {
+        return Err(format!(
+            "Berkas PHP KARSA tidak ditemukan di {}. Jalankan ulang aplikasi.",
+            php.display()
+        ));
+    }
+    let php = native_path(&php);
+
+    let skrip = if aktifkan {
+        format!(
+            concat!(
+                "@echo off\r\n",
+                "netsh advfirewall firewall delete rule name=\"{}\" >nul 2>&1\r\n",
+                "netsh advfirewall firewall add rule name=\"{}\" dir=in action=allow ",
+                "program=\"{}\" protocol=TCP profile=private,domain enable=yes ",
+                "description=\"KARSA - akses LAN hanya untuk php.exe internal (profil Private/Domain)\"\r\n",
+                "exit /b %ERRORLEVEL%\r\n"
+            ),
+            NAMA_ATURAN_FIREWALL, NAMA_ATURAN_FIREWALL, php
+        )
+    } else {
+        format!(
+            "@echo off\r\nnetsh advfirewall firewall delete rule name=\"{}\" >nul 2>&1\r\nexit /b %ERRORLEVEL%\r\n",
+            NAMA_ATURAN_FIREWALL
+        )
+    };
+
+    let berkas = std::env::temp_dir().join(format!("karsa-firewall-{}.cmd", std::process::id()));
+    if let Err(e) = std::fs::write(&berkas, skrip) {
+        return Err(format!("Gagal menyiapkan berkas aturan firewall: {e}"));
+    }
+
+    let perintah = format!(
+        "$p = Start-Process -FilePath '{}' -Verb RunAs -Wait -PassThru -WindowStyle Hidden; exit $p.ExitCode",
+        native_path(&berkas)
+    );
+
+    let keluaran = Command::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-Command", perintah.as_str()])
+        .output();
+
+    // Berkas sementara berisi nama aturan & path php.exe — tidak perlu menetap.
+    let _ = std::fs::remove_file(&berkas);
+
+    let keluaran = keluaran.map_err(|e| format!("Gagal menjalankan PowerShell: {e}"))?;
+    let kode = keluaran.status.code().unwrap_or(-1);
+    let galat = String::from_utf8_lossy(&keluaran.stderr).to_lowercase();
+
+    if kode == 0 {
+        return Ok(if aktifkan {
+            "Aturan firewall dibuat: hanya php.exe KARSA, profil Private/Domain.".to_string()
+        } else {
+            "Aturan firewall KARSA dihapus.".to_string()
+        });
+    }
+
+    if kode == 1223
+        || galat.contains("canceled")
+        || galat.contains("cancelled")
+        || galat.contains("dibatalkan")
+    {
+        return Err(
+            "Permintaan izin administrator dibatalkan. Aturan firewall tidak diubah.".to_string(),
+        );
+    }
+
+    Err(format!(
+        "Gagal mengubah aturan firewall (kode {kode}). Setujui izin administrator, atau buat aturan manual sesuai panduan di halaman Tentang."
+    ))
 }
 
 /// Decode percent-encoding (untuk `filename*=UTF-8''...` pada Content-Disposition).
@@ -863,13 +1022,23 @@ pub fn run() {
     let _ = rustls::crypto::ring::default_provider().install_default();
 
     let app = tauri::Builder::default()
+        // WAJIB didaftarkan paling awal. Instance kedua tidak akan membuat
+        // server PHP baru, melainkan hanya memfokuskan jendela yang sudah ada
+        // lalu keluar — mencegah dua server menulis ke satu SQLite.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(jendela) = app.get_webview_window("main") {
+                let _ = jendela.unminimize();
+                let _ = jendela.set_focus();
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(UpdateState(Mutex::new(ProgresUpdate::default())))
         .invoke_handler(tauri::generate_handler![
             simpan_unduhan,
             status_update,
-            perbarui_sekarang
+            perbarui_sekarang,
+            atur_firewall_lan
         ])
         .setup(|app| {
             let handle = app.handle().clone();
@@ -897,16 +1066,14 @@ pub fn run() {
             }
 
             let port = if cfg!(debug_assertions) {
-                // Dev: sebelumDevCommand sudah menjalankan artisan serve di 9200
+                // Dev: beforeDevCommand sudah menjalankan artisan serve di 9200.
+                // State tetap didaftarkan (tanpa proses) supaya handler Exit
+                // tidak panic saat dijalankan dalam mode dev.
+                app.manage(PhpServerState(Mutex::new(None)));
                 9200
             } else {
-                let port = find_free_port();
-                let child = spawn_php_server(&handle, &root, port);
-                app.manage(PhpServerState(Mutex::new(Some(child))));
-                if !wait_ready(port) {
-                    eprintln!("KARSA web server did not start in time (port {port})");
-                }
-                port
+                // Port dinamis + fallback aman (coba beberapa port bila gagal).
+                mulai_server_php(app, &handle, &root)
             };
 
             let url = format!("http://127.0.0.1:{port}/");

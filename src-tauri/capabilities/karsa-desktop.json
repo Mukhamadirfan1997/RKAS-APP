@@ -13,6 +13,7 @@
   "permissions": [
     "allow-simpan-unduhan",
     "allow-perbarui-sekarang",
-    "allow-status-update"
+    "allow-status-update",
+    "allow-atur-firewall-lan"
   ]
 }

@@ -38,6 +38,165 @@
         </div>
     </div>
 
+    <!-- Server Internal (Port Dinamis) -->
+    <div class="card p-6" id="card-server">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
+                <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+                    Server Internal
+                </h2>
+                <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Alamat internal aplikasi di komputer ini. Akses dari komputer lain diatur pada kartu <span class="font-semibold">Akses Jaringan (LAN)</span> di bawah.</p>
+            </div>
+            @if($modeDesktop)
+                <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 shrink-0">Mode Desktop</span>
+            @else
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 text-[11px] font-bold text-slate-600 dark:text-slate-300 shrink-0">Mode Browser (dev)</span>
+            @endif
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-500/10 px-4 py-3">
+                <div class="text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">Port Aktif</div>
+                <div class="font-mono text-2xl font-extrabold text-slate-800 dark:text-white leading-tight" id="port-server">{{ $portServer }}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 px-4 py-3 sm:col-span-2">
+                <div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Alamat Lokal</div>
+                <div class="mt-1 flex items-center gap-2 flex-wrap">
+                    <code id="alamat-server" class="font-mono text-sm font-bold text-slate-800 dark:text-slate-100 break-all">{{ $alamatServer }}</code>
+                    <button type="button" id="btn-salin-alamat" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+            <span>Host: <span class="font-mono font-semibold text-slate-700 dark:text-slate-200">{{ $hostServer }}</span></span>
+            <span>PHP: <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $versiPhp }}</span></span>
+            <span>Laravel: <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $versiLaravel }}</span></span>
+        </div>
+
+        <div class="mt-3 flex items-start gap-2 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5">
+            <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Port dipilih otomatis setiap aplikasi dibuka, jadi bisa berbeda dari sebelumnya. Angka di atas selalu menunjukkan port yang sedang aktif saat ini — tidak perlu diisi manual di mana pun.</span>
+        </div>
+    </div>
+
+    @php
+        $statusLan = $lan['status'] ?? 'nonaktif';
+        $badgeLan = [
+            'aktif' => [
+                'teks' => 'LAN Aktif',
+                'kelas' => 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300',
+                'titik' => 'bg-emerald-500',
+            ],
+            'terputus' => [
+                'teks' => 'Jaringan Terputus',
+                'kelas' => 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300',
+                'titik' => 'bg-amber-500',
+            ],
+            'nonaktif' => [
+                'teks' => 'LAN Tidak Aktif',
+                'kelas' => 'bg-slate-100 dark:bg-slate-700/60 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300',
+                'titik' => 'bg-slate-400',
+            ],
+        ][$statusLan] ?? [
+            'teks' => 'LAN Tidak Aktif',
+            'kelas' => 'bg-slate-100 dark:bg-slate-700/60 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300',
+            'titik' => 'bg-slate-400',
+        ];
+        $subnetTeks = empty($lan['subnet']) ? '—' : implode(', ', $lan['subnet']);
+    @endphp
+
+    <!-- Akses Jaringan (LAN) -->
+    <div class="card p-6" id="card-lan">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
+                <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                    Akses Jaringan (LAN)
+                </h2>
+                <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Buka KARSA dari komputer lain di jaringan sekolah yang sama lewat browser. Data tetap tersimpan di komputer ini.</p>
+            </div>
+            <span id="lan-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold shrink-0 {{ $badgeLan['kelas'] }}">
+                <span class="w-1.5 h-1.5 rounded-full {{ $badgeLan['titik'] }}"></span>
+                <span id="lan-badge-teks">{{ $badgeLan['teks'] }}</span>
+            </span>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div class="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-500/10 px-4 py-3 lg:col-span-2">
+                <div class="text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">Alamat untuk Komputer Lain</div>
+                <div class="mt-1 flex items-center gap-2 flex-wrap">
+                    <code id="lan-url" class="font-mono text-sm font-bold text-slate-800 dark:text-slate-100 break-all">{{ $lan['alamat_lan'] ?? 'Belum tersedia — tidak ada jaringan aktif' }}</code>
+                    <button type="button" id="btn-salin-lan" @disabled(empty($lan['alamat_lan'])) class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        Salin
+                    </button>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Ketik alamat ini di browser komputer lain (tanpa memasang aplikasi). Alamat ikut berubah otomatis bila IP komputer ini berpindah.</div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 px-4 py-3">
+                <div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Komputer Terhubung</div>
+                <div class="mt-1 flex items-end gap-1.5">
+                    <span id="lan-klien" class="font-mono text-2xl font-extrabold text-slate-800 dark:text-white leading-none">{{ $lan['klien_aktif'] }}</span>
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">komputer</span>
+                </div>
+                <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">sesi aktif 5 menit terakhir</div>
+            </div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+            <span>Binding server: <span class="font-mono font-semibold text-slate-700 dark:text-slate-200" id="lan-binding">{{ $hostBinding }}</span></span>
+            <span>Jaringan diizinkan: <span class="font-mono font-semibold text-slate-700 dark:text-slate-200" id="lan-subnet">{{ $subnetTeks }}</span></span>
+            <span>IP komputer ini: <span class="font-mono font-semibold text-slate-700 dark:text-slate-200" id="lan-ip">{{ $lan['ip_utama'] ?? '—' }}</span></span>
+        </div>
+
+        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400" id="lan-adapter">
+            @forelse ($lan['antarmuka'] as $a)
+                <span class="inline-flex items-center gap-1 mr-3">{{ $a['nama'] }} <span class="font-mono">({{ $a['ip'] }})</span></span>
+            @empty
+                <span>Tidak ada adapter jaringan fisik yang aktif.</span>
+            @endforelse
+        </div>
+
+        @if ($dariKomputerUtama)
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                <button type="button" id="btn-lan-toggle" data-aktif="{{ $lan['aktif'] ? '1' : '0' }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors {{ $lan['aktif'] ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-100' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' }}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span id="btn-lan-toggle-teks">{{ $lan['aktif'] ? 'Matikan Akses LAN' : 'Aktifkan Akses LAN' }}</span>
+                </button>
+
+                <button type="button" id="btn-firewall-buat" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Buat Aturan Firewall
+                </button>
+                <button type="button" id="btn-firewall-hapus" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600">
+                    Hapus Aturan Firewall
+                </button>
+                <span id="lan-proses" class="text-[11px] text-slate-500 dark:text-slate-400"></span>
+            </div>
+        @else
+            <div class="mt-4 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5">
+                Pengaturan akses LAN hanya bisa diubah dari komputer utama KARSA. Anda sedang membuka dari komputer lain.
+            </div>
+        @endif
+
+        <details class="mt-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-3 py-2.5">
+            <summary class="text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none">Keamanan &amp; batasan akses bersamaan</summary>
+            <div class="mt-2 space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p><span class="font-semibold text-slate-700 dark:text-slate-200">🔒 Tetap wajib login.</span> Setiap komputer memakai halaman login yang sama; tidak ada akses tanpa nama pengguna dan sandi. Percobaan login dibatasi 5 kali per menit per komputer.</p>
+                <p><span class="font-semibold text-slate-700 dark:text-slate-200">🛡️ Hanya jaringan sekolah.</span> Hanya alamat di subnet <span class="font-mono">{{ $subnetTeks }}</span> yang diterima. Jaringan VPN, tethering, atau adapter virtual ditolak walaupun alamatnya privat.</p>
+                <p><span class="font-semibold text-slate-700 dark:text-slate-200">🧱 Firewall sempit.</span> Tombol firewall hanya membuka <span class="font-mono">php.exe</span> milik KARSA pada profil Private/Domain — bukan seluruh program, dan tidak membuka jaringan Public maupun internet.</p>
+                <p><span class="font-semibold text-slate-700 dark:text-slate-200">⚠️ Akses bersamaan terbatas.</span> Database SQLite menulis satu per satu dan server PHP bawaan melayani satu permintaan pada satu waktu. Beberapa komputer boleh membuka halaman, tetapi hindari menyimpan data pada saat yang sama; bila terasa lambat, ajak bergantian. Semua data &amp; berkas tetap berada di komputer ini (tidak ada salinan di komputer lain).</p>
+                <p><span class="font-semibold text-slate-700 dark:text-slate-200">📴 Desktop Offline tetap normal.</span> Menyalakan atau mematikan LAN tidak me-restart server dan tidak memengaruhi pemakaian di komputer utama.</p>
+            </div>
+        </details>
+    </div>
+
     @php $kontak = config('karsa.kontak'); @endphp
     <!-- Kredit Pengembang -->
     <div class="card p-6">
@@ -125,6 +284,34 @@
 </div>
 
 <script>
+// Salin alamat lokal (port dinamis) — pakai Clipboard API, fallback textarea
+// agar tetap bekerja di WebView2 lama yang belum mengizinkan navigator.clipboard.
+document.getElementById('btn-salin-alamat')?.addEventListener('click', async function () {
+    const teks = (document.getElementById('alamat-server')?.textContent || '').trim();
+    if (teks === '') return;
+    const berhasil = () => { if (window.karsaToast) window.karsaToast('Alamat disalin: ' + teks, 'success', 6000); };
+    const gagal = () => { if (window.karsaToast) window.karsaToast('Gagal menyalin. Alamat: ' + teks, 'error', 9000); };
+    try {
+        await navigator.clipboard.writeText(teks);
+        berhasil();
+    } catch (e) {
+        try {
+            const area = document.createElement('textarea');
+            area.value = teks;
+            area.setAttribute('readonly', '');
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            const ok = document.execCommand('copy');
+            area.remove();
+            ok ? berhasil() : gagal();
+        } catch (_) {
+            gagal();
+        }
+    }
+});
+
 document.getElementById('btn-restart-tour')?.addEventListener('click', async function() {
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
     try {
@@ -281,5 +468,184 @@ document.getElementById('btn-restart-tour')?.addEventListener('click', async fun
   btnUnduh?.addEventListener('click', () => { if(desktop) perbaruiOtomatis(); else unduh(); });
   btnManual?.addEventListener('click', (ev) => { ev.preventDefault(); unduh(); });
 })();
+
+// --- Akses Jaringan (LAN) ---
+(function(){
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  const badge = document.getElementById('lan-badge');
+  const badgeTeks = document.getElementById('lan-badge-teks');
+  const urlEl = document.getElementById('lan-url');
+  const btnSalin = document.getElementById('btn-salin-lan');
+  const klienEl = document.getElementById('lan-klien');
+  const subnetEl = document.getElementById('lan-subnet');
+  const ipEl = document.getElementById('lan-ip');
+  const adapterEl = document.getElementById('lan-adapter');
+  const btnToggle = document.getElementById('btn-lan-toggle');
+  const btnToggleTeks = document.getElementById('btn-lan-toggle-teks');
+  const prosesEl = document.getElementById('lan-proses');
+  if (!badge || !urlEl) return;
+
+  const GAYA = {
+    aktif: {
+      badge: 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300',
+      titik: 'bg-emerald-500',
+      teks: 'LAN Aktif',
+      tombol: 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-100',
+    },
+    terputus: {
+      badge: 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300',
+      titik: 'bg-amber-500',
+      teks: 'Jaringan Terputus',
+      tombol: 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-100',
+    },
+    nonaktif: {
+      badge: 'bg-slate-100 dark:bg-slate-700/60 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300',
+      titik: 'bg-slate-400',
+      teks: 'LAN Tidak Aktif',
+      tombol: 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700',
+    },
+  };
+
+  function terapkan(r) {
+    const gaya = GAYA[r.status] || GAYA.nonaktif;
+    badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold shrink-0 ' + gaya.badge;
+    const titik = badge.querySelector('span');
+    if (titik) {
+      titik.classList.remove('bg-emerald-500', 'bg-amber-500', 'bg-slate-400');
+      titik.classList.add(gaya.titik);
+    }
+    if (badgeTeks) badgeTeks.textContent = gaya.teks;
+
+    const url = r.alamat_lan || '';
+    urlEl.textContent = url || 'Belum tersedia — tidak ada jaringan aktif';
+    if (btnSalin) btnSalin.disabled = !url;
+    if (klienEl) klienEl.textContent = r.klien_aktif ?? 0;
+    if (subnetEl) subnetEl.textContent = (r.subnet && r.subnet.length) ? r.subnet.join(', ') : '—';
+    if (ipEl) ipEl.textContent = r.ip_utama || '—';
+
+    if (adapterEl) {
+      adapterEl.innerHTML = '';
+      if (!r.antarmuka || !r.antarmuka.length) {
+        adapterEl.textContent = 'Tidak ada adapter jaringan fisik yang aktif.';
+      } else {
+        r.antarmuka.forEach(function(a) {
+          const span = document.createElement('span');
+          span.className = 'inline-flex items-center gap-1 mr-3';
+          span.textContent = a.nama + ' ';
+          const mono = document.createElement('span');
+          mono.className = 'font-mono';
+          mono.textContent = '(' + a.ip + ')';
+          span.appendChild(mono);
+          adapterEl.appendChild(span);
+        });
+      }
+    }
+
+    if (btnToggle && btnToggleTeks) {
+      btnToggle.dataset.aktif = r.aktif ? '1' : '0';
+      btnToggleTeks.textContent = r.aktif ? 'Matikan Akses LAN' : 'Aktifkan Akses LAN';
+      btnToggle.className = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors ' + gaya.tombol;
+    }
+  }
+
+  async function muatStatus() {
+    try {
+      const r = await fetch("{{ route('jaringan.status') }}", {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin',
+      });
+      if (!r.ok) return;
+      terapkan(await r.json());
+    } catch (_) {}
+  }
+
+  btnToggle?.addEventListener('click', async function () {
+    const aktifSekarang = btnToggle.dataset.aktif === '1';
+    btnToggle.disabled = true;
+    if (prosesEl) prosesEl.textContent = 'Menyimpan…';
+    try {
+      const r = await fetch("{{ route('jaringan.lan') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrf,
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ aktif: !aktifSekarang }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.message || 'Gagal menyimpan status LAN.');
+      if (j.ringkasan) terapkan(j.ringkasan);
+      if (window.karsaToast) window.karsaToast(j.message || 'Status LAN diperbarui.', 'success', 9000);
+    } catch (e) {
+      if (window.karsaToast) window.karsaToast(e.message || 'Gagal mengubah status LAN.', 'error', 11000);
+    } finally {
+      if (prosesEl) prosesEl.textContent = '';
+      btnToggle.disabled = false;
+    }
+  });
+
+  btnSalin?.addEventListener('click', async function () {
+    const teks = (urlEl.textContent || '').trim();
+    if (!teks || teks.indexOf('Belum') === 0) return;
+    let berhasil = false;
+    try {
+      await navigator.clipboard.writeText(teks);
+      berhasil = true;
+    } catch (_) {
+      const ta = document.createElement('textarea');
+      ta.value = teks;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { berhasil = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+    }
+    if (window.karsaToast) {
+      window.karsaToast(
+        berhasil ? 'Alamat LAN disalin: ' + teks : 'Gagal menyalin. Alamat LAN: ' + teks,
+        berhasil ? 'success' : 'error',
+        berhasil ? 8000 : 12000
+      );
+    }
+  });
+
+  // Aturan firewall hanya bisa diubah lewat aplikasi desktop (butuh izin admin).
+  async function aturFirewall(aktifkan) {
+    const inv = window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke;
+    if (typeof inv !== 'function') {
+      if (window.karsaToast) {
+        window.karsaToast('Aturan firewall hanya bisa diatur dari aplikasi desktop KARSA di komputer utama.', 'info', 10000);
+      }
+      return;
+    }
+    if (prosesEl) prosesEl.textContent = aktifkan ? 'Meminta izin administrator…' : 'Menghapus aturan firewall…';
+    try {
+      await inv('atur_firewall_lan', { aktifkan: aktifkan });
+      if (window.karsaToast) {
+        window.karsaToast(
+          aktifkan
+            ? 'Aturan firewall dibuat: hanya php.exe KARSA, profil Private/Domain.'
+            : 'Aturan firewall KARSA dihapus.',
+          'success',
+          10000
+        );
+      }
+    } catch (e) {
+      const pesan = typeof e === 'string' ? e : ((e && e.message) || 'Gagal mengubah aturan firewall.');
+      if (window.karsaToast) window.karsaToast(pesan, 'error', 14000);
+    } finally {
+      if (prosesEl) prosesEl.textContent = '';
+    }
+  }
+  document.getElementById('btn-firewall-buat')?.addEventListener('click', function () { aturFirewall(true); });
+  document.getElementById('btn-firewall-hapus')?.addEventListener('click', function () { aturFirewall(false); });
+
+  // Segarkan status berkala: IP LAN bisa berubah (DHCP), klien bisa masuk/keluar.
+  setInterval(function () { if (!document.hidden) muatStatus(); }, 20000);
+})();
 </script>
+
 @endsection

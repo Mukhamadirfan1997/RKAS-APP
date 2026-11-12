@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BatasiAksesLan;
 use App\Http\Middleware\CekLisensi;
 use App\Services\BackupService;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,15 @@ $app = Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectUsersTo('/');
+
+        // Penjaga akses jaringan (global, sengaja dipasang paling awal sebelum
+        // sesi/database disentuh):
+        // - localhost selalu lolos (mode Desktop Offline tidak terpengaruh),
+        // - komputer lain hanya lolos bila operator mengaktifkan Akses LAN DAN
+        //   alamatnya termasuk subnet adapter fisik komputer ini.
+        // Lihat App\Http\Middleware\BatasiAksesLan.
+        $middleware->append(BatasiAksesLan::class);
+
         $middleware->alias([
             'cek.lisensi' => CekLisensi::class,
         ]);

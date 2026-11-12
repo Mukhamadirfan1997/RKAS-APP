@@ -7,6 +7,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KatalogUpdateController;
 use App\Http\Controllers\KesiapanController;
+use App\Http\Controllers\LanController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\MonitoringJuknisController;
 use App\Http\Controllers\PanduanController;
@@ -29,7 +30,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/pulihkan', [RegistrasiController::class, 'pulihkan'])->name('pulihkan.proses');
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login.attempt');
     Route::get('/lupa-password', [AuthController::class, 'showForgot'])->name('auth.forgot');
     Route::post('/lupa-password', [AuthController::class, 'handleForgot'])->middleware('throttle:5,1')->name('auth.forgot.attempt');
     Route::get('/reset-password', [AuthController::class, 'showReset'])->name('auth.reset');
@@ -112,6 +113,10 @@ Route::middleware('auth')->group(function () {
 
     // Tentang & Panduan
     Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');
+
+    // Akses LAN (pengaturan jaringan lokal)
+    Route::get('/jaringan/status', [LanController::class, 'status'])->name('jaringan.status');
+    Route::post('/jaringan/lan', [LanController::class, 'atur'])->name('jaringan.lan');
     Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan.index');
 
     // Aktivasi Lisensi (harus bisa diakses bahkan saat read-only, jadi tanpa cek.lisensi)

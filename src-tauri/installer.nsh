@@ -29,5 +29,12 @@
   DetailPrint "Menutup KARSA sebelum penghapusan..."
   nsExec::ExecToLog "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"Get-CimInstance Win32_Process | Where-Object { $$_.ExecutablePath -and $$_.ExecutablePath.StartsWith('$INSTDIR') } | ForEach-Object { Stop-Process -Id $$_.ProcessId -Force -ErrorAction SilentlyContinue }$\""
   Pop $0
+  ; Bersihkan aturan firewall akses LAN milik KARSA agar tidak tertinggal.
+  ; Best-effort: uninstaller berjalan tanpa hak administrator, jadi bila gagal
+  ; (butuh elevasi) aturan hanya menunjuk path php.exe yang sudah tidak ada —
+  ; tidak berbahaya. Pengguna bisa menghapusnya manual dari Windows Firewall.
+  DetailPrint "Menghapus aturan Windows Firewall KARSA (bila ada)..."
+  nsExec::ExecToLog 'netsh advfirewall firewall delete rule name="KARSA LAN Server"'
+  Pop $0
   Sleep 800
 !macroend

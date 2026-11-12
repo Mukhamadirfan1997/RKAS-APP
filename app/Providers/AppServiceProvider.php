@@ -5,9 +5,14 @@ namespace App\Providers;
 use App\Services\AuditLogArchiveService;
 use App\Services\BackupService;
 use App\Services\DatabaseHealthService;
+use App\Services\JaringanService;
+use App\Services\LanConfigService;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,7 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Status akses LAN & deteksi jaringan dipakai bersama oleh middleware dan
+        // controller. Singleton agar berkas lan.json hanya dibaca sekali per
+        // permintaan, dan perubahan status langsung terlihat tanpa cache basi.
+        $this->app->singleton(LanConfigService::class);
+        $this->app->singleton(JaringanService::class);
     }
 
     /**
@@ -28,6 +37,26 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'id');
         date_default_timezone_set(config('app.timezone', 'Asia/Jakarta'));
+
+        // Rate limit login: maksimal 5 percobaan per menit per alamat IP.
+        // Berlaku juga untuk komputer lain lewat Akses LAN, sehingga tebak sandi
+        // otomatis tidak bisa jalan tanpa henti. Mekanisme autentikasi tetap
+        // sama — hanya ditambah pembatas percobaan (bukan dimatikan).
+        RateLimiter::for('login', function (Request $request) {
+            $pesan = 'Terlalu banyak percobaan masuk (maksimal 5 per menit). Tunggu sebentar lalu coba lagi.';
+
+            return Limit::perMinute(5)
+                ->by('login|'.$request->ip())
+                ->response(function (Request $request) use ($pesan) {
+                    if ($request->expectsJson()) {
+                        return response()->json(['message' => $pesan], 429);
+                    }
+
+                    return back()
+                        ->withErrors(['email' => $pesan])
+                        ->withInput($request->only('email'));
+                });
+        });
 
         // WAL mode — idempoten, aman dipanggil berulang (lebih tahan crash)
         try {
