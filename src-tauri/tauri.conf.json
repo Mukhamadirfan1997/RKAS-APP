@@ -19,6 +19,7 @@
     "active": true,
     "targets": ["nsis", "msi"],
     "createUpdaterArtifacts": true,
+    "licenseFile": "installer/KARSA-Info.rtf",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -53,7 +54,16 @@
     },
     "windows": {
       "nsis": {
-        "installerHooks": "./installer.nsh"
+        "installerHooks": "./installer.nsh",
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
+        "headerImage": "installer/header.bmp",
+        "uninstallerHeaderImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp",
+        "languages": ["Indonesian"],
+        "customLanguageFiles": {
+          "Indonesian": "installer/bahasa-installer.nsh"
+        }
       }
     }
   },
