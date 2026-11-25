@@ -74,9 +74,13 @@
                     <label class="label">Tahun Baru *</label>
                     <input type="number" name="tahun" value="{{ old('tahun', date('Y')+1) }}" min="2020" max="2100" required class="input" placeholder="2027">
                 </div>
-                <div>
+                <div x-data="{ paguVal: '{{ old('pagu_total', '') }}' }">
                     <label class="label">Pagu Total</label>
-                    <input type="number" name="pagu_total" value="{{ old('pagu_total') }}" placeholder="180320000" class="input">
+                    <input type="hidden" name="pagu_total" :value="paguVal ? Number(String(paguVal).replace(/[^\d]/g, '')) || 0 : ''">
+                    <input type="text" inputmode="numeric"
+                        :value="paguVal ? (Number(String(paguVal).replace(/[^\d]/g, '')) || 0).toLocaleString('id-ID') : ''"
+                        @input="let raw = String($event.target.value).replace(/[^\d]/g, ''); paguVal = raw ? Number(raw) : ''"
+                        placeholder="180.320.000" class="input font-semibold text-slate-800 dark:text-white">
                 </div>
                 <div>
                     <label class="label">Copy dari</label>

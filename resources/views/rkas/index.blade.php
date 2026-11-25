@@ -398,12 +398,12 @@
 
                 <!-- Step indicator — hidden in view mode -->
                 <div x-show="mode !== 'view'" class="mx-6 mt-4 flex items-center gap-3 text-xs">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 cursor-pointer" @click="step=1">
                         <span :class="step===1 ? 'bg-blue-600 text-white' : 'bg-emerald-500 text-white'" class="w-7 h-7 rounded-full flex items-center justify-center font-bold">1</span>
                         <span :class="step===1 ? 'text-slate-800 dark:text-white font-bold' : 'text-emerald-600 dark:text-emerald-400 font-semibold'">Pilih Kegiatan & Rekening</span>
                     </div>
                     <div class="flex-1 h-0.5" :class="step===2 ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'"></div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 cursor-pointer" @click="if(pickers.kegiatan.value && pickers.rekening.value) step=2">
                         <span :class="step===2 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'" class="w-7 h-7 rounded-full flex items-center justify-center font-bold">2</span>
                         <span :class="step===2 ? 'text-slate-800 dark:text-white font-bold' : 'text-slate-400'">Detail Uraian & Alokasi</span>
                     </div>
@@ -477,7 +477,7 @@
 
                 <div x-show="mode !== 'view'" class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
                     <!-- STEP 1 -->
-                    <div x-show="step===1" class="space-y-4">
+                    <div x-show="step===1" class="space-y-6 min-h-[380px]">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="label">Kegiatan <span class="text-red-500">*</span></label>
@@ -485,9 +485,9 @@
                                 <input type="text" x-model="pickers.kegiatan.q" @input="debouncedSearch('kegiatan')" placeholder="Klik untuk melihat daftar / ketik untuk mencari kegiatan..." autocomplete="off"
                                     @focus="openPicker('kegiatan')"
                                     class="input">
-                                <template x-if="pickers.kegiatan.open && pickers.kegiatan.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                <template x-if="pickers.kegiatan.open && pickers.kegiatan.loading"><div class="absolute z-30 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-2xl px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.kegiatan.open && !pickers.kegiatan.loading">
-                                    <ul @scroll="gulirMuat('kegiatan', $event)" class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('kegiatan', $event)" class="absolute z-30 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-2xl max-h-72 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.kegiatan.results" :key="r.id">
                                             <li @click="selectKegiatan(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
@@ -507,9 +507,9 @@
                                 <input type="text" x-model="pickers.rekening.q" @input="debouncedSearch('rekening')" placeholder="Klik untuk melihat daftar / ketik untuk mencari kode rekening..." autocomplete="off"
                                     @focus="openPicker('rekening')"
                                     class="input">
-                                <template x-if="pickers.rekening.open && pickers.rekening.loading"><div class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                <template x-if="pickers.rekening.open && pickers.rekening.loading"><div class="absolute z-30 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-2xl px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.rekening.open && !pickers.rekening.loading">
-                                    <ul @scroll="gulirMuat('rekening', $event)" class="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('rekening', $event)" class="absolute z-30 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-2xl max-h-72 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.rekening.results" :key="r.id">
                                             <li @click="selectRekening(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200" x-text="r.text"></div>
@@ -540,9 +540,9 @@
                                 <textarea x-model="form.uraian" maxlength="500" rows="2" placeholder="Klik untuk melihat saran katalog, atau ketik uraian bebas. Contoh: spidol snowman / kertas hvs a4 — boleh beberapa kata, urutan bebas. Untuk pemeliharaan, tulis sendiri mis. &quot;Pemeliharaan Ruang Kelas 1&quot;." class="input resize-none"
                                     @input="searchUraianSuggestion($event)"
                                     @focus="form.saran_katalog && openPicker('barang')"></textarea>
-                                <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-lg px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
+                                <template x-if="pickers.barang.open && pickers.barang.loading"><div class="absolute z-30 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-lg shadow-2xl px-3 py-2 text-xs text-slate-400">Mencari...</div></template>
                                 <template x-if="pickers.barang.open && !pickers.barang.loading">
-                                    <ul @scroll="gulirMuat('barang', $event)" class="absolute z-20 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-lg max-h-60 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <ul @scroll="gulirMuat('barang', $event)" class="absolute z-30 inset-x-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/60 rounded-xl shadow-2xl max-h-72 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                                         <template x-for="r in pickers.barang.results" :key="r.id">
                                             <li @click="applyBarangSuggestion(r)" class="px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/15 cursor-pointer">
                                                 <div class="text-sm text-slate-700 dark:text-slate-200 font-medium" x-text="r.nama"></div>
@@ -603,11 +603,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="label">Harga Satuan yang Dianggarkan <span class="text-red-500">*</span></label>
-                            <div class="flex items-center gap-1">
-                                <span class="text-sm text-slate-400">Rp</span>
-                                <input type="text" inputmode="numeric" x-bind:value="form.harga_satuan.toLocaleString('id-ID')"
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm font-semibold text-slate-400">Rp</span>
+                                <input type="text" inputmode="numeric" x-bind:value="form.harga_satuan ? form.harga_satuan.toLocaleString('id-ID') : ''"
                                     @input="form.harga_satuan = Number(String($event.target.value).replace(/[^\d]/g, '')) || 0"
-                                    placeholder="0" class="input !w-auto max-w-xs font-bold text-slate-800 dark:text-white">
+                                    placeholder="0" class="input w-full max-w-sm font-bold text-slate-800 dark:text-white text-base">
                             </div>
 
                             {{-- SSH / Batas Harga Info & Warning --}}
@@ -652,9 +652,9 @@
                             <label class="label text-[11px]">KOREKSI (selisih rupiah manual, boleh negatif)</label>
                             <div class="flex items-center gap-1.5 mt-1">
                                 <span class="text-sm text-slate-400 font-semibold">Rp</span>
-                                <input type="text" inputmode="numeric" x-bind:value="form.koreksi.toLocaleString('id-ID')"
+                                <input type="text" inputmode="numeric" x-bind:value="form.koreksi ? form.koreksi.toLocaleString('id-ID') : ''"
                                     @input="form.koreksi = Number(String($event.target.value).replace(/[^\d-]/g, '')) || 0"
-                                    placeholder="0" class="input !w-auto max-w-xs text-xs">
+                                    placeholder="0" class="input w-full max-w-sm text-xs font-semibold">
                             </div>
                             <div class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
                                 Angka ini untuk penyesuaian khusus selisih pembulatan rupiah. Total terpakai = (&Sigma; Vol &times; Harga) + Koreksi = <span class="font-semibold text-slate-700 dark:text-slate-200" x-text="'Rp ' + totalAll()"></span>

@@ -83,10 +83,10 @@
             </div>
             <div>
                 <label class="label">Pagu Total 1 Tahun <span class="text-red-500">*</span></label>
-                <div class="flex items-center gap-1">
-                    <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                     <input type="hidden" name="pagu_total" :value="pagu_total">
-                    <input type="text" x-bind:value="pagu_total.toLocaleString('id-ID')" @input="ubahTotal(Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input">
+                    <input type="text" inputmode="numeric" x-bind:value="pagu_total ? pagu_total.toLocaleString('id-ID') : ''" @input="ubahTotal(Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input font-bold text-slate-800 dark:text-white text-base">
                 </div>
                 <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Setelah pagu 1 tahun diisi, pagu tiap tahap otomatis dibagi 50% : 50% &mdash; tetap bisa Anda ubah manual.</p>
             </div>
@@ -99,10 +99,10 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="label">Pagu Tahap I (Jan&ndash;Jun)</label>
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap1" :value="pagu_tahap1">
-                        <input type="text" x-bind:value="pagu_tahap1.toLocaleString('id-ID')" @input="ubahTahap(1, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input"
+                        <input type="text" inputmode="numeric" x-bind:value="pagu_tahap1 ? pagu_tahap1.toLocaleString('id-ID') : ''" @input="ubahTahap(1, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input font-semibold text-slate-800 dark:text-white"
                                :class="Number(pagu_tahap1) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
                     <p class="mt-1 text-[11px]" :class="Number(pagu_tahap1) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
@@ -112,10 +112,10 @@
                 </div>
                 <div>
                     <label class="label">Pagu Tahap II (Jul&ndash;Des)</label>
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="pagu_tahap2" :value="pagu_tahap2">
-                        <input type="text" x-bind:value="pagu_tahap2.toLocaleString('id-ID')" @input="ubahTahap(2, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input"
+                        <input type="text" inputmode="numeric" x-bind:value="pagu_tahap2 ? pagu_tahap2.toLocaleString('id-ID') : ''" @input="ubahTahap(2, Number(String($event.target.value).replace(/[^\d]/g, '')) || 0)" placeholder="0" class="input font-semibold text-slate-800 dark:text-white"
                                :class="Number(pagu_tahap2) > batasTahap ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''">
                     </div>
                     <p class="mt-1 text-[11px]" :class="Number(pagu_tahap2) > batasTahap ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-400 dark:text-slate-500'">
@@ -158,26 +158,26 @@
                 </div>
                 <div>
                     <label class="label">Target Belanja Barang dan Jasa</label>
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="target_barjas" :value="target_barjas ?? ''">
-                        <input type="text" :value="target_barjas === null ? '' : Number(target_barjas).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_barjas = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
+                        <input type="text" inputmode="numeric" :value="target_barjas === null ? '' : Number(target_barjas).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_barjas = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input font-semibold text-slate-800 dark:text-white" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
                     </div>
                 </div>
                 <div>
                     <label class="label">Target Modal Mesin</label>
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="target_modal_mesin" :value="target_modal_mesin ?? ''">
-                        <input type="text" :value="target_modal_mesin === null ? '' : Number(target_modal_mesin).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_modal_mesin = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
+                        <input type="text" inputmode="numeric" :value="target_modal_mesin === null ? '' : Number(target_modal_mesin).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_modal_mesin = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input font-semibold text-slate-800 dark:text-white" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
                     </div>
                 </div>
                 <div>
                     <label class="label">Target Modal Aset Tetap Lainnya (termasuk buku)</label>
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm text-slate-400 dark:text-slate-500">Rp</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">Rp</span>
                         <input type="hidden" name="target_modal_aset" :value="target_modal_aset ?? ''">
-                        <input type="text" :value="target_modal_aset === null ? '' : Number(target_modal_aset).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_modal_aset = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
+                        <input type="text" inputmode="numeric" :value="target_modal_aset === null ? '' : Number(target_modal_aset).toLocaleString('id-ID')" @input="let v=String($event.target.value).replace(/[^\d]/g,''); target_modal_aset = v === '' ? null : Number(v)" placeholder="— belum diisi —" class="input font-semibold text-slate-800 dark:text-white" @if(($tahunAnggaran->status_pengesahan ?? 'Draft') === 'Disahkan') disabled @endif>
                     </div>
                 </div>
                 <div class="rounded-xl border px-4 py-3 text-xs"

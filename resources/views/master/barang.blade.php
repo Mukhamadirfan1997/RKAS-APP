@@ -124,7 +124,14 @@
                 <div><label class="label">Nama Barang/Jasa <span class="text-red-500">*</span></label><input type="text" name="nama" x-model="form.nama" required placeholder="Nasi Dus & Lauk Pauk" class="input w-full"></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="label">Satuan Default</label><input type="text" name="satuan_default" x-model="form.satuan" placeholder="dus" class="input w-full"></div>
-                    <div><label class="label">Harga Acuan</label><input type="number" name="harga_acuan" x-model="form.harga" min="0" step="any" placeholder="30000" class="input w-full"></div>
+                    <div>
+                        <label class="label">Harga Acuan</label>
+                        <input type="hidden" name="harga_acuan" :value="form.harga">
+                        <input type="text" inputmode="numeric"
+                            :value="form.harga ? (Number(form.harga) || 0).toLocaleString('id-ID') : ''"
+                            @input="let raw = String($event.target.value).replace(/[^\d]/g, ''); form.harga = raw ? Number(raw) : ''"
+                            placeholder="30.000" class="input w-full font-semibold text-slate-800 dark:text-white">
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2"><button type="button" @click="showModal=false" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 text-xs font-semibold">Batal</button><button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">Simpan</button></div>
             </form>
