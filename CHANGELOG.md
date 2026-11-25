@@ -2,6 +2,20 @@
 
 Semua perubahan penting aplikasi dicatat di sini. Versi terbaru di paling atas.
 
+## [1.8.0] - 2026-11-25
+
+### Ditambahkan
+- **Mode akses LAN** — komputer lain di jaringan sekolah dapat membuka KARSA lewat browser (alamat LAN + tombol salin, aturan firewall sekali klik, pembatasan hanya subnet jaringan sekolah). Bisa dinyalakan/dimatikan dari halaman **Tentang**.
+- **Halaman Tentang menampilkan 3 pembaruan terbaru** dengan tombol **Unduh CHANGELOG.md** (riwayat lengkap tetap tersedia sebagai berkas).
+- **Installer berbahasa Indonesia** dengan panel samping berlogo, halaman **Tentang KARSA** berisi ringkasan aplikasi dan ketentuan penggunaan, serta tombol "Lanjut", "Saya Setuju", dan "Selesai".
+
+### Diperbaiki
+- **Input rupiah lebih nyaman** — Harga Acuan (Master Barang), Pagu Total (Tahun Anggaran), Pagu Total/Tahap I/Tahap II/target belanja (Pengaturan), harga satuan, dan koreksi kini tampil berformat `1.234.567` dan tidak lagi menampilkan "0" palsu saat kosong.
+- **Modal Detail Anggaran** — indikator langkah 1/2 bisa diklik untuk berpindah, daftar saran pencarian lebih tinggi dan tidak lagi tertutup elemen lain, kolom harga satuan serta koreksi diperlebar.
+
+### Ditingkatkan
+- **Aplikasi lebih ringan dan cepat**: logo 106 KB menjadi 19,7 KB, bundel JavaScript mengecil (axios dibuang, tur hanya dimuat saat dibutuhkan), serta **kompresi gzip** dan cache aset. Tur pembaruan lama dibersihkan agar tidak menumpuk.
+
 ## [1.7.3] - 2026-11-09
 
 ### Diperbaiki
